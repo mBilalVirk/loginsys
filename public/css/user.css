@@ -1,0 +1,94 @@
+.profile-page {
+    display: flex;
+    gap: 30px;
+    padding: 20px;
+}
+
+/* PROFILE CARD */
+.profile-card {
+    width: 250px;
+    height: 25%;
+    background: white;
+    padding: 20px;
+    text-align: center;
+    border-radius: 8px;
+    position: sticky;
+    top: 20px;
+}
+
+.profile-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+.mini-img {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+.profile-card h2 {
+    margin: 10px 0;
+}
+
+.profile-card p {
+    margin-bottom: 15px;
+}
+
+/* BUTTONS */
+.btn {
+    background: #1877f2;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.logout-btn {
+    background: #dc3545;
+    margin-top: 10px;
+}
+
+.link {
+    display: block;
+    margin-top: 10px;
+}
+
+/* UPDATE PROFILE FORM */
+.update-profile {
+    flex: 1;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.update-profile input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* ALERTS */
+.alert {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+}
+
+.alert.error {
+    background: #ffe5e5;
+    color: #b30000;
+}
+
+.alert.success {
+    background: #e6ffe6;
+    color: #006600;
+}
