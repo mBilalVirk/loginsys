@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Post;
+use App\Models\Friend;
 
 class User extends Authenticatable
 {
@@ -27,6 +29,22 @@ class User extends Authenticatable
     {
         return $this->hasMany(Post::class);
     }
+    public function sentFriendRequests(){
+        return $this->hasMany(Friend::class, 'user_id');
+    }
+    public function receivedFriendRequests(){
+        return $this->hasMany(Friend::class, 'friend_id');
+    }
+    public function acceptedFriends(){
+        return $this->hasMany(Friend::class, 'user_id')->where('status', 'accepted');
+    }
+    public function rejectedFriends(){
+        return $this->hasMany(Friend::class, 'user_id')->where('status', 'rejected');
+    }
+    // public function friends(){
+    //     return $this->hasMany(Friend::class, 'user_id');
+    // }
+
     /**
      * The attributes that should be hidden for serialization.
      *

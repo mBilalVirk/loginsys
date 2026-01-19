@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FriendController;
+
+
 
 Route::get('/', function () {
     return view('login');
@@ -15,6 +18,16 @@ Route::get('/register', function () {
 Route::get('/passwordupdate', function () {
     return view('passwordupdate');
 })->middleware('auth')->name('passwordupdate');
+
+Route::middleware('auth')->group(function(){
+Route::get('/friends', [FriendController::class, 'index'])
+    ->middleware('auth')
+    ->name('friends');
+    Route::post('/friends/send/{id}', [FriendController::class, 'send'])
+    ->middleware('auth')
+    ->name('send.request');
+});
+
 
 
 Route::get('/admin', [App\Http\Controllers\AdminController::class, 'index'])->name('admin.login');

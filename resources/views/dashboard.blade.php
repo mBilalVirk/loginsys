@@ -23,6 +23,7 @@
             <button class="btn logout-btn">Logout</button>
         </form>
 
+        <a href="{{ route('friends') }}" class="link">Friends</a>
         <a href="{{ route('passwordupdate') }}" class="link">Change Password</a>
     </div>
 
@@ -55,6 +56,13 @@
                 <input type="file" name="photo" id="image" accept="image/*">
             <button type="submit" class="btn">Create Post</button>
         </form>
+    </div>
+    <div>
+
+    </div>
+
+    <div>
+        All Users
     </div>
     <div class="update-profile card">
         <h3>Your Posts</h3>

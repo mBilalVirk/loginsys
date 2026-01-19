@@ -55,8 +55,8 @@ class UserController extends Controller
             'photo.required'=>'Photo is Required',
         ]);
         if ($request->hasFile('photo')) {
-            if ($user->photo && file_exists(public_path($user->photo))) {
-            unlink(public_path($user->photo));}
+            // if ($user->photo && file_exists(public_path($user->photo))) {
+            // unlink(public_path($user->photo));}
 
             $imageName = time().'_'.$request->photo->getClientOriginalName();
             $request->photo->move(public_path('images'), $imageName);
