@@ -14,17 +14,85 @@ class FriendController extends Controller
     {
 
         $user = auth()->user();
-        $friends = User::where('id', '!=', $user->id)->get();
-        $friendRequests = User::withWhereHas('sentFriendRequests', function ($query) use ($user) {
-            $query->where('user_id', $user->id)
-                  ->where('status', 'pending');
+        // $friends = User::where('id', '!=', $user->id)->get();
+        // Get all users except the authenticated user and those who are already friends or have pending requests
+
+
+        $friends = User::where('id', '!=', $user->id)->whereNotIn('id', function ($query) use ($user) {
+            $query->select('friend_id')
+                  ->from('friends')
+                  ->where('user_id', $user->id)
+                  ->where('status', ['pending', 'accepted'])
+                  
+                  ;
         })->get();
+
+        // return $friends;
+        $sentFriendRequests = User::withWhereHas('sentFriendRequests', function ($query) use ($user) {
+            $query->where('user_id', $user->id)
+                  ->where('status', 'pending')
+                  ->with('receiver' );
+        })->get();
+  
+
+        $receivedFriendRequests = User::withWhereHas('receivedFriendRequests', function ($query) use ($user) {
+            $query->where('friend_id', $user->id)
+                  ->where('status', 'pending')
+                  ->with('sender' );
+        })->get();
+    //    echo $receivedFriendRequests;
+
+
+        // $acceptedFriends = User::withWhereHas('acceptedFriends', function ($query) use ($user) {
+        //     $query->where('user_id', $user->id)
+        //           ->where('friend_id', $user->id)
+        //           ->where('status', 'accepted')
+        //            ;
+        // })->get();
+        $acceptedFriends = Friend::with(['sender', 'receiver'])
+    ->where(function($query) use ($user) {
+        $query->where('user_id', $user->id)   // requests you sent
+              ->orWhere('friend_id', $user->id); // requests you received
+    })
+    ->where('status', 'accepted')
+    ->get();
+        
+      
        
-        return view('user.friends', compact('friends', 'friendRequests', 'user'));
+        
+         $rejectedFriends = User::withWhereHas('rejectedFriends', function ($query) use ($user) {
+            $query->where('user_id', $user->id)
+                  ->where('status', 'rejected');
+        })->get();
+
+
+
+        return view('user.friends', compact('friends', 'sentFriendRequests', 'receivedFriendRequests', 'acceptedFriends', 'rejectedFriends', 'user'));
     }
     public function send($friend_id){
         $user = auth()->user();
         $user_id = $user->id;
+
+        // $alreadyExist = Friend::where('user_id', $user_id)
+        //                         ->where('friend_id',$friend_id )
+        //                         ->where('status', 'pending')
+        //                         ->exists();
+        $alreadyExist = friend::where (function($query) use ($user_id,$friend_id){
+                $query->where('user_id', $user_id)
+                        ->where('friend_id',$friend_id );
+        })
+        ->orWhere(function($query) use ($user_id,$friend_id)
+        {
+                $query->where('user_id', $friend_id)
+                        ->where('friend_id',$user_id );
+        })
+        ->where('status', 'pending')
+        ->exists();
+
+        if($alreadyExist){
+            return redirect()->back()->with('status', 'Friend request Already Sent');
+        }
+
         Friend::create([
             'user_id' => $user_id,
             'friend_id' => $friend_id,
@@ -32,6 +100,24 @@ class FriendController extends Controller
         ]);
         return redirect()->back()->with('status', 'Friend request sent successfully');
     }
+        public function deleteRequest($id){
+                $friend = Friend::findOrFail($id);
+                $friend->delete();
+                return redirect()->back()->with('status', 'Friend request has been canceled');
+        }
+    public function acceptRequest(Request $request, $id){
+        $acceptFriend = Friend::findOrFail($id);
+
+        $acceptFriend->update([
+            'status'=>'accepted'
+        ]);
+        return redirect()->back()->with('status', 'Friend request has been accepted');
+    }
+        public function unFriend($id){
+                $friend = Friend::findOrFail($id);
+                $friend->delete();
+                return redirect()->back()->with('status', 'Unfriended successfully');
+        }
 
     /**
      * Show the form for creating a new resource.

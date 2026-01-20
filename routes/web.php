@@ -26,6 +26,15 @@ Route::get('/friends', [FriendController::class, 'index'])
     Route::post('/friends/send/{id}', [FriendController::class, 'send'])
     ->middleware('auth')
     ->name('send.request');
+Route::delete('/friends/delete/{id}',[FriendController::class, 'deleteRequest'])
+    ->middleware('auth')
+    ->name('delete.request');
+Route::post('/friends/accept/{id}',[FriendController::class, 'acceptRequest'])
+    ->middleware('auth')
+    ->name('accept.request');
+Route::post('/friends/unfriend/{id}',[FriendController::class, 'unFriend'])
+    ->middleware('auth')
+    ->name('unfriend.request');
 });
 
 

@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="{{ asset('css/user.css') }}">
 </head>
 
-<h1>All users</h1>
+
 
 @section('content')
 @if(session('status'))
@@ -13,6 +13,90 @@
         {{ session('status') }}
     </div>
 @endif
+<!-- my friends -->
+ <h1>Your Friends</h1>
+ <div class="friends-list">
+       @foreach($acceptedFriends as $friendRequest)
+    @php
+        // Determine who the friend is
+        if ($friendRequest->user_id == auth()->id()) {
+            $friendUser = $friendRequest->receiver; // You sent the request
+        } else {
+            $friendUser = $friendRequest->sender;   // They sent the request
+        }
+        
+    @endphp
+
+    <div class="friend-card">
+        <img src="{{ $friendUser->photo ? asset($friendUser->photo) : asset('images/default-user.png') }}"
+             class="friend-img">
+
+        <h2>{{ $friendUser->name }}</h2>
+        <p>{{ $friendUser->email }}</p>
+
+        <form action="{{ route('unfriend.request', $friendRequest->id) }}" method="POST">
+            @csrf
+            <button class="btn logout-btn">Unfriend</button>
+        </form>
+    </div>
+@endforeach
+
+</div>
+<!-- Sent Friend Requests -->
+ <h1>Sent Friend Requests</h1>
+<div class="friends-list">
+       @foreach($sentFriendRequests as $user)
+        @foreach($user->sentFriendRequests as $request)
+
+            <div class="friend-card">
+                <img src="{{ $request->receiver && $request->receiver->photo
+                    ? asset('/' . $request->receiver->photo)
+                    : asset('images/default-user.png') }}"
+                    class="friend-img">
+
+                <h2>{{ $request->receiver->name }}</h2>
+                <p>{{ $request->receiver->email }}</p>
+                 <form action="{{route('delete.request',$request->id)}}" method="POST">
+                @csrf
+                @method('DELETE')
+            <button class="btn logout-btn">Cancel Request</button>
+            </form>
+            </div>
+             @endforeach
+    @endforeach
+</div>
+<!-- receivedFriendRequests -->
+<h1>Received Friend Requests</h1>
+<div class="friends-list">
+       @foreach($receivedFriendRequests as $user)
+        @foreach($user->receivedFriendRequests as $request)
+
+            <div class="friend-card">
+                <img src="{{ $request->sender && $request->sender->photo
+                    ? asset('/' . $request->sender->photo)
+                    : asset('images/default-user.png') }}"
+                    class="friend-img">
+
+                <h2>{{ $request->sender->name }}</h2>
+                <p>{{ $request->sender->email }}</p>
+                 <form action="{{route('delete.request',$request->id)}}" method="POST">
+                @csrf
+                @method('DELETE')
+            <button class="btn logout-btn">Cancel Request</button>
+            </form>
+            <form action="{{route('accept.request',$request->id)}}" method="POST">
+                @csrf
+                @method('POST')
+                <input type="submit"class="btn logout-btn" value="Accept Friend Request">
+            
+            </form>
+            </div>
+             @endforeach
+    @endforeach
+</div>
+
+<h1>All others</h1>
+
 <div class="friends-list">
 @foreach($friends as $friend)
 
@@ -27,9 +111,7 @@
         <h2>{{ $friend->name }}</h2>
         <p>{{ $friend->email }}</p>
         
-       @foreach($friendRequests as $request)
-    {{ $request->status }}
-@endforeach
+       
             <form action="{{route('send.request',$friend->id)}}" method="POST">
                 @csrf
             <button class="btn logout-btn">Send Friend Request</button>
