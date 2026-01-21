@@ -22,10 +22,15 @@ class FriendController extends Controller
             $query->select('friend_id')
                   ->from('friends')
                   ->where('user_id', $user->id)
-                  ->where('status', ['pending', 'accepted'])
-                  
-                  ;
-        })->get();
+                  ->whereIn('status', ['pending', 'accepted']);
+                          })
+                          ->whereNotIn('id', function ($query) use ($user) {
+            $query->select('user_id')
+                  ->from('friends')
+                  ->where('friend_id', $user->id)
+                  ->whereIn('status', ['pending', 'accepted']);
+                          })
+                          ->get();
 
         // return $friends;
         $sentFriendRequests = User::withWhereHas('sentFriendRequests', function ($query) use ($user) {

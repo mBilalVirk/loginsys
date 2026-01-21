@@ -7,10 +7,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>User Profile</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=edit" />
-    
+
     <script>
     function openImage(imgElement) {
         var modal = document.getElementById('imageModal');
@@ -29,14 +26,23 @@ document.querySelector('.edit-icon').addEventListener('click', function() {
     document.getElementById('photoUpload').click();
 });
 
+function postUpdate() {
+    // Implement post update functionality here
+    getElementById('content').style.display = "none";
 
+    alert('Post update functionality to be implemented.');
+}
 </script>
 
 </head>
 <body>
 
 <div class="container">
-
+@if(session('status'))
+    <div class="alert success" style="margin-top:20px; z-index:100;">
+        {{ session('status') }}
+    </div>
+@endif
     <!-- Profile Section -->
     <div class="profile-card">
         <div class="profile-photo-wrapper">
@@ -100,6 +106,7 @@ document.querySelector('.edit-icon').addEventListener('click', function() {
     </div>
 
     <!-- Posts Section -->
+     
     <div class="posts">
         @foreach($posts as $post)
         <div class="posts">
@@ -113,11 +120,16 @@ document.querySelector('.edit-icon').addEventListener('click', function() {
             @endif
 
             {{-- Post Content --}}
-            <textarea rows="3" disabled>{{ $post->content }}</textarea>
+            <!-- <textarea rows="3" disabled name="content">{{ $post->content }}</textarea> -->
+             <p>{{ $post->content }}</p>
 
-            <div class="post-actions">
+            <div class="post-actions" >
                 <span>{{ $post->created_at->diffForHumans() }}</span>
-                <button>Edit</button>
+                <button style="color: blue;" onclick="postUpdate()">Edit</button>
+                <form action="{{ route('delpost', $post->id) }}" method="POST" style="display: inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" style="color: red;" onclick="return confirm('Are you sure you want to delete this post?')">Delete</button>   
             </div>
 
         </div>

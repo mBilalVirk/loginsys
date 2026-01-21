@@ -1,0 +1,236 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", sans-serif;
+}
+
+body {
+    background: #f4f6f8;
+
+}
+
+.container {
+
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    columns: 250px 1fr;
+    gap: 10px;
+}
+
+/* Profile Card */
+.profile-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, .08);
+}
+
+.profile-card img {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    margin-bottom: 15px;
+}
+
+.profile-card h2 {
+    margin-bottom: 5px;
+}
+
+.profile-card p {
+    color: #777;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.profile-info {
+    text-align: left;
+    margin-top: 20px;
+}
+
+.profile-info label {
+    font-size: 13px;
+    color: #555;
+}
+
+.profile-info input,
+.profile-info textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 6px 0 15px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.profile-info button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: #4f46e5;
+    color: white;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.profile-info button:hover {
+    background: #4338ca;
+}
+
+/* Posts Section */
+.posts {
+    background: transparent;
+    border-radius: 12px;
+    padding: 0;
+    box-shadow: none;
+    width: 100%;
+}
+
+.post-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, .06);
+}
+
+.post-card textarea {
+    width: 100%;
+    border: none;
+    resize: none;
+    font-size: 15px;
+}
+
+.post-actions {}
+
+.post-actions span {
+    font-size: 13px;
+    color: #888;
+}
+
+.post-actions button {
+    border: none;
+    background: #e5e7eb;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.post-actions button:hover {
+    background: #d1d5db;
+}
+
+.post-image {}
+
+/* Modal Overlay */
+#imageModal {
+    display: none;
+    /* hidden by default */
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.9);
+    justify-content: center;
+    align-items: center;
+}
+
+/* Modal Image */
+#modalImg {
+    max-width: 90%;
+    max-height: 90%;
+    margin: auto;
+    display: block;
+    border-radius: 10px;
+}
+
+/* Close Button */
+#closeBtn {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.material-symbols-outlined {
+    font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24
+}
+
+.profile-photo-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Edit icon overlay */
+.edit-icon {
+    position: absolute;
+    bottom: 5px;
+    /* adjust vertical position */
+    right: 5px;
+    /* adjust horizontal position */
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border-radius: 50%;
+    padding: 6px;
+    cursor: pointer;
+    font-size: 20px;
+    transition: background 0.2s;
+}
+
+.edit-icon:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.profile-info-field {
+    position: relative;
+    display: inline-block;
+    /* aligns icon next to text */
+    margin-bottom: 15px;
+}
+
+.profile-info-field h2 {
+    display: inline-block;
+    margin-right: 10px;
+    font-size: 20px;
+}
+
+.text-edit-icon {
+    font-size: 20px;
+    color: #4f46e5;
+    /* nice purple color */
+    cursor: pointer;
+    vertical-align: middle;
+    transition: color 0.2s;
+}
+
+.text-edit-icon:hover {
+    color: #3730a3;
+    /* darker on hover */
+}
+
+
+@media (max-width: 900px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+}

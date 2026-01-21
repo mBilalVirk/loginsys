@@ -21,7 +21,21 @@ class UserController extends Controller
     public function dashboard()
     {
         $user = auth()->user();
-        $posts = Post::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
+        //Show user's and friends posts on dashboard page
+        $posts = Post::whereIn('user_id', function ($query) use ($user) {
+            $query->select('friend_id')
+                  ->from('friends')
+                  ->where('user_id', $user->id)
+                  ->where('status', 'accepted');
+        })->orWhereIn('user_id', function ($query) use ($user) {
+            $query->select('user_id')
+                  ->from('friends')
+                  ->where('friend_id', $user->id)
+                  ->where('status', 'accepted');
+        })->orWhere('user_id', $user->id)
+          ->orderBy('created_at', 'desc')
+          ->get();
+        // $posts = Post::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
         return view('dashboard', compact('user', 'posts'));
     }
     public function logout(Request $request)
@@ -156,7 +170,69 @@ if (auth()->attempt($credentials)) {
 
     return redirect('/dashboard')->with('status', 'Password successfully updated');
 }
+    public function userProfile($id)
+    {
+        $user = User::findOrFail($id);
+        $posts = Post::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();   
+        return view('user.profile', compact('user', 'posts'));
+    }   
+   public function updatePhoto(Request $request)
+   {
+       $user = auth()->user();
+
+       $request->validate([
+           'photo'=> 'required|image|mimes:jpeg,png,jpg|max:2048'
+       ],[
+           'photo.required'=>'Photo is Required',
+       ]);
+
+       if ($request->hasFile('photo')) {
+           if ($user->photo && file_exists(public_path($user->photo))) {
+               unlink(public_path($user->photo));
+           }
+
+           $imageName = time().'_'.$request->photo->getClientOriginalName();
+           $request->photo->move(public_path('images'), $imageName);
+
+           $user->photo = 'images/'.$imageName;
+           $user->save();
+       }
+
+       return redirect()->back()->with('status', 'Profile photo updated successfully.');
+   }
+   public function updateName(Request $request)
+   {
+       $user = auth()->user();
+
+       $request->validate([
+           'name'=> 'required|string|max:255'
+       ],[
+           'name.required'=>'Name is Required',
+       ]);
+
+       
+           $user->name = $request->name;
+           $user->save();
+       
+
+       return redirect()->back()->with('status', 'Name updated successfully.');
+   }
+   public function updateEmail(Request $request)
+   {
+       $user = auth()->user();  
+         $request->validate([
+              'email'=> 'required|string|email|max:255|unique:users,email,' . $user->id,
+         ],[
+              'email.required'=>'Email is Required',
+              'email.email' => 'Please enter a valid email address',
+              'email.unique' => 'This email is already registered',
+         ]);
     
-   
+         
+              $user->email = $request->email;
+              $user->save();
+              return redirect()->back()->with('status', 'Email updated successfully.');
+
+            }
     
 }

@@ -29,7 +29,7 @@ class Friend extends Model
     }
     public function friends()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id', 'friend_id');
     }
 
 }

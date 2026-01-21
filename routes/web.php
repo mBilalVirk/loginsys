@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FriendController;
+use App\Http\Controllers\UserController;
 
 
 
@@ -53,15 +54,24 @@ Route::delete('admin/delete/{id}',[App\Http\Controllers\AdminController::class, 
 
 
 
+Route::middleware('auth')->group(function(){
+    Route::post('/user/uploadPhoto', [UserController::class, 'updatePhoto'])->name('user.updatePhoto');
+    Route::post('/user/updateName', [UserController::class, 'updateName'])->name('user.updateName');
+    Route::post('/user/updateEmail', [UserController::class, 'updateEmail'])->name('user.updateEmail');
+    
+});
+
+
 Route::post('/registerUser', [App\Http\Controllers\UserController::class, 'registerUser'])->name('registerUser');
 Route::post('/loginUser', [App\Http\Controllers\UserController::class, 'loginUser'])->name('loginUser');
-Route::get('/dashboard', [App\Http\Controllers\UserController::class, 'dashboard'])->middleware('auth');
+Route::get('/dashboard', [App\Http\Controllers\UserController::class, 'dashboard'])->middleware('auth')->name('dashboard');
 Route::post('/logout', [App\Http\Controllers\UserController::class, 'logout'])->middleware('auth')->name('logout');
 Route::post('/updateProfile', [App\Http\Controllers\UserController::class, 'updateProfile'])->middleware('auth')->name('updateProfile');
 Route::post('/updatePassword',[App\Http\Controllers\UserController::class, 'updatePassword'])->middleware('auth')->name('updatePassword');
 // Route::get('/admin', [App\Http\Controllers\UserController::class, 'fetch'])
     // ->middleware('auth')
     // ->name('admin.index');
+Route::get('/user/profile/{id}', [App\Http\Controllers\UserController::class, 'userProfile'])->middleware('auth')->name('user.profile');
 
 
 

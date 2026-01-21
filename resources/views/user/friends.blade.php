@@ -1,10 +1,10 @@
 @extends('layouts.user')
+@section('title', 'Profile')
 
-@section('title', 'Friends')
 <head>
     <link rel="stylesheet" href="{{ asset('css/user.css') }}">
 </head>
-
+@include('layouts.navbar')
 
 
 @section('content')

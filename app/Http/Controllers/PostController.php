@@ -38,7 +38,7 @@ $post = Post::create([
         $post=Post::findOrFail($id);
         $post->delete();
         unlink(public_path($post->photo));
-        return redirect('/dashboard')->with('status','Post has been deleted successfully');
+         return redirect()->back()->with('status','Post has been deleted successfully');
     }
    
 }

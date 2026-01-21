@@ -1,7 +1,7 @@
 @extends('layouts.user')
 
-@section('title', 'Profile')
-
+@section('title', 'Home')
+@include('layouts.navbar')
 @section('content')
 <head>
     <link rel="stylesheet" href="{{ asset('css/user.css') }}">
@@ -72,7 +72,7 @@
                 ? asset('/' . auth()->user()->photo) 
                 : asset('images/default-user.png') }}" 
              class="mini-img">
-            <p>{{ auth()->user()->name }}</p>
+            <p>{{ $post->user->name }}</p>
             <p>Posted at {{ $post->created_at->format('M d, Y') }}</p>
         </div>
     <div class="post-card ">
@@ -83,6 +83,7 @@
             <img src="{{ asset($post->photo) }}" width="300" style="margin-top:10px; border-radius:8px; ">
         @endif
         <div>
+            @if($post->user->name == auth()->user()->name)
             <form action="{{url('post/delete/'.$post->id)}}" method="post">
                 @csrf
                 @method('DELETE')
@@ -91,6 +92,9 @@
                             Delete
                         </button>
             </form>
+            @else
+            <p></p>
+            @endif
         </div>
         <hr>
     </div>
