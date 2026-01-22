@@ -1,5 +1,6 @@
 .profile-page {
     display: flex;
+
     gap: 30px;
 
 }
@@ -30,7 +31,7 @@
     align-items: center;
 
     width: 250px;
-    height: 25%;
+    height: 100%;
     background: white;
     padding: 20px;
     text-align: center;

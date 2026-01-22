@@ -37,10 +37,14 @@ function postUpdate() {
 </head>
 <body>
 
+    
 <div class="container">
-@if(session('status'))
-    <div class="alert success" style="margin-top:20px; z-index:100;">
+    @if(session('status'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 20px; z-index: 100;">
         {{ session('status') }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
     </div>
 @endif
     <!-- Profile Section -->
@@ -108,6 +112,18 @@ function postUpdate() {
     <!-- Posts Section -->
      
     <div class="posts">
+         <form action="{{ route('post') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+           @method('POST')
+            <div class="form-group">
+                <label for="content">Content</label>
+                <textarea name="content" id="content" required>{{ old('content') }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="photo">Image (optional)</label>
+                <input type="file" name="photo" id="image" accept="image/*">
+            <button type="submit" class="btn">Create Post</button>
+        </form>
         @foreach($posts as $post)
         <div class="posts">
 
@@ -123,13 +139,24 @@ function postUpdate() {
             <!-- <textarea rows="3" disabled name="content">{{ $post->content }}</textarea> -->
              <p>{{ $post->content }}</p>
 
+             <span>{{ $post->created_at->diffForHumans() }}</span>
             <div class="post-actions" >
-                <span>{{ $post->created_at->diffForHumans() }}</span>
-                <button style="color: blue;" onclick="postUpdate()">Edit</button>
-                <form action="{{ route('delpost', $post->id) }}" method="POST" style="display: inline;">
+                <form action="" method="POST" style="display: inline;">
                     @csrf
-                    @method('DELETE')
-                    <button type="submit" style="color: red;" onclick="return confirm('Are you sure you want to delete this post?')">Delete</button>   
+                    @method('Post')
+                    <button style="color: blue;" onclick="postUpdate()">Edit</button>   
+                    
+                </form>
+</div>
+<div class="post-actions">
+                <form action="{{url('post/delete/'.$post->id)}}" method="post">
+                @csrf
+                @method('DELETE')
+                <button class="delete-btn"
+                            onclick="return confirm('Are you sure you want to delete this Post?')">
+                            Delete
+                        </button>
+            </form>  
             </div>
 
         </div>

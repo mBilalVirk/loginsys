@@ -21,6 +21,7 @@ class UserController extends Controller
     public function dashboard()
     {
         $user = auth()->user();
+
         //Show user's and friends posts on dashboard page
         $posts = Post::whereIn('user_id', function ($query) use ($user) {
             $query->select('friend_id')
@@ -234,5 +235,6 @@ if (auth()->attempt($credentials)) {
               return redirect()->back()->with('status', 'Email updated successfully.');
 
             }
+            
     
 }

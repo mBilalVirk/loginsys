@@ -54,4 +54,16 @@
             }
 ```
 
-#
+4. Some bug fix in PostController You must need to check if post have file, if it have a file or photo its should be delete or unlink
+
+```php
+ public function delete($id){
+        $post=Post::findOrFail($id);
+        // Check before unlink file
+        if($post->photo && file_exists(public_path($post->photo))){
+            unlink(public_path($post->photo));
+            }
+            $post->delete();
+         return redirect()->back()->with('status','Post has been deleted successfully');
+    }
+```

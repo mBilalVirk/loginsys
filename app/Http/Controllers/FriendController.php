@@ -123,6 +123,17 @@ class FriendController extends Controller
                 $friend->delete();
                 return redirect()->back()->with('status', 'Unfriended successfully');
         }
+        public function searchUser(Request $request){
+                
+                $searchUser = $request->input('searchUser');
+                $users = User::where('name', 'LIKE', "%{$searchUser}%")
+                             ->where('id', '!=', auth()->user()->id)
+                             ->orWhere('email', 'LIKE', "%{$searchUser}%")
+                             ->get();
+                return view('user.search', compact('users'));
+               
+                // return view('user.friends', compact('searchUser'));
+            }
 
     /**
      * Show the form for creating a new resource.

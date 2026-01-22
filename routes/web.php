@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PostController;
 
 
 
@@ -22,20 +23,17 @@ Route::get('/passwordupdate', function () {
 
 Route::middleware('auth')->group(function(){
 Route::get('/friends', [FriendController::class, 'index'])
-    ->middleware('auth')
     ->name('friends');
     Route::post('/friends/send/{id}', [FriendController::class, 'send'])
-    ->middleware('auth')
     ->name('send.request');
 Route::delete('/friends/delete/{id}',[FriendController::class, 'deleteRequest'])
-    ->middleware('auth')
     ->name('delete.request');
 Route::post('/friends/accept/{id}',[FriendController::class, 'acceptRequest'])
-    ->middleware('auth')
     ->name('accept.request');
 Route::post('/friends/unfriend/{id}',[FriendController::class, 'unFriend'])
-    ->middleware('auth')
     ->name('unfriend.request');
+    route::post('/friends/search', [FriendController::class, 'searchUser'])
+    ->name('search.user');
 });
 
 
@@ -58,6 +56,7 @@ Route::middleware('auth')->group(function(){
     Route::post('/user/uploadPhoto', [UserController::class, 'updatePhoto'])->name('user.updatePhoto');
     Route::post('/user/updateName', [UserController::class, 'updateName'])->name('user.updateName');
     Route::post('/user/updateEmail', [UserController::class, 'updateEmail'])->name('user.updateEmail');
+   
     
 });
 
@@ -75,8 +74,10 @@ Route::get('/user/profile/{id}', [App\Http\Controllers\UserController::class, 'u
 
 
 
-
-Route::post('/post',[App\Http\Controllers\PostController::class, 'store'])->middleware('auth')->name('post');
-Route::delete('post/delete/{id}',[App\Http\Controllers\PostController::class, 'delete'])->middleware('auth')->name('delpost');
+Route::middleware('auth')->group(function(){
+    Route::post('/post',[PostController::class, 'store'])->name('post');
+    Route::delete('post/delete/{id}',[PostController::class, 'delete'])->name('delpost');
+    Route::post('/post/edit/{id}', [PostController::class, 'edit'])->name('editpost');
+});
 
 
