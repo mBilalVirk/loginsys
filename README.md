@@ -67,3 +67,40 @@
          return redirect()->back()->with('status','Post has been deleted successfully');
     }
 ```
+
+# 23/01/2026 Task
+
+1. Improvement in Admin dashboard
+2. add : Like dashboard.blade.php with userCount and postCount
+
+```php
+    public function countUsersPosts()
+    {
+        $userCount = User::count();
+        $postCount = Post::count();
+        return view('admin.dashboard', compact('userCount', 'postCount'));
+
+    }
+```
+
+3. Display all User on Dashboard. users.blade.php : Route :: admin.users
+
+```php
+    public function fetch()
+    {
+        $user = auth()->user();
+         $users = user::all();
+        return view('admin.users', compact('users','user'));
+
+    }
+```
+
+4. Display all User's Post in Dashboard. posts.blade.php : Route:: admin.posts
+
+```php
+ public function userPosts(){
+        $posts = USER::with('posts')->get();
+        // return $posts;
+        return view('admin.posts', compact('posts'));
+    }
+```
