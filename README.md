@@ -171,3 +171,5 @@
     </body>
 </html>
 ```
+
+6. Add functionality in admin panel He can edit and delete the post

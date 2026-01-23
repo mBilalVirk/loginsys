@@ -9,7 +9,7 @@ use App\Http\Controllers\PostController;
 
 Route::get('/', function () {
     return view('login');
-});
+})->name('login');
 Route::get('/register', function () {
     return view('register');
 })->name('register');
@@ -40,11 +40,14 @@ Route::post('/friends/unfriend/{id}',[FriendController::class, 'unFriend'])
 
 Route::get('/admin', [App\Http\Controllers\AdminController::class, 'index'])->name('admin.login');
 Route::post('/adminlogin', [App\Http\Controllers\AdminController::class, 'adminlogin'])->name('adminlogin');
-Route::get('/admin/dashboard', [App\Http\Controllers\AdminController::class, 'fetch'])
-    ->name('admin.index')
+Route::get('/admin/dashboard', [App\Http\Controllers\AdminController::class, 'countUsersPosts'])
+    ->name('admin.dashboard')
     ->middleware('auth');
+Route::get('/admin/posts', [App\Http\Controllers\AdminController::class, 'userPosts'])->middleware('auth')->name('admin.posts');
+// Route::get('/admin/dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])->middleware('auth')->name('admin.dashboard');
+Route::get('/admin/users', [App\Http\Controllers\AdminController::class, 'fetch'])->middleware('auth')->name('admin.users');
 Route::get('/admin/edit/{id}', [App\Http\Controllers\AdminController::class, 'edit'])->middleware('auth')->name('admin.edit');
-Route::post('admin/update/{id}',[App\Http\Controllers\AdminController::class, 'update'])->middleware('auth')->name('admin.update');
+Route::post('admin/update/{id}',[App\Http\Controllers\AdminController::class, 'userUpdate'])->middleware('auth')->name('admin.userUpdate');
 Route::delete('admin/delete/{id}',[App\Http\Controllers\AdminController::class, 'delete'])->middleware('auth')->name('admin.delete');
 
 

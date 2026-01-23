@@ -42,7 +42,8 @@ $post = Post::create([
             unlink(public_path($post->photo));
             }
             $post->delete();
-         return redirect()->back()->with('status','Post has been deleted successfully');
+            return redirect()->back()->with('status','Post has been deleted successfully');
+        //  return redirect()->back()->with('status','Post has been deleted successfully');
     }
     public function edit(Request $request, $id)
     {
@@ -68,6 +69,7 @@ $post = Post::create([
         
         }
         $post->update($validatedData);
-        return redirect('/dashboard')->with('status','Post updated successfully');
+        return redirect()->back()->with('status','Post updated successfully');
+        // return redirect('/dashboard')->with('status','Post updated successfully');
     }
         }

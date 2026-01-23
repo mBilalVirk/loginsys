@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\User;
+use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
@@ -15,26 +16,40 @@ class AdminController extends Controller
     {
         return view('admin.login');
     }
-
+    public function countUsersPosts()
+    {
+        $userCount = User::count();
+        $postCount = Post::count();
+        return view('admin.dashboard', compact('userCount', 'postCount'));
+        
+    }
     public function fetch()
     {
         $user = auth()->user();
-         $users = user::all();
-        return view('admin.index', compact('users','user')); 
+         $users = user::where('id', '!=', $user->id)->get();
+        return view('admin.users', compact('users','user')); 
        
     }
     public function adminlogin(Request $request)
 {
     $credentials = $request->validate([
-        'email' => 'required|email',
-        'password' => 'required|string',
-    ]);
+            'email' => 'required|string|email',
+            'password' => 'required|string',
+        ],[
+            'email.required' => 'Email is required',
+            'email.email' => 'Please enter a valid email address',
+            'password.required' => 'Password is required',
+        ]);
 
-    if (Auth::attempt($credentials)) {
+    if (auth()->attempt($credentials)) {
         $request->session()->regenerate();
+        if (auth()->user()->role === 'user') {
+        return redirect()->route('userLogin')->with('status','User must login with this page');
+    }else{
 
+        return redirect()->route('admin.dashboard');
         
-            return redirect()->route('admin.index');
+    }
        
 
        
@@ -48,21 +63,21 @@ class AdminController extends Controller
         $user = user::FindOrFail($id);
         return view('admin.edit', compact('user'));
     }
-     public function update(Request $request, $id){
+     public function userUpdate(Request $request, $id){
         $user = user::FindOrFail($id);
         $validatedData = $request->validate(
             [
                 'name'=>'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-                'photo'=> 'required|image|mimes:jpeg,png,jpg|max:2048'
+                'photo'=> 'nullable|image|mimes:jpeg,png,jpg|max:2048'
             ],[
                 'name.required'=>'Name is Required',
                 'email.required'=>'Email is Required',
-                'photo.required'=>'Photo is Required',
                 'name.email'=>'Please enter a valid email',
                 'name.unique'=>'Email already Exist'
             ]
       );
+    //   return $validatedData;
      if ($request->hasFile('photo')) {
     if ($user->photo && file_exists(public_path($user->photo))) {
     unlink(public_path($user->photo));
@@ -76,18 +91,28 @@ class AdminController extends Controller
 }
 
       $user -> update($validatedData);
-        return redirect()->route('admin.index')->with('status','User updated successfully.');
+      return redirect()->back()->with('status','User updated successfully.');
+        // return redirect()->route('admin.index')->with('status','User updated successfully.');
     }
      public function logout(Request $request)
     {
         auth()->logout();
+        session()->invalidate();
+        session()->regenerateToken();
         return redirect('/adminlogin');
     }
 
     public function delete($id){
         $user = user::FindOrFail($id);
         $user -> delete();
-        return redirect()->route('admin.index')->with('status', 'User deleted successfully');
+        return redirect()->back()->with('status','User deleted successfully.');
+        // return redirect()->route('admin.index')->with('status', 'User deleted successfully');
+    }
+
+    public function userPosts(){
+        $posts = USER::with('posts')->get();
+        // return $posts;
+        return view('admin.posts', compact('posts'));
     }
     /**
      * Show the form for creating a new resource.

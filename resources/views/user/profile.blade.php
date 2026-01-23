@@ -124,10 +124,9 @@ function postUpdate() {
                 <input type="file" name="photo" id="image" accept="image/*">
             <button type="submit" class="btn">Create Post</button>
         </form>
-        @foreach($posts as $post)
+       
         <div class="posts">
-
-    @forelse(auth()->user()->posts as $post)
+            @forelse(auth()->user()->posts as $post)
         <div class="post-card">
 
             {{-- Post Image --}}
@@ -143,7 +142,7 @@ function postUpdate() {
             <div class="post-actions" >
                 <form action="" method="POST" style="display: inline;">
                     @csrf
-                    @method('Post')
+                    @method('POST')
                     <button style="color: blue;" onclick="postUpdate()">Edit</button>   
                     
                 </form>
@@ -166,7 +165,7 @@ function postUpdate() {
 
 </div>
 
-        @endforeach
+       
     </div>
 
 </div>
