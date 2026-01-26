@@ -36,7 +36,7 @@
             <!-- Login Form -->
             <form action="{{ route('adminlogin') }}" method="POST">
                 @csrf
-
+                @method('POST')
                 <div class="mb-3">
                     <label for="email" class="form-label">Email address</label>
                     <input type="email"

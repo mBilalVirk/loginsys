@@ -27,6 +27,9 @@
         .sidebar a:hover {
             background: #343a40;
         }
+        @media screen {
+            
+        }
     </style>
 </head>
 <body>
@@ -36,14 +39,24 @@
     <div class="container-fluid">
         <span class="navbar-brand mb-0 h1">Admin Panel</span>
         <span class="text-white">Welcome, Admin : {{ Auth::user()->name }}</span>
+        
+        
+            <img src="{{ asset(Auth::user()->photo) }}"
+                 width="40"
+                 height="40"
+                 class="rounded-circle object-fit-cover"
+                 alt="Profile Picture"
+                 />
+
+        
          <a href="{{ route('logout') }}"
            class="btn btn-danger"
            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
             Logout
         </a>
-        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-        @csrf
-    </form>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+            @csrf
+        </form>
     </div>
    
     
@@ -57,7 +70,8 @@
             <a href="{{ route('admin.dashboard') }}">Dashboard</a>
             <a href="{{ route('admin.users') }}">Users</a>
             <a href="{{ route('admin.posts') }}">Posts</a>
-            <a href="#">Settings</a>
+            <a href="{{ route('admin.admins') }}">Add New Admin</a>
+            <a href="{{ route('admin.setting') }}">Settings</a>
            
         </div>
 

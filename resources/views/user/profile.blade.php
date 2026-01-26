@@ -7,7 +7,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
+     
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+        />
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
     function openImage(imgElement) {
         var modal = document.getElementById('imageModal');
@@ -38,15 +47,15 @@ function postUpdate() {
 <body>
 
     
-<div class="container">
     @if(session('status'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 20px; z-index: 100;">
+<div class="container">
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 20px; z-index: 2;">
         {{ session('status') }}
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
-@endif
+    @endif
     <!-- Profile Section -->
     <div class="profile-card">
         <div class="profile-photo-wrapper">
@@ -85,13 +94,16 @@ function postUpdate() {
         @method('POST')
         <input type="email" id="emailupdate" name="email" style="display:none;" onchange="this.form.submit()">
      </form>
-     <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button class="btn logout-btn">Logout</button>
-        </form>
+     
 
+        <a href="{{ route('dashboard') }}">Home</a>
         <a href="{{ route('friends') }}" class="link">Friends</a>
+        <a href="#">Messages</a>
         <a href="{{ route('passwordupdate') }}" class="link">Change Password</a>
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button class="btn logout-btn btn-primary">Logout</button>
+        </form>
        </div>
       
 
@@ -112,18 +124,21 @@ function postUpdate() {
     <!-- Posts Section -->
      
     <div class="posts">
-         <form action="{{ route('post') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-           @method('POST')
-            <div class="form-group">
-                <label for="content">Content</label>
-                <textarea name="content" id="content" required>{{ old('content') }}</textarea>
-            </div>
-            <div class="form-group">
-                <label for="photo">Image (optional)</label>
-                <input type="file" name="photo" id="image" accept="image/*">
-            <button type="submit" class="btn">Create Post</button>
-        </form>
+         <div class="form">
+                    <form action="{{ route('post') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                @method('POST')
+                    <div class="form-group">
+                        <label for="content">Content</label>
+                        <textarea name="content" id="content" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="photo">Image (optional)</label>
+                        <input type="file" name="photo" id="image" accept="image/*">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Post</button>
+                </form>
+         </div>
        
         <div class="posts">
             @forelse(auth()->user()->posts as $post)
@@ -139,14 +154,84 @@ function postUpdate() {
              <p>{{ $post->content }}</p>
 
              <span>{{ $post->created_at->diffForHumans() }}</span>
+
             <div class="post-actions" >
-                <form action="" method="POST" style="display: inline;">
-                    @csrf
-                    @method('POST')
-                    <button style="color: blue;" onclick="postUpdate()">Edit</button>   
-                    
-                </form>
-</div>
+                    <!-- <button style="color: blue;" onclick="postUpdate()">Edit</button>    -->
+                <!-- start of model -->
+                 <div class="container">
+           
+            <!-- Button to Open the Modal -->
+            <button
+                type="button"
+                class="btn btn-primary"
+                data-toggle="modal"
+                data-target="#editPost{{$post->id}}"
+            >
+                Edit
+            </button>
+
+            <!-- The Modal -->
+            <div class="modal" id="editPost{{$post->id}}">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <!-- Modal Header -->
+                        <div class="modal-header">
+                            <h4 class="modal-title">Edit Post</h4>
+                            <button
+                                type="button"
+                                class="close"
+                                data-dismiss="modal"
+                            >
+                                &times;
+                            </button>
+                        </div>
+
+                        <!-- Modal body -->
+                        <div class="modal-body">
+                            <form
+                                action="{{ route('editpost', $post->id) }}"
+                                method="POST" enctype="multipart/form-data"
+                            >
+                                @csrf
+                                @method('POST')
+                                <div class="form-group">
+                                    <label for="content">Content</label>
+                                    <textarea
+                                        name="content"
+                                        id="content"
+                                        class="form-control"
+                                        rows="3"
+                                        required
+                                    >{{ $post->content }}</textarea>
+                                    <label for="photo">Image</label>
+                                    <input
+                                        type="file"
+                                        name="photo"
+                                        id="photo"
+                                        class="form-control"
+                                        accept="image/*"
+                                    />
+                                    <input type="submit" value="Update Post" class="btn btn-success mt-2"/>
+                                    </form>
+
+                        </div>
+
+                        <!-- Modal footer -->
+                        <div class="modal-footer">
+                            <button
+                                type="button"
+                                class="btn btn-danger"
+                                data-dismiss="modal"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+                 <!-- End of model -->
+                </div>
 <div class="post-actions">
                 <form action="{{url('post/delete/'.$post->id)}}" method="post">
                 @csrf

@@ -18,9 +18,10 @@ class AdminController extends Controller
     }
     public function countUsersPosts()
     {
-        $userCount = User::count();
+        $userCount = User::where('role', 'user')->count();
         $postCount = Post::count();
-        return view('admin.dashboard', compact('userCount', 'postCount'));
+        $adminCount = User::where('role', 'admin')->count();
+        return view('admin.dashboard', compact('userCount', 'postCount', 'adminCount'));
         
     }
     public function fetch()
@@ -30,35 +31,49 @@ class AdminController extends Controller
         return view('admin.users', compact('users','user')); 
        
     }
+      public function fetchAdmin()
+    {
+        $user = auth()->user();
+        $admins = user::where('role', 'admin')->get()
+                        ->where('id', '!=', $user->id);
+        return view('admin.admins', compact('admins')); 
+       
+    }
     public function adminlogin(Request $request)
 {
-    $credentials = $request->validate([
+    $credentials = $request->validate(
+        [
             'email' => 'required|string|email',
             'password' => 'required|string',
-        ],[
+        ],
+        [
             'email.required' => 'Email is required',
-            'email.email' => 'Please enter a valid email address',
+            'email.email'    => 'Please enter a valid email address',
             'password.required' => 'Password is required',
+        ]
+    );
+    // return $credentials;
+    if (!auth()->attempt($credentials)) {
+        return back()->withErrors([
+            'email' => 'Invalid email or password',
         ]);
-
-    if (auth()->attempt($credentials)) {
-        $request->session()->regenerate();
-        if (auth()->user()->role === 'user') {
-        return redirect()->route('userLogin')->with('status','User must login with this page');
-    }else{
-
-        return redirect()->route('admin.dashboard');
-        
-    }
-       
-
-       
     }
 
-    return back()->withErrors([
-        'email' => 'Invalid email or password.',
-    ])->onlyInput('email');
+    // ✅ User is authenticated
+    if (auth()->user()->role !== 'admin') {
+        auth()->logout(); // VERY IMPORTANT
+        return redirect()
+            ->route('login')
+            ->with('status', 'You are not allowed to login as admin');
+    }
+
+    $request->session()->regenerate();
+
+    return redirect()->route('admin.dashboard');
 }
+
+
+
     public function edit(Request $request, $id){
         $user = user::FindOrFail($id);
         return view('admin.edit', compact('user'));
@@ -114,13 +129,94 @@ class AdminController extends Controller
         // return $posts;
         return view('admin.posts', compact('posts'));
     }
+        public function setting(){
+
+            return view('admin.setting');
+        }
+        public function updateProfile(Request $request){
+            $user = auth()->user();
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+                'password' => 'nullable|string|min:8|confirmed',
+                'photo'=> 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            ],[
+                'name.required' => 'Name is required',
+                'email.required' => 'Email is required',
+                'email.email' => 'Please enter a valid email address',
+                'email.unique' => 'This email is already registered',
+                'password.min' => 'Password must be at least 8 characters',
+                'password.confirmed' => 'Password confirmation does not match',
+            ]);
+
+             if (!$request->filled('password')) {
+        unset($validatedData['password']);
+    } else {
+        $validatedData['password'] = Hash::make($validatedData['password']);
+    }       if ($request->hasFile('photo')) {
+            if ($user->photo && file_exists(public_path($user->photo))) {
+            unlink(public_path($user->photo));}
+            $imageName = time().'_'.$request->photo->getClientOriginalName();
+            $request->photo->move(public_path('images'), $imageName);
+            $validatedData['photo'] = 'images/'.$imageName;
+        }
+
+            // if password in not filled, it will not be updated
+
+            $user->update($validatedData);
+            return redirect()->back()->with('success', 'Profile updated successfully.');
+        }
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function createNewAdmin(Request $request)
     {
-        //
-    }
+        
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+           'password' => [
+            'required',
+            'string',
+            'min:8', 
+            'confirmed',
+            'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$/'
+    ],
+            'photo'=> 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            
+        ],[
+            'name.required' => 'Name is required',
+            'email.required' => 'Email is required',
+            'email.email' => 'Please enter a valid email address',
+            'email.unique' => 'This email is already registered',
+            'password.required' => 'Password is required',
+            'password.min' => 'Password must be at least 8 characters',
+            'password.confirmed' => 'Password confirmation does not match',
+            'password.regex' => 'Password must include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character',
+            
+        ]);
+        // return $validatedData;
+        if ($request->hasFile('photo')) {
+            // if ($user->photo && file_exists(public_path($user->photo))) {
+            // unlink(public_path($user->photo));}
+
+            $imageName = time().'_'.$request->photo->getClientOriginalName();
+            $request->photo->move(public_path('images'), $imageName);
+    
+            
+            $validatedData['photo'] = 'images/'.$imageName;
+        }
+        $validatedData['role'] = 'admin';
+        $user = User::create([
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'password' => $validatedData['password'],
+            'photo' => $validatedData['photo'] ?? null,
+            'role' => $validatedData['role'],
+        ]);
+
+        return redirect()->back()->with('success','New admin created successfully');
+    } 
 
     /**
      * Store a newly created resource in storage.

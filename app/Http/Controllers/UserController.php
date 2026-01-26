@@ -84,6 +84,7 @@ class UserController extends Controller
             'email' => $validatedData['email'],
             'password' => $validatedData['password'],
             'photo' => $validatedData['photo'],
+            'role' => 'user',
         ]);
 
         auth()->login($user);

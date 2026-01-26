@@ -27,8 +27,8 @@
                 <div class="col-md-4">
                     <div class="card text-bg-warning mb-3">
                         <div class="card-body">
-                            <h5 class="card-title">Comments</h5>
-                            <p class="card-text fs-4">230</p>
+                            <h5 class="card-title">Admins</h5>
+                            <p class="card-text fs-4">{{ $adminCount }}</p>
                         </div>
                     </div>
                 </div>
