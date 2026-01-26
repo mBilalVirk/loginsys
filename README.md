@@ -173,3 +173,9 @@
 ```
 
 6. Add functionality in admin panel He can edit and delete the post
+
+# 26/01/2026 Tasks
+
+1. Update User Profile. user can edit their Post directly in Profile page. some bugs fixes.
+2. Add setting.blade.php in admin penal, Where admin can update its profile details. like Name, Email, Password and Profile Photo
+3. Add adminMiddleWare that only admin can use the control penal.
