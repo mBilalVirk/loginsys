@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Post;
 use App\Models\Friend;
+use App\Models\Comment;
 
 class User extends Authenticatable
 {
@@ -41,6 +42,9 @@ class User extends Authenticatable
     }
     public function rejectedFriends(){
         return $this->hasMany(Friend::class, 'user_id')->where('status', 'rejected');
+    }
+     public function comments(){
+        return $this->hasMany(Comment::class);
     }
     // public function friends(){
     //     return $this->hasMany(Friend::class, 'user_id');

@@ -18,7 +18,10 @@ class FriendController extends Controller
         // Get all users except the authenticated user and those who are already friends or have pending requests
 
 
-        $friends = User::where('id', '!=', $user->id)->whereNotIn('id', function ($query) use ($user) {
+        $friends = User::where('id', '!=', $user->id)
+                        ->where('role', '!=', 'super_admin')
+                        ->where('role', '!=', 'admin')
+        ->whereNotIn('id', function ($query) use ($user) {
             $query->select('friend_id')
                   ->from('friends')
                   ->where('user_id', $user->id)

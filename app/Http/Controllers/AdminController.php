@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Post;
+use App\Models\Comment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
@@ -27,16 +28,29 @@ class AdminController extends Controller
     public function fetch()
     {
         $user = auth()->user();
-         $users = user::where('id', '!=', $user->id)->get();
+        if($user->role == 'super_admin'){
+            $users = user::where('id', '!=', $user->id)->get();
+        }else{
+             $users = user::where('role', '!=', 'admin')->get();
+        }
         return view('admin.users', compact('users','user')); 
        
     }
       public function fetchAdmin()
     {
         $user = auth()->user();
-        $admins = user::where('role', 'admin')->get()
-                        ->where('id', '!=', $user->id);
-        return view('admin.admins', compact('admins')); 
+        if($user->role =='super_admin'){
+            $admins = user::where('role', 'admin')
+                            ->where('id', '!=', $user->id)
+                            ->get();
+                            return view('admin.admins', compact('admins')); 
+
+        }else{
+            $admins = USER::where('id',$user->id)->get();
+                            return view('admin.admins', compact('admins'));
+
+        }
+                        
        
     }
     public function adminlogin(Request $request)
@@ -59,11 +73,13 @@ class AdminController extends Controller
         ]);
     }
 
-    // ✅ User is authenticated
-    if (auth()->user()->role !== 'admin') {
-        auth()->logout(); // VERY IMPORTANT
+    
+    if (auth()->user()->role !== 'admin' && auth()->user()->role !== 'super_admin') {
+        auth()->logout(); 
+        session()->invalidate();
+        session()->regenerateToken();
         return redirect()
-            ->route('login')
+            ->back()
             ->with('status', 'You are not allowed to login as admin');
     }
 
@@ -125,8 +141,8 @@ class AdminController extends Controller
     }
 
     public function userPosts(){
-        $posts = USER::with('posts')->get();
-        // return $posts;
+        $posts = USER::with('posts.comments')->get();
+      //  return $posts;
         return view('admin.posts', compact('posts'));
     }
         public function setting(){

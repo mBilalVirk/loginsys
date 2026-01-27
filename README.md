@@ -179,3 +179,18 @@
 1. Update User Profile. user can edit their Post directly in Profile page. some bugs fixes.
 2. Add setting.blade.php in admin penal, Where admin can update its profile details. like Name, Email, Password and Profile Photo
 3. Add adminMiddleWare that only admin can use the control penal.
+
+# 27/01/2026 Tasks
+
+1. Add super_admin in admin Penal
+2. Improved Profile page layout.
+3. Create comments Table and make its relation with users and post
+4. View Comments in admin Penal.
+
+```php
+public function userPosts(){
+        $posts = USER::with('posts.comments')->get();
+        // return $posts;
+        return view('admin.posts', compact('posts'));
+    }
+```

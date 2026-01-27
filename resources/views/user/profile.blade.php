@@ -1,14 +1,8 @@
 @extends('layouts.user')
 
 @section('title', 'Profile')
-@include('layouts.navbar')
-@section('content')
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-     
-        <meta charset="utf-8" />
+@section('head')
+     <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link
             rel="stylesheet"
@@ -42,13 +36,14 @@ function postUpdate() {
     alert('Post update functionality to be implemented.');
 }
 </script>
+@endsection
+@section('content')
 
-</head>
-<body>
+
 
     
     @if(session('status'))
-<div class="container">
+    <div class="container">
     <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 20px; z-index: 2;">
         {{ session('status') }}
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -72,7 +67,7 @@ function postUpdate() {
         @method('POST')
         <input type="file" id="photoUpload" name="photo" style="display:none;" onchange="this.form.submit()">
      </form>
-</div>
+    </div>
 
        <div class="profile-info-field">
             <h2>{{ auth()->user()->name }}</h2>
@@ -90,23 +85,22 @@ function postUpdate() {
             <h2>{{ auth()->user()->email }}</h2>
             <span class="text-edit-icon material-symbols-outlined" onclick="this.style.display=''; document.getElementById('emailupdate').style.display='inline-block'; document.getElementById('emailupdate').focus();">edit</span>
             <form action="{{ route('user.updateEmail') }}" method="post" enctype="multipart/form-data">
-        @csrf
-        @method('POST')
-        <input type="email" id="emailupdate" name="email" style="display:none;" onchange="this.form.submit()">
-     </form>
-     
+                 @csrf
+                 @method('POST')
+                <input type="email" id="emailupdate" name="email" style="display:none;" onchange="this.form.submit()">
+            </form>
 
-        <a href="{{ route('dashboard') }}">Home</a>
-        <a href="{{ route('friends') }}" class="link">Friends</a>
-        <a href="#">Messages</a>
-        <a href="{{ route('passwordupdate') }}" class="link">Change Password</a>
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button class="btn logout-btn btn-primary">Logout</button>
-        </form>
+            <a href="{{ route('dashboard') }}">Home</a>
+            <a href="{{ route('friends') }}" class="link">Friends</a>
+            <a href="#">Messages</a>
+            <a href="{{ route('passwordupdate') }}" class="link">Change Password</a>
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button class="btn logout-btn btn-primary">Logout</button>
+            </form>
+
+        
        </div>
-      
-
         <!-- <div class="profile-info">
             <label>Name</label>
             <input type="text" value="{{ auth()->user()->name }}">
@@ -123,7 +117,7 @@ function postUpdate() {
 
     <!-- Posts Section -->
      
-    <div class="posts">
+    <div class="posts-section">
          <div class="form">
                     <form action="{{ route('post') }}" method="POST" enctype="multipart/form-data">
                     @csrf
@@ -139,118 +133,135 @@ function postUpdate() {
                     <button type="submit" class="btn btn-primary">Create Post</button>
                 </form>
          </div>
-       
+      
         <div class="posts">
             @forelse(auth()->user()->posts as $post)
-        <div class="post-card">
+            <div class="post-card">
+                <span class="editPost-icon material-symbols-outlined"
+                
+                    data-toggle="modal"
+                    data-target="#editPost{{$post->id}}"
+                    style="margin-right: 10px; cursor: pointer;position: relative;top: -180px;right: -810px;"
 
-            {{-- Post Image --}}
-            @if($post->photo)
-                <img src="{{ asset($post->photo) }}" class="post-image" width="300" style="margin-top:10px; border-radius:8px;" onclick="openImage(this)">
-            @endif
+                >
+                    edit
+                </span>
+                <span class="editPost-icon material-symbols-outlined"
+                
+                    data-toggle="modal"
+                    data-target="#editPost{{$post->id}}"
+                    style="margin-right: 10px; cursor: pointer;position: relative;top: -180px;right: -810px;"
 
-            {{-- Post Content --}}
-            <!-- <textarea rows="3" disabled name="content">{{ $post->content }}</textarea> -->
-             <p>{{ $post->content }}</p>
+                >
+                    edit
+                </span>
 
-             <span>{{ $post->created_at->diffForHumans() }}</span>
+                {{-- Post Image --}}
+                @if($post->photo)
+                    <img src="{{ asset($post->photo) }}" class="post-image" width="300" style="margin-top:10px; border-radius:8px;" onclick="openImage(this)">
+                @endif
 
-            <div class="post-actions" >
-                    <!-- <button style="color: blue;" onclick="postUpdate()">Edit</button>    -->
-                <!-- start of model -->
-                 <div class="container">
-           
-            <!-- Button to Open the Modal -->
-            <button
-                type="button"
-                class="btn btn-primary"
-                data-toggle="modal"
-                data-target="#editPost{{$post->id}}"
-            >
-                Edit
-            </button>
+                {{-- Post Content --}}
+                <!-- <textarea rows="3" disabled name="content">{{ $post->content }}</textarea> -->
+                <p>{{ $post->content }}</p>
 
-            <!-- The Modal -->
-            <div class="modal" id="editPost{{$post->id}}">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <!-- Modal Header -->
-                        <div class="modal-header">
-                            <h4 class="modal-title">Edit Post</h4>
-                            <button
-                                type="button"
-                                class="close"
-                                data-dismiss="modal"
-                            >
-                                &times;
-                            </button>
-                        </div>
+                <span>{{ $post->created_at->diffForHumans() }}</span>
 
-                        <!-- Modal body -->
-                        <div class="modal-body">
-                            <form
-                                action="{{ route('editpost', $post->id) }}"
-                                method="POST" enctype="multipart/form-data"
-                            >
-                                @csrf
-                                @method('POST')
-                                <div class="form-group">
-                                    <label for="content">Content</label>
-                                    <textarea
-                                        name="content"
-                                        id="content"
-                                        class="form-control"
-                                        rows="3"
-                                        required
-                                    >{{ $post->content }}</textarea>
-                                    <label for="photo">Image</label>
-                                    <input
-                                        type="file"
-                                        name="photo"
-                                        id="photo"
-                                        class="form-control"
-                                        accept="image/*"
-                                    />
-                                    <input type="submit" value="Update Post" class="btn btn-success mt-2"/>
-                                    </form>
+                <div class="container">
+                <div class="post-actions" >
+                        <!-- <button style="color: blue;" onclick="postUpdate()">Edit</button>    -->
+                    <!-- start of model -->
+            
+                <!-- Button to Open the Modal -->
+                <!-- <span class="edit-icon material-symbols-outlined" data-target="#editPost{{$post->id}}">edit</span> -->
+                <!-- <span class="editPost-icon material-symbols-outlined"
+                
+                    data-toggle="modal"
+                    data-target="#editPost{{$post->id}}"
+                    style="margin-right: 10px; background-color: blue;"
 
-                        </div>
+                >
+                    edit
+                </span> -->
 
-                        <!-- Modal footer -->
-                        <div class="modal-footer">
-                            <button
-                                type="button"
-                                class="btn btn-danger"
-                                data-dismiss="modal"
-                            >
-                                Close
-                            </button>
+                <!-- The Modal -->
+                <div class="modal" id="editPost{{$post->id}}">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <h4 class="modal-title">Edit Post</h4>
+                                <button
+                                    type="button"
+                                    class="close"
+                                    data-dismiss="modal"
+                                >
+                                    &times;
+                                </button>
+                            </div>
+
+                            <!-- Modal body -->
+                            <div class="modal-body">
+                                <form
+                                    action="{{ route('editpost', $post->id) }}"
+                                    method="POST" enctype="multipart/form-data"
+                                >
+                                    @csrf
+                                    @method('POST')
+                                    <div class="form-group">
+                                        <label for="content">Content</label>
+                                        <textarea
+                                            name="content"
+                                            id="content"
+                                            class="form-control"
+                                            rows="3"
+                                            required
+                                        >{{ $post->content }}</textarea>
+                                        <label for="photo">Image</label>
+                                        <input
+                                            type="file"
+                                            name="photo"
+                                            id="photo"
+                                            class="form-control"
+                                            accept="image/*"
+                                        />
+                                        <input type="submit" value="Update Post" class="btn btn-success mt-2"/>
+                                        </form>
+
+                            </div>
+
+                            <!-- Modal footer -->
+                            <div class="modal-footer">
+                                <button
+                                    type="button"
+                                    class="btn btn-danger"
+                                    data-dismiss="modal"
+                                    style="margin-right: 10px; background-color: blue;"
+                                >
+                                    Close
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-                 <!-- End of model -->
-                </div>
-<div class="post-actions">
+            <!-- End of model -->
+             <div class="post-actions">
                 <form action="{{url('post/delete/'.$post->id)}}" method="post">
                 @csrf
                 @method('DELETE')
-                <button class="delete-btn"
+                <button class="delete-btn" style="margin-right: 10px; background-color: red;"
                             onclick="return confirm('Are you sure you want to delete this Post?')">
                             Delete
                         </button>
-            </form>  
-            </div>
-
+                </form>  
         </div>
+        </div>
+    </div>
     @empty
         <p>No posts yet.</p>
     @endforelse
-
-</div>
-
-       
+    </div>      
     </div>
 
 </div>
@@ -259,7 +270,6 @@ function postUpdate() {
     <span id="closeBtn">&times;</span>
     <img id="modalImg" src="">
 </div>
-</body>
-</html>
+
 
 @endsection

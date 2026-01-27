@@ -7,14 +7,18 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3">Dashboard : Users</h1>
         
-        <button
+         @if(auth()->user()->role == 'super_admin')
+            <button
                 type="button"
                 class="btn btn-primary"
                 data-toggle="modal"
                 data-target="#addAdmin"
             >
                 Add New Admin
-            </button>
+        </button>
+        @else 
+            <p></p>
+        @endif
             @if(session('success'))
     <div class="alert alert-success">
         {{ session('success') }}

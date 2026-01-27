@@ -74,6 +74,7 @@
                 <th>Post ID</th>
                 <th>Image</th>
                 <th>Content</th>
+                <th>Comments</th>
                 <th>Created</th>
                 <th>Edit</th>
                 <th>Delete</th>
@@ -94,6 +95,90 @@
                             @endif
                         </td>
                         <td>{{ \Illuminate\Support\Str::limit($post->content, 50) }}</td>
+                        <td>
+                           
+                                
+                                <button
+                                    type="button"
+                                    class="btn btn-primary"
+                                    data-toggle="modal"
+                                    data-target="#viewComments{{$post->id}}"
+                                    >
+                                    View : {{$post->comments->count()}}
+                                </button>
+
+                                <!-- The Modal -->
+                            <div class="modal" id="viewComments{{$post->id}}">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <!-- Modal Header -->
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">Comments</h4>
+                                            <button
+                                                type="button"
+                                                class="close"
+                                                data-dismiss="modal"
+                                            >
+                                                &times;
+                                            </button>
+                                        </div>
+
+                                        <!-- Modal body -->
+                                        <div class="modal-body">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Comments</th>
+                                                        <th>Posts</th>
+                                                        <th>Comments By</th>
+                                                        <th>Edit</th>
+                                                        <th>Delete</th>
+                                                    </tr>
+                                                </thead>
+                                                    <tbody>
+                                                       @foreach($post->comments as $comment)
+                                                      
+                                                            <tr>
+                                                                <td>{{ $comment->comments }}</td>
+                                                                <td>{{ $comment->post_id }}</td>
+                                                                <td>{{$comment->user->name }}</td>
+                                                                <td></td>
+                                                                <td> 
+                                                                    <form
+                                                                        action=""
+                                                                        action=""
+                                                                        method="POST"
+                                                                        onsubmit="return confirm('Are you sure you want to delete this post?');"
+                                                                    >
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                                                    </form>
+                                                                 </td>
+                                                            </tr>
+                                                        @endforeach
+
+                                                    </tbody>
+
+                                            </table>
+                                            
+                                        </div>
+
+                                        <!-- Modal footer -->
+                                        <div class="modal-footer">
+                                            <button
+                                                type="button"
+                                                class="btn btn-danger"
+                                                data-dismiss="modal"
+                                            >
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </td>
                         <td>{{ $post->created_at->diffForHumans() }}</td>
                         <td>
                             <button
@@ -103,7 +188,7 @@
                                     data-target="#editPost{{ $post->id }}"
                                     >
                                     Edit
-                                    </button>
+                            </button>
                             <!-- The Modal -->
                             <div class="modal" id="editPost{{ $post->id }}">
                                 <div class="modal-dialog">

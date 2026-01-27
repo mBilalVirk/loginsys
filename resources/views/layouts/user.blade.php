@@ -14,7 +14,7 @@
     <link rel="apple-touch-icon" type="image/png" href="{{ asset('logo512.png') }}">
     <link rel="manifest" href="{{ asset('manifest.json') }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=edit" />
-    
+    @yield('head')
 </head>
 <body>
     <div class="container">

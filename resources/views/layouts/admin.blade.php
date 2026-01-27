@@ -38,8 +38,8 @@
 <nav class="navbar navbar-dark bg-dark">
     <div class="container-fluid">
         <span class="navbar-brand mb-0 h1">Admin Panel</span>
-        <span class="text-white">Welcome, Admin : {{ Auth::user()->name }}</span>
-        
+        <span class="text-white">Welcome, {{ Auth::user()->role }} : {{ Auth::user()->name }}</span>
+    
         
             <img src="{{ asset(Auth::user()->photo) }}"
                  width="40"
