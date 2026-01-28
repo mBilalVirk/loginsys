@@ -41,6 +41,7 @@ Route::post('/friends/unfriend/{id}',[FriendController::class, 'unFriend'])
 Route::get('/admin', [App\Http\Controllers\AdminController::class, 'index'])->name('admin.login');
 
 Route::post('/adminlogin', [App\Http\Controllers\AdminController::class, 'adminlogin'])->name('adminlogin');
+
 Route::middleware(['auth', 'admin'])->group(function () {
     
     Route::get('/admin/dashboard', [App\Http\Controllers\AdminController::class, 'countUsersPosts'])
@@ -56,6 +57,9 @@ Route::get('/admin/setting', [App\Http\Controllers\AdminController::class, 'sett
 Route::post('/admin/updateProfile',[App\Http\Controllers\AdminController::class, 'updateProfile'])->name('admin.updateProfile');
 Route::get('/admin/admins',[App\Http\Controllers\AdminController::class, 'fetchAdmin'])->name('admin.admins');
 Route::post('admin/createAdmin',[App\Http\Controllers\AdminController::class, 'createNewAdmin'])->name('admin.createNewAdmin');
+// Route::delete('admin/comment/{id}', [App\Http\Controllers\AdminController::class,'deleteComment'])->name('comment.delete');
+Route::delete('admin/comment/{id}', [App\Http\Controllers\AdminController::class,'deleteComment'])->name('comment.delete');
+
 });
 
 
@@ -68,7 +72,7 @@ Route::middleware('auth')->group(function(){
     Route::post('/user/uploadPhoto', [UserController::class, 'updatePhoto'])->name('user.updatePhoto');
     Route::post('/user/updateName', [UserController::class, 'updateName'])->name('user.updateName');
     Route::post('/user/updateEmail', [UserController::class, 'updateEmail'])->name('user.updateEmail');
-   
+    Route::delete('/user/comment/{id}',[UserController::class,'deleteComment'])->name('user.deleteComment');
     
 });
 
@@ -90,6 +94,8 @@ Route::middleware('auth')->group(function(){
     Route::post('/post',[PostController::class, 'store'])->name('post');
     Route::delete('post/delete/{id}',[PostController::class, 'delete'])->name('delpost');
     Route::post('/post/edit/{id}', [PostController::class, 'edit'])->name('editpost');
+    Route::post('/post/comment',[PostController::class, 'createComment'])->name('giveComment');
+    Route::post('/post/comment/update/{id}',[PostController::class,'updateComment'])->name('commentUpdate');
 });
 
 

@@ -139,7 +139,18 @@ class AdminController extends Controller
         return redirect()->back()->with('status','User deleted successfully.');
         // return redirect()->route('admin.index')->with('status', 'User deleted successfully');
     }
-
+    public function deleteComment($id){
+        $comment = Comment::FindOrFail($id);
+        $comment->delete();
+        
+        return redirect()->back()->with('status', 'Comment deleted successfully');
+        // return "<h1>Comment deleted successfully</h1>";
+        //         return redirect()->back()->with('toast', [
+        //     'type' => 'success', // success | error | warning | help
+        //     'title' => 'Success!',
+        //     'message' => 'Your comment was deleted successfully.'
+        // ]);
+    }
     public function userPosts(){
         $posts = USER::with('posts.comments')->get();
       //  return $posts;

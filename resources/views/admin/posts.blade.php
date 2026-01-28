@@ -52,9 +52,16 @@
 
 </style>
 @section('content')
+<!-- {{-- layouts/app.blade.php --}}
+@include('partials.toast') -->
+<script>
+     setTimeout(() => {
+        document.querySelector('.alert')?.remove();
+    }, 4000);
+</script>
  <!-- Top Bar -->
 @if(session('status'))
-    <div class="alert alert-success">
+    <div class="alert alert-success mt-4">
         {{ session('status') }}
     </div>
 @endif
@@ -139,14 +146,13 @@
                                                        @foreach($post->comments as $comment)
                                                       
                                                             <tr>
-                                                                <td>{{ $comment->comments }}</td>
+                                                                <td>{{ $comment->comment }}</td>
                                                                 <td>{{ $comment->post_id }}</td>
                                                                 <td>{{$comment->user->name }}</td>
                                                                 <td></td>
                                                                 <td> 
                                                                     <form
-                                                                        action=""
-                                                                        action=""
+                                                                        action="{{ route('comment.delete', $comment->id) }}"
                                                                         method="POST"
                                                                         onsubmit="return confirm('Are you sure you want to delete this post?');"
                                                                     >

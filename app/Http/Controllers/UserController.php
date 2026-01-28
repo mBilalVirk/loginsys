@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Post;
+use App\Models\Comment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -35,6 +36,7 @@ class UserController extends Controller
                   ->where('status', 'accepted');
         })->orWhere('user_id', $user->id)
           ->orderBy('created_at', 'desc')
+          ->with('comments')
           ->get();
         // $posts = Post::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
         return view('dashboard', compact('user', 'posts'));
@@ -175,7 +177,8 @@ if (auth()->attempt($credentials)) {
     public function userProfile($id)
     {
         $user = User::findOrFail($id);
-        $posts = Post::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();   
+        $posts = Post::where('user_id', $user->id)->orderBy('created_at', 'desc')->get(); 
+        // dd($posts->toArray());  
         return view('user.profile', compact('user', 'posts'));
     }   
    public function updatePhoto(Request $request)
@@ -234,6 +237,12 @@ if (auth()->attempt($credentials)) {
               $user->email = $request->email;
               $user->save();
               return redirect()->back()->with('status', 'Email updated successfully.');
+
+            }
+            public function deleteComment($id){
+                $comment = Comment::FindOrFail($id);
+                $comment->delete();
+            return redirect()->back()->with('status','Comment delete successfully!');
 
             }
             

@@ -194,3 +194,8 @@ public function userPosts(){
         return view('admin.posts', compact('posts'));
     }
 ```
+
+# 27/01/2026 Tasks
+
+1. Add comment section in user dashboard and profile. user can see comment and create commend
+2. User can delete comments on his post.

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\Post;
+use App\Models\Comment;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -72,4 +73,36 @@ $post = Post::create([
         return redirect()->back()->with('status','Post updated successfully');
         // return redirect('/dashboard')->with('status','Post updated successfully');
     }
+    public function createComment(Request $comment){
+       $validatedData = $comment->validate([
+            'post_id'=> 'required | string ',
+            'comment' => 'required | string | max:200'
+       ],[
+            'post_id.required'=> 'Required Post id does not exist',
+            'comment.required'=> 'You must need type a comment'
+       ]);
+       Comment::create([
+        'user_id'=> auth()->id(),
+        'comment'=> $validatedData['comment'],
+        'post_id'=> $validatedData['post_id'],
+       ]);
+       return redirect()->back()->with('status','Comment has been given!');
+    }
+    public function updateComment(Request $request, $id){
+        $comment = Comment::FindOrFail($id);
+        // return $comment;
+        $user_id = $comment->user_id;
+        if(auth()->id() == $user_id){
+        $validatedData = $request->validate([
+            'comment' => 'required | string | max:200'
+        ],[
+            'comment.required'=> 'You must need type a comment'
+        ]);
+        $comment->update($validatedData);
+        return redirect()->back()->with('status','Comment updated');
         }
+        else{
+            return redirect()->back()->with('status','You can not update comment!');
+        }
+    }
+}
