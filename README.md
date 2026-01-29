@@ -195,7 +195,13 @@ public function userPosts(){
     }
 ```
 
-# 27/01/2026 Tasks
+# 28/01/2026 Tasks
 
 1. Add comment section in user dashboard and profile. user can see comment and create commend
 2. User can delete comments on his post.
+
+# 29/01/2026 Tasks
+
+1. Add Soft Delete Functionality. User can Delete Post etc.
+2. Admin Can see all Deleted item in Recycle bin.
+3. Add Restore and Permanently Delete users, Post, Comments and Admins
