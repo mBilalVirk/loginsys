@@ -202,6 +202,14 @@ public function userPosts(){
 
 # 29/01/2026 Tasks
 
-1. Add Soft Delete Functionality. User can Delete Post etc. eg.[click here](https://medium.com/@emad-mohamed/softdelete-on-laravel-a8545ec87253)
+1. Add Soft Delete Functionality. User can Delete Post etc. eg. [click here](https://medium.com/@emad-mohamed/softdelete-on-laravel-a8545ec87253)
 2. Admin Can see all Deleted item in Recycle bin.
 3. Add Restore and Permanently Delete users, Post, Comments and Admins
+4. There is bug in using SoftDelete. Relationship not working properly. you need to define relationship as given below... Optional : don't do this. in relation it give you all deleted data.
+
+```PHP
+    public function user()
+    {
+        return $this->belongsTo(User::class)->withTrashed(); //You Must used ->withTrashed() with belongsTo
+    }
+```

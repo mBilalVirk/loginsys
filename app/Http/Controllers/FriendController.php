@@ -21,6 +21,7 @@ class FriendController extends Controller
         $friends = User::where('id', '!=', $user->id)
                         ->where('role', '!=', 'super_admin')
                         ->where('role', '!=', 'admin')
+                        ->whereNull('deleted_at')
         ->whereNotIn('id', function ($query) use ($user) {
             $query->select('friend_id')
                   ->from('friends')
@@ -40,14 +41,18 @@ class FriendController extends Controller
             $query->where('user_id', $user->id)
                   ->where('status', 'pending')
                   ->with('receiver' );
-        })->get();
+        })
+        ->whereNull('deleted_at')
+        ->get();
   
 
         $receivedFriendRequests = User::withWhereHas('receivedFriendRequests', function ($query) use ($user) {
             $query->where('friend_id', $user->id)
                   ->where('status', 'pending')
                   ->with('sender' );
-        })->get();
+        })
+        ->whereNull('deleted_at')
+        ->get();
     //    echo $receivedFriendRequests;
 
 
@@ -71,7 +76,9 @@ class FriendController extends Controller
          $rejectedFriends = User::withWhereHas('rejectedFriends', function ($query) use ($user) {
             $query->where('user_id', $user->id)
                   ->where('status', 'rejected');
-        })->get();
+        })
+        ->whereNull('deleted_at')
+        ->get();
 
 
 
@@ -95,6 +102,7 @@ class FriendController extends Controller
                         ->where('friend_id',$user_id );
         })
         ->where('status', 'pending')
+        
         ->exists();
 
         if($alreadyExist){

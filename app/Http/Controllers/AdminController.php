@@ -29,9 +29,9 @@ class AdminController extends Controller
     {
         $user = auth()->user();
         if($user->role == 'super_admin'){
-            $users = user::where('id', '!=', $user->id)->get();
+            $users = user::where('id', '!=', $user->id)->whereNull('deleted_at')->get();
         }else{
-             $users = user::where('role', '!=', 'admin')->get();
+             $users = user::where('role', '!=', 'admin')->whereNull('deleted_at')->get();
         }
         return view('admin.users', compact('users','user')); 
        
@@ -42,12 +42,15 @@ class AdminController extends Controller
         if($user->role =='super_admin'){
             $admins = user::where('role', 'admin')
                             ->where('id', '!=', $user->id)
+                            ->whereNull('deleted_at')
                             ->get();
                             return view('admin.admins', compact('admins')); 
 
         }else{
-            $admins = USER::where('id',$user->id)->get();
-                            return view('admin.admins', compact('admins'));
+            $admins = USER::where('id',$user->id)->whereNull('deleted_at')
+                            ->whereNull('deleted_at')
+                            ->get();
+                    return view('admin.admins', compact('admins'));
 
         }
                         
@@ -244,7 +247,51 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success','New admin created successfully');
     } 
-
+    public function fetchTrashedData(){
+        $users = USER::onlyTrashed()
+                        ->where('role','user')->get();
+        $posts = POST::onlyTrashed()->get();
+        $admins = USER::onlyTrashed()
+                        ->where('role','admin')->get();
+        $comments = COMMENT::onlyTrashed()->get();
+        return view('admin.Deleted', compact('users','posts', 'admins', 'comments'));
+    }
+    public function restoreUser($id){
+        $user = USER::withTrashed()->find($id);
+        $user->restore();
+        return redirect()->back()->with('status','User Restore Successfully!');
+    }public function permanentDeleteUser($id){
+        $user = USER::withTrashed()->find($id);
+        $user->forceDelete();
+        return redirect()->back()->with('status','User Permanently Deleted!');
+    }
+    public function restorePost($id){
+        $post = POST::withTrashed()->find($id);
+        $post->restore();
+        return redirect()->back()->with('status','Post Restore Successfully!');
+    }public function permanentDeletePost($id){
+        $post = POST::withTrashed()->find($id);
+        $post->forceDelete();
+        return redirect()->back()->with('status','Post Permanently Deleted!');
+    }
+    public function restoreComment($id){
+        $comment = COMMENT::withTrashed()->find($id);
+        $comment->restore();
+        return redirect()->back()->with('status','Comment Restore Successfully!');
+    }public function permanentDeleteComment($id){
+        $comment = COMMENT::withTrashed()->find($id);
+        $comment->forceDelete();
+        return redirect()->back()->with('status','Comment Permanently Deleted!');
+    }
+    public function restoreAdmin($id){
+        $admin = USER::withTrashed()->find($id);
+        $admin->restore();
+        return redirect()->back()->with('status','Admin Restore Successfully!');
+    }public function permanentDeleteAdmin($id){
+        $admin = USER::withTrashed()->find($id);
+        $admin->forceDelete();
+        return redirect()->back()->with('status','Admin Permanently Deleted!');
+    }
     /**
      * Store a newly created resource in storage.
      */

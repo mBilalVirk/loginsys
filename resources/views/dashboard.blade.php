@@ -61,7 +61,7 @@
         </form>
          <a href="{{ route('dashboard') }}">Home</a>
                 <a href="{{ route('friends') }}" class="link">Friends</a>
-        <a href="{{ route('friends') }}" class="link">Friends</a>
+       
          <a href="{{ route('user.profile', auth()->user()->id) }}">Profile</a>
         <a href="{{ route('passwordupdate') }}" class="link">Change Password</a>
     </div>

@@ -5,7 +5,7 @@
 @section('content')
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3">Dashboard : Users</h1>
+        <h1 class="h3">Dashboard : Admins</h1>
         
          @if(auth()->user()->role == 'super_admin')
             <button

@@ -3,14 +3,14 @@
 @include('layouts.navbar')
 @section('content')
 <!-- my friends -->
-<div style="display:flex;justify-content:center;align-items:center;flex-direction:column;gap:20px; margin-top:20px;">
+<div style="display:flex;justify-content:center;align-items:center;flex-direction:column;gap:20px; margin-top:20px;position:relative;">
     @if(session('status'))
     <div class="alert success">
         {{ session('status') }}
     </div>
     @endif
 
-    <div class="search-bar" style="width:500px">
+    <div class="search-bar" style="width:500px ">
         <form action="{{ route('search.user') }}" method="POST" style="display: flex; align-items: flex-start; gap: 8px;width: 100%;">
             @csrf
             @method('POST')

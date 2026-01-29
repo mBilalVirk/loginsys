@@ -59,6 +59,15 @@ Route::get('/admin/admins',[App\Http\Controllers\AdminController::class, 'fetchA
 Route::post('admin/createAdmin',[App\Http\Controllers\AdminController::class, 'createNewAdmin'])->name('admin.createNewAdmin');
 // Route::delete('admin/comment/{id}', [App\Http\Controllers\AdminController::class,'deleteComment'])->name('comment.delete');
 Route::delete('admin/comment/{id}', [App\Http\Controllers\AdminController::class,'deleteComment'])->name('comment.delete');
+Route::get('/admin/deleted/data', [App\Http\Controllers\AdminController::class,'fetchTrashedData'])->name('admin.DeletedData');
+Route::post('/admin/restore/user/{id}', [App\Http\Controllers\AdminController::class,'restoreUser'])->name('admin.restoreUser');
+Route::post('/admin/restore/post/{id}', [App\Http\Controllers\AdminController::class,'restorePost'])->name('admin.restorePost');
+Route::post('/admin/restore/comment/{id}', [App\Http\Controllers\AdminController::class,'restoreComment'])->name('admin.restoreComment');
+Route::post('/admin/restore/admin/{id}', [App\Http\Controllers\AdminController::class,'restoreAdmin'])->name('admin.restoreAdmin');
+Route::Delete('admin/permanentDelete/user/{id}', [App\Http\Controllers\AdminController::class,'permanentDeleteUser'])->name('admin.permanentDeleteUser');
+Route::Delete('admin/permanentDelete/post/{id}', [App\Http\Controllers\AdminController::class,'permanentDeletePost'])->name('admin.permanentDeletePost');
+Route::Delete('admin/permanentDelete/comment/{id}', [App\Http\Controllers\AdminController::class,'permanentDeleteComment'])->name('admin.permanentDeleteComment');
+Route::Delete('admin/permanentDelete/admin/{id}', [App\Http\Controllers\AdminController::class,'permanentDeleteAdmin'])->name('admin.permanentDeleteAdmin');
 
 });
 

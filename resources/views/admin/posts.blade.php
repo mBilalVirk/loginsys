@@ -148,7 +148,7 @@
                                                             <tr>
                                                                 <td>{{ $comment->comment }}</td>
                                                                 <td>{{ $comment->post_id }}</td>
-                                                                <td>{{$comment->user->name }}</td>
+                                                                <td>{{$comment->user->name ?? null }}</td>
                                                                 <td></td>
                                                                 <td> 
                                                                     <form

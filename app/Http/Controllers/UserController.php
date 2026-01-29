@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Models\Comment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 use Illuminate\Http\Request;
 
@@ -21,6 +22,8 @@ class UserController extends Controller
 //     }
     public function dashboard()
     {
+        DB::enableQueryLog();
+
         $user = auth()->user();
 
         //Show user's and friends posts on dashboard page
@@ -28,16 +31,24 @@ class UserController extends Controller
             $query->select('friend_id')
                   ->from('friends')
                   ->where('user_id', $user->id)
+                  ->whereNull('deleted_at')
                   ->where('status', 'accepted');
         })->orWhereIn('user_id', function ($query) use ($user) {
             $query->select('user_id')
                   ->from('friends')
                   ->where('friend_id', $user->id)
+                  ->whereNull('deleted_at')
                   ->where('status', 'accepted');
         })->orWhere('user_id', $user->id)
           ->orderBy('created_at', 'desc')
-          ->with('comments')
+          ->with(['comments'=> function($q){
+                $q->whereNull('deleted_at');
+          }])
+          
           ->get();
+        $qry=  DB::getQueryLog();
+        echo '<pre>';
+print_r($qry);
         // $posts = Post::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
         return view('dashboard', compact('user', 'posts'));
     }
@@ -106,7 +117,7 @@ class UserController extends Controller
 if (auth()->attempt($credentials)) {
     
     $request->session()->regenerate();
-    if (auth()->user()->role === 'admin') {
+    if (auth()->user()->role === 'admin' || auth()->user()->role === 'super_admin') {
         return redirect()->route('admin.login')->with('status','Admin must login with this page');
     }else{
 
@@ -241,8 +252,14 @@ if (auth()->attempt($credentials)) {
             }
             public function deleteComment($id){
                 $comment = Comment::FindOrFail($id);
+                 $user_id = $comment->user_id;
+                if(auth()->id() == $user_id){
                 $comment->delete();
-            return redirect()->back()->with('status','Comment delete successfully!');
+                return redirect()->back()->with('status','Comment delete successfully!');
+                }else{
+                    return redirect()->back()->with('status','You Can not Delete Comment!');
+
+                }
 
             }
             

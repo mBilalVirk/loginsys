@@ -138,6 +138,7 @@
                 
                     
                 {{-- Post Image --}}
+                <br>
                 @if($post->photo)
                     <img src="{{ asset($post->photo) }}" class="post-image" width="300" style="margin-top:10px; border-radius:8px;" onclick="openImage(this)">
                 @endif
