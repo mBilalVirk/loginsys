@@ -202,6 +202,6 @@ public function userPosts(){
 
 # 29/01/2026 Tasks
 
-1. Add Soft Delete Functionality. User can Delete Post etc.
+1. Add Soft Delete Functionality. User can Delete Post etc. eg.[click here](https://medium.com/@emad-mohamed/softdelete-on-laravel-a8545ec87253)
 2. Admin Can see all Deleted item in Recycle bin.
 3. Add Restore and Permanently Delete users, Post, Comments and Admins
