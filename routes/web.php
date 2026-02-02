@@ -7,9 +7,9 @@ use App\Http\Controllers\PostController;
 
 
 
-Route::get('/', function () {
+Route::get('/login', function () {
     return view('login');
-})->name('userLogin');
+})->name('login');
 Route::get('/register', function () {
     return view('register');
 })->name('register');
@@ -38,7 +38,7 @@ Route::post('/friends/unfriend/{id}',[FriendController::class, 'unFriend'])
 
 
 
-Route::get('/admin', [App\Http\Controllers\AdminController::class, 'index'])->name('admin.login');
+Route::get('/admin/login', [App\Http\Controllers\AdminController::class, 'index'])->name('admin.login');
 
 Route::post('/adminlogin', [App\Http\Controllers\AdminController::class, 'adminlogin'])->name('adminlogin');
 
@@ -46,6 +46,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     
     Route::get('/admin/dashboard', [App\Http\Controllers\AdminController::class, 'countUsersPosts'])
     ->name('admin.dashboard');
+    Route::post('/admin/logout', [App\Http\Controllers\AdminController::class, 'logout'])->name('admin.logout');
     
 Route::get('/admin/posts', [App\Http\Controllers\AdminController::class, 'userPosts'])->name('admin.posts');
 // Route::get('/admin/dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])->middleware('auth')->name('admin.dashboard');
@@ -69,6 +70,11 @@ Route::Delete('admin/permanentDelete/post/{id}', [App\Http\Controllers\AdminCont
 Route::Delete('admin/permanentDelete/comment/{id}', [App\Http\Controllers\AdminController::class,'permanentDeleteComment'])->name('admin.permanentDeleteComment');
 Route::Delete('admin/permanentDelete/admin/{id}', [App\Http\Controllers\AdminController::class,'permanentDeleteAdmin'])->name('admin.permanentDeleteAdmin');
 
+Route::get('/admin/friends', [App\Http\Controllers\AdminController::class, 'fetchFriends'])->name('admin.friends');
+Route::delete('admin/friend/delete/{id}', [App\Http\Controllers\AdminController::class,'deleteFriend'])->name('admin.deleteFriend');
+Route::post('/admin/restore/friend/{id}', [App\Http\Controllers\AdminController::class,'restoreFriend'])->name('admin.restoreFriend');
+Route::Delete('admin/permanentDelete/friend/{id}', [App\Http\Controllers\AdminController::class,'permanentDeleteFriend'])->name('admin.permanentDeleteFriend');
+
 });
 
 
@@ -76,26 +82,28 @@ Route::Delete('admin/permanentDelete/admin/{id}', [App\Http\Controllers\AdminCon
 
 
 
+Route::post('/registerUser', [App\Http\Controllers\UserController::class, 'registerUser'])->name('registerUser');
+Route::post('/loginUser', [App\Http\Controllers\UserController::class, 'loginUser'])->name('loginUser');
+Route::middleware('auth' ,'user')->group(function(){
 
-Route::middleware('auth')->group(function(){
+    
     Route::post('/user/uploadPhoto', [UserController::class, 'updatePhoto'])->name('user.updatePhoto');
     Route::post('/user/updateName', [UserController::class, 'updateName'])->name('user.updateName');
     Route::post('/user/updateEmail', [UserController::class, 'updateEmail'])->name('user.updateEmail');
     Route::delete('/user/comment/{id}',[UserController::class,'deleteComment'])->name('user.deleteComment');
     
+    Route::get('/dashboard', [App\Http\Controllers\UserController::class, 'dashboard'])->middleware('auth')->name('dashboard');
+    Route::post('/logout', [App\Http\Controllers\UserController::class, 'logout'])->middleware('auth')->name('logout');
+    Route::post('/updateProfile', [App\Http\Controllers\UserController::class, 'updateProfile'])->middleware('auth')->name('updateProfile');
+    Route::post('/updatePassword',[App\Http\Controllers\UserController::class, 'updatePassword'])->middleware('auth')->name('updatePassword');
+    // Route::get('/admin', [App\Http\Controllers\UserController::class, 'fetch'])
+        // ->middleware('auth')
+        // ->name('admin.index');
+    Route::get('/user/profile/{id}', [App\Http\Controllers\UserController::class, 'userProfile'])->middleware('auth')->name('user.profile');
 });
 
 
-Route::post('/registerUser', [App\Http\Controllers\UserController::class, 'registerUser'])->name('registerUser');
-Route::post('/loginUser', [App\Http\Controllers\UserController::class, 'loginUser'])->name('loginUser');
-Route::get('/dashboard', [App\Http\Controllers\UserController::class, 'dashboard'])->middleware('auth')->name('dashboard');
-Route::post('/logout', [App\Http\Controllers\UserController::class, 'logout'])->middleware('auth')->name('logout');
-Route::post('/updateProfile', [App\Http\Controllers\UserController::class, 'updateProfile'])->middleware('auth')->name('updateProfile');
-Route::post('/updatePassword',[App\Http\Controllers\UserController::class, 'updatePassword'])->middleware('auth')->name('updatePassword');
-// Route::get('/admin', [App\Http\Controllers\UserController::class, 'fetch'])
-    // ->middleware('auth')
-    // ->name('admin.index');
-Route::get('/user/profile/{id}', [App\Http\Controllers\UserController::class, 'userProfile'])->middleware('auth')->name('user.profile');
+
 
 
 

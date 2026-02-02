@@ -213,3 +213,8 @@ public function userPosts(){
         return $this->belongsTo(User::class)->withTrashed(); //You Must used ->withTrashed() with belongsTo
     }
 ```
+
+# 02/02/2026 Tasks
+
+1. change the some query in userController to solve the error to fetching the deleting user post data.
+2. improve login

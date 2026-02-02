@@ -33,6 +33,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Post::class);
     }
+    
     public function sentFriendRequests(){
         return $this->hasMany(Friend::class, 'user_id');
     }

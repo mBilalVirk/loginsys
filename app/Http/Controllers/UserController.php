@@ -20,14 +20,19 @@ class UserController extends Controller
 //         return view('admin.index', compact('users','user')); 
        
 //     }
+
+
     public function dashboard()
     {
-        DB::enableQueryLog();
+        // DB::enableQueryLog();
 
         $user = auth()->user();
 
         //Show user's and friends posts on dashboard page
-        $posts = Post::whereIn('user_id', function ($query) use ($user) {
+        $posts = Post::whereHas('user', function ($q){
+            $q->whereNull('deleted_at');
+        })
+        ->whereIn('user_id', function ($query) use ($user) {
             $query->select('friend_id')
                   ->from('friends')
                   ->where('user_id', $user->id)
@@ -46,16 +51,18 @@ class UserController extends Controller
           }])
           
           ->get();
-        $qry=  DB::getQueryLog();
-        echo '<pre>';
-print_r($qry);
+//         $qry=  DB::getQueryLog();
+//         echo '<pre>';
+// print_r($qry);
         // $posts = Post::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
         return view('dashboard', compact('user', 'posts'));
     }
     public function logout(Request $request)
     {
         auth()->logout();
-        return redirect('/');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/login');
     }
     public function registerUser(Request $request)
     {
@@ -114,20 +121,22 @@ print_r($qry);
             'email.email' => 'Please enter a valid email address',
             'password.required' => 'Password is required',
         ]);
-if (auth()->attempt($credentials)) {
-    
-    $request->session()->regenerate();
-    if (auth()->user()->role === 'admin' || auth()->user()->role === 'super_admin') {
+        $user = USER::where('email',$credentials['email'])->first();
+        if($user == null){
+             return back()->withErrors([
+            'email' => 'Please Register first to login',
+        ])->onlyInput('email');
+        }
+        if ($user->role === 'admin' || $user->role === 'super_admin') {
         return redirect()->route('admin.login')->with('status','Admin must login with this page');
     }else{
-
-        return redirect('/dashboard');
+        if (auth()->attempt($credentials)) {
+            $request->session()->regenerate();
+            return redirect('/dashboard');
+            }
     }
-}
-
-
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+            'email' => 'Password incorrect.',
         ])->onlyInput('email');
     }   
     public function updateProfile(Request $request)

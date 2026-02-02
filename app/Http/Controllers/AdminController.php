@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Post;
 use App\Models\Comment;
+use App\Models\Friend;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
@@ -31,7 +32,9 @@ class AdminController extends Controller
         if($user->role == 'super_admin'){
             $users = user::where('id', '!=', $user->id)->whereNull('deleted_at')->get();
         }else{
-             $users = user::where('role', '!=', 'admin')->whereNull('deleted_at')->get();
+             $users = user::where('role', '!=', 'admin')
+                            ->where('role', '!=', 'super_admin')
+                            ->whereNull('deleted_at')->get();
         }
         return view('admin.users', compact('users','user')); 
        
@@ -70,25 +73,28 @@ class AdminController extends Controller
         ]
     );
     // return $credentials;
-    if (!auth()->attempt($credentials)) {
-        return back()->withErrors([
-            'email' => 'Invalid email or password',
-        ]);
-    }
-
-    
-    if (auth()->user()->role !== 'admin' && auth()->user()->role !== 'super_admin') {
-        auth()->logout(); 
-        session()->invalidate();
-        session()->regenerateToken();
-        return redirect()
+    $user = USER::where('email',$credentials['email'])->first();
+    if($user == null){
+                return back()->withErrors([
+                'email' => 'Invalid email or Password',
+            ])->onlyInput('email');
+            }
+    if ($user->role !== 'admin' && $user->role !== 'super_admin') {
+            return redirect()
             ->back()
             ->with('status', 'You are not allowed to login as admin');
+    }else{
+        if (auth()->attempt($credentials)) {
+            $request->session()->regenerate();
+            return redirect()->route('admin.dashboard');
+            }
     }
-
-    $request->session()->regenerate();
-
-    return redirect()->route('admin.dashboard');
+    if (!auth()->attempt($credentials)) {
+        return back()->withErrors([
+            'email' => 'Invalid email or Password',
+            ]);
+            }
+            
 }
 
 
@@ -133,7 +139,7 @@ class AdminController extends Controller
         auth()->logout();
         session()->invalidate();
         session()->regenerateToken();
-        return redirect('/adminlogin');
+        return redirect()->route('admin.login');
     }
 
     public function delete($id){
@@ -254,7 +260,8 @@ class AdminController extends Controller
         $admins = USER::onlyTrashed()
                         ->where('role','admin')->get();
         $comments = COMMENT::onlyTrashed()->get();
-        return view('admin.Deleted', compact('users','posts', 'admins', 'comments'));
+        $friends = Friend::onlyTrashed()->get();
+        return view('admin.Deleted', compact('users','posts', 'admins', 'comments','friends'));
     }
     public function restoreUser($id){
         $user = USER::withTrashed()->find($id);
@@ -291,6 +298,26 @@ class AdminController extends Controller
         $admin = USER::withTrashed()->find($id);
         $admin->forceDelete();
         return redirect()->back()->with('status','Admin Permanently Deleted!');
+    }
+    public function fetchFriends()
+    {
+        $friends = Friend::with(['sender', 'receiver'])->get();
+        return view('admin.friends', compact('friends'));
+    }
+    public function deleteFriend($id){
+        $friend = Friend::FindOrFail($id);
+        $friend -> delete();
+        return redirect()->back()->with('status','Friend deleted successfully.');
+        // return redirect()->route('admin.index')->with('status', 'User deleted successfully');
+    }
+    public function restoreFriend($id){
+        $friend = Friend::withTrashed()->find($id);
+        $friend->restore();
+        return redirect()->back()->with('status','Friendship Restore Successfully!');
+    }public function permanentDeleteFriend($id){
+        $friend = Friend::withTrashed()->find($id);
+        $friend->forceDelete();
+        return redirect()->back()->with('status','Friendship Permanently Deleted!');
     }
     /**
      * Store a newly created resource in storage.

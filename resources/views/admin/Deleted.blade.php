@@ -112,7 +112,7 @@
                     </div>
                      </div>
                     <!-- Model start -->
-                     <div class="container" style="all:unset">
+                     
                 <div class="modal" id="viewPost">
                                 <div class="modal-dialog modal-lg">
                                     <div class="modal-content">
@@ -192,7 +192,7 @@
                                     </div>
                                 </div>
                             </div>
-                            </div>
+                           
                 <!-- end -->
                
                 
@@ -205,7 +205,7 @@
                     </div>
                      </div>
                      <!-- Model start -->
-                     <div class="container" >
+                     
                 <div class="modal" id="viewComments{{$comments->count()}}">
                                 <div class="modal-dialog modal-lg">
                                     <div class="modal-content">
@@ -287,7 +287,7 @@
                                     </div>
                                 </div>
                             </div>
-                            </div>
+                            
                     <!-- End -->
                
 
@@ -300,7 +300,6 @@
                         </div>
                     </div>
                 </div>
-</div>
                 <!-- Model start -->
                 <div class="modal" id="viewAdmin{{$admins->count()}}">
                                 <div class="modal-dialog modal-lg">
@@ -388,6 +387,100 @@
                                 </div>
                             </div>
                 <!-- end -->
+
+                
+                <div class="col-md-4" data-toggle="modal" data-target="#viewFriends{{$friends->count()}}" style="cursor:pointer;">
+                    <div class="card text-bg-danger mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Deleted Friend Relation</h5>
+                            <p class="card-text fs-4">{{$friends->count()}}</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Model start -->
+                <div class="modal" id="viewFriends{{$friends->count()}}">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <!-- Modal Header -->
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">Deleted Friends</h4>
+                                            <button
+                                                type="button"
+                                                class="close"
+                                                data-dismiss="modal"
+                                            >
+                                                &times;
+                                            </button>
+                                        </div>
+
+                                        <!-- Modal body -->
+                                        <div class="modal-body">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                         <th>ID</th>
+                                                        <th>Sender</th>
+                                                        <th>Receiver</th>
+                                                        <th>Status</th>
+                                                        <th colspan="2">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                    <tbody>
+                                                       @foreach($friends as $friend)
+                                                      
+                                                            <tr>
+                                                                <td>{{ $friend->id }}</td>
+                                                                <td>{{ $friend->sender->name }}</td>
+                                                                <td>{{ $friend->receiver->name }}</td>
+                                                                <td>{{ $friend->status }}</td>
+                                                               
+                                                                <td>
+                                                                    <form
+                                                                        action="{{ route('admin.restoreFriend', $friend->id) }}"
+                                                                        method="POST"
+                                                                        onsubmit="return confirm('Are you sure you want to restore this Friendship?');"
+                                                                    >
+                                                                        @csrf
+                                                                        @method('POST')
+                                                                        <button type="submit" class="btn btn-success">Restore</button>
+                                                                    </form>                                                       
+                                                                <td> 
+                                                                    <form
+                                                                        action="{{ route('admin.permanentDeleteFriend', $friend->id) }}"
+                                                                        method="POST"
+                                                                        onsubmit="return confirm('Are you sure you want to delete this Friendship?');"
+                                                                    >   
+                                                                    <input type="hidden" name="id" value="{{ $friend->id }}">                                                                  
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                                                    </form>
+                                                                 </td>
+                                                            </tr>
+                                                        @endforeach
+
+                                                    </tbody>
+
+                                            </table>
+                                            
+                                        </div>
+
+                                        <!-- Modal footer -->
+                                        <div class="modal-footer">
+                                            <button
+                                                type="button"
+                                                class="btn btn-danger"
+                                                data-dismiss="modal"
+                                            >
+                                                Close
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                <!-- end -->
+            </div>
+                
             
 
 

@@ -206,7 +206,7 @@
                     </td>
                     <td>
                         
-
+                            @if(auth()->user()->role == 'super_admin')
                             <form action="{{ url('admin/delete/'.$admin->id) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
@@ -216,6 +216,9 @@
                                     Delete
                                 </button>
                             </form>
+                            @else
+                                <p></p>
+                            @endif
                     </td>
                 </tr>
                 @endforeach
