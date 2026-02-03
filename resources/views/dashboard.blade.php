@@ -59,10 +59,10 @@
             @csrf
             <button class="btn logout-btn">Logout</button>
         </form>
-         <a href="{{ route('dashboard') }}">Home</a>
-                <a href="{{ route('friends') }}" class="link">Friends</a>
-       
-         <a href="{{ route('user.profile', auth()->user()->id) }}">Profile</a>
+         <a href="{{ route('dashboard') }}" class="link">Home</a>
+         <a href="{{ route('userMessages') }}" class="link">Messages</a>
+            <a href="{{ route('friends') }}" class="link">Friends</a>
+         <a href="{{ route('user.profile', auth()->user()->id) }}" class="link">Profile</a>
         <a href="{{ route('passwordupdate') }}" class="link">Change Password</a>
     </div>
 

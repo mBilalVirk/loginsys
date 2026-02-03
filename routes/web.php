@@ -1,21 +1,20 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\FriendController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\FriendController;
+use App\Http\Controllers\MessageController;
 
 
 
-Route::get('/login', function () {
+Route::get('/', function () {
     return view('login');
 })->name('login');
 Route::get('/register', function () {
     return view('register');
 })->name('register');
-// Route::get('/login', function () {
-//     return view('login');
-// })->name('login');
+
 
 Route::get('/passwordupdate', function () {
     return view('passwordupdate');
@@ -100,6 +99,7 @@ Route::middleware('auth' ,'user')->group(function(){
         // ->middleware('auth')
         // ->name('admin.index');
     Route::get('/user/profile/{id}', [App\Http\Controllers\UserController::class, 'userProfile'])->middleware('auth')->name('user.profile');
+    
 });
 
 
@@ -113,6 +113,12 @@ Route::middleware('auth')->group(function(){
     Route::post('/post/edit/{id}', [PostController::class, 'edit'])->name('editpost');
     Route::post('/post/comment',[PostController::class, 'createComment'])->name('giveComment');
     Route::post('/post/comment/update/{id}',[PostController::class,'updateComment'])->name('commentUpdate');
+
 });
 
-
+Route::middleware('auth')->group(function(){
+      Route::get('/user/message', [App\Http\Controllers\MessageController::class, 'index'])->name('userMessages');
+      Route::post('/user/message/send',[App\Http\Controllers\MessageController::class, 'create'])->name('sendMessage');
+      Route::get('/user/message/chat/{id}',[App\Http\Controllers\MessageController::class, 'chat'])->name('chat');
+      Route::delete('/user/message/chat/delete/{id}',[App\Http\Controllers\MessageController::class, 'delete'])->name('deleteMessage');
+});

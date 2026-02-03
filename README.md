@@ -218,3 +218,8 @@ public function userPosts(){
 
 1. change the some query in userController to solve the error to fetching the deleting user post data.
 2. improve login
+
+# 03/02/2026 Tasks
+
+1. Messages System. User can send messages to their friend
+2. And received messages from the friends

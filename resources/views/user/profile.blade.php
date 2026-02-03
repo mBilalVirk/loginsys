@@ -9,7 +9,11 @@
         <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+       
+        
         function openImage(imgElement) {
             var modal = document.getElementById('imageModal');
             var modalImg = document.getElementById('modalImg');
@@ -33,21 +37,26 @@
 
             alert('Post update functionality to be implemented.');
         }
-        setTimeout(() => {
-            document.querySelector('.alert')?.remove();
-        }, 4000);
+       setTimeout(() => {
+        const alert = document.querySelector('.alert');
+        if (alert) {
+            alert.classList.remove('show');
+            alert.classList.add('fade');
+            setTimeout(() => alert.remove(), 500);
+        }
+    }, 3000);
     </script>
 @endsection
 @section('content')
     @if(session('status'))
         <div class="alert alert-success alert-dismissible fade show" role="alert"
-            style="position: fixed; top: 1rem; right: 1rem; z-index: 1000; min-width: 300px;">
+            style="position: fixed; top: 1rem; right: 1rem; z-index: 1000; min-width: 300px;" setTimeout>
             {{ session('status') }}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
-@endif
+    @endif
 
    
     <div class="container">
