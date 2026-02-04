@@ -10,10 +10,9 @@
     </div>
     @endif
         <form action="{{ route('search.user') }}" method="POST" style="display: flex; align-items: flex-start; gap: 8px;width: 100%;">
-            @csrf
-            @method('POST')
+           @csrf
             <input type="search" name="searchUser" placeholder="Search friends..." style=" padding: 8px;" />
-            <button type="submit" style="cursor: pointer;">
+            <button  style="cursor: pointer;">
                 Search
             </button>
         </form>
@@ -30,6 +29,7 @@
             <h2>{{ $user->name }}</h2>
             <p>{{ $user->email }}</p>
             <form action="{{route('sendRequestSearch', $user->id)}}" method="GET">
+                
                 <button class="btn primary-btn">Send Friend Request</button>
             </form>
         </div>

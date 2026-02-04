@@ -23,7 +23,8 @@ class AdminController extends Controller
         $userCount = User::where('role', 'user')->count();
         $postCount = Post::count();
         $adminCount = User::where('role', 'admin')->count();
-        return view('admin.dashboard', compact('userCount', 'postCount', 'adminCount'));
+        $comments = Comment::count();
+        return view('admin.dashboard', compact('userCount', 'postCount', 'adminCount','comments'));
         
     }
     public function fetch()
