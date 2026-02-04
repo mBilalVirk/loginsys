@@ -35,26 +35,38 @@
                     </div>
 
                     <!-- Messages -->
-                    <div class="card-body" style="height: 350px; overflow-y: auto;" >
+                    <div class="card-body" style="height: 350px; overflow-y: auto; position:relative;" >
                         @foreach($messages as $message)
                             @if($message->sender_id == auth()->id())
                         <div class="mb-2 text-end">
                             <span class="badge bg-primary p-2"> You : {{$message->message}}</span>
 
                             <i class="fa-regular fa-pen-to-square" style="margin-bottom: 5px; cursor: pointer;"
-                            data-bs-toggle="modal"
-                            data-bs-target="#editMessage{{$message->id}}"
+                            data-toggle="modal"
+                            data-target="#editMessage{{$message->id}}"
                             ></i>
                             
-                            <div class="modal" id="editMessage{{$message->id}}" style="width:50%;">
+                            <div class="modal" id="editMessage{{$message->id}}" style="width:50%;position:absolute;width: 50%;top: 50%;left:50%;transform: translate(-50%, -50%);">
                                  <div class="model-dialog" >
                                     <div  class="modal-content" >
                                         <!-- Modal Header -->
-                                      
+                                        <div class="modal-header">
+                                            <h3>Rewrite your Message!</h3>
+                                            <button
+                                                type="button"
+                                                class="close"
+                                                data-dismiss="modal"
+                                            >
+                                                &times;
+                                            </button>
+                                        </div>
                                         <div class="modal-body">
-                                        <form action="" class="model-form">
+                                        <form action="{{route('messageUpdate',$message->id)}}" method="POST">
+                                            @csrf 
+                                            @method('POST')
                                             <input type="text" name="message" id="" value="{{$message->message}}"
                                             style="width:100%; border:none;" >
+                                            
                                         </form>
                                         </div>
                                     </div>

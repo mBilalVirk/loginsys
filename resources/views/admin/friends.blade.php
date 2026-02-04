@@ -13,7 +13,7 @@
                             <th>Sender</th>
                             <th>Receiver</th>
                             <th>Status</th>
-                            <th colspan="2">Action</th>
+                            <th >Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -23,7 +23,7 @@
                             <td>{{ $friend->sender->name }}</td>
                             <td>{{ $friend->receiver->name }}</td>
                             <td>{{ $friend->status }}</td> 
-                            <td>
+                            
                             <td>
                                 <form action="{{route('admin.deleteFriend',$friend->id)}}" method="post"
                                 onsubmit="return confirm('Are you sure you want to delete this friends record?')">

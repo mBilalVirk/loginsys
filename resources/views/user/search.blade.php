@@ -12,44 +12,29 @@
         <form action="{{ route('search.user') }}" method="POST" style="display: flex; align-items: flex-start; gap: 8px;width: 100%;">
             @csrf
             @method('POST')
-
             <input type="search" name="searchUser" placeholder="Search friends..." style=" padding: 8px;" />
-
             <button type="submit" style="cursor: pointer;">
                 Search
             </button>
         </form>
         @if($users->isEmpty())
         <p>No users found.</p>
-    @else
+        @else
     <h2>Search Results:</h2>    
     <div class="friends-list">
         @foreach($users as $user)
-
-
         <div class="friend-card">
             <img src="{{ $user->photo 
                 ? asset('/' . $user->photo) 
-                : asset('images/default-user.png') }}" class="friend-img" class="profile-img">
-
+                : asset('images/default-user.png') }}" class="friend-img" class="profile-img"/>
             <h2>{{ $user->name }}</h2>
             <p>{{ $user->email }}</p>
-
-            <form action="{{route('send.request', $user->id)}}" method="POST">
-                @csrf
-               @method('POST')
+            <form action="{{route('sendRequestSearch', $user->id)}}" method="GET">
                 <button class="btn primary-btn">Send Friend Request</button>
             </form>
-
-
-
-
         </div>
         @endforeach
     </div>
     @endif
-       
-    </div>
-    
 </div>
 @endsection

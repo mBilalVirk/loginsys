@@ -223,3 +223,8 @@ public function userPosts(){
 
 1. Messages System. User can send messages to their friend
 2. And received messages from the friends
+
+# 04/02/2026 Tasks
+
+1. User can delete and update its messages
+2. Search page improving.

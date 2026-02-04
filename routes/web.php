@@ -25,6 +25,8 @@ Route::get('/friends', [FriendController::class, 'index'])
     ->name('friends');
     Route::post('/friends/send/{id}', [FriendController::class, 'send'])
     ->name('send.request');
+     Route::get('/friends/sendRequestSearch/{id}', [FriendController::class, 'sendRequestSearch'])
+    ->name('sendRequestSearch');
 Route::delete('/friends/delete/{id}',[FriendController::class, 'deleteRequest'])
     ->name('delete.request');
 Route::post('/friends/accept/{id}',[FriendController::class, 'acceptRequest'])
@@ -121,4 +123,5 @@ Route::middleware('auth')->group(function(){
       Route::post('/user/message/send',[App\Http\Controllers\MessageController::class, 'create'])->name('sendMessage');
       Route::get('/user/message/chat/{id}',[App\Http\Controllers\MessageController::class, 'chat'])->name('chat');
       Route::delete('/user/message/chat/delete/{id}',[App\Http\Controllers\MessageController::class, 'delete'])->name('deleteMessage');
+      Route::post('/user/massage/chat/update/{id}',[App\Http\Controllers\MessageController::class, 'update'])->name('messageUpdate');
 });

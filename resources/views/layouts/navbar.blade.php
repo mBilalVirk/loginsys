@@ -44,7 +44,7 @@ nav{
         
         <li><a href="{{ route('dashboard') }}">Home</a></li>
         <li><a href="{{ route('friends') }}">Friends</a></li>
-        <li><a href="#">Messages</a></li>
+        <li><a href="{{route('userMessages')}}">Messages</a></li>
         <li><a href="{{ route('user.profile', auth()->user()->id) }}">Profile</a></li>
       </ul>
     </div><!-- /.navbar-collapse -->

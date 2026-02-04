@@ -67,4 +67,17 @@ class MessageController extends Controller
         return redirect()->back();
 
     }
+    public function update(Request $request, $id){
+
+        $message = Message::FindOrFail($id);
+        $validatedData = $request->validate([
+            
+            'message'=> 'string | required | max:500',
+        ],[
+            
+            'message.required'=> 'You must need type a message'
+        ]);
+        $message->update($validatedData);
+        return redirect()->back();
+    }
 }

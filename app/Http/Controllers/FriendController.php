@@ -136,15 +136,51 @@ class FriendController extends Controller
         }
         public function searchUser(Request $request){
                 
-                $searchUser = $request->input('searchUser');
-                $users = User::where('name', 'LIKE', "%{$searchUser}%")
-                             ->where('id', '!=', auth()->user()->id)
-                             ->orWhere('email', 'LIKE', "%{$searchUser}%")
-                             ->get();
+                // $searchUser = $request->input('searchUser');
+                $validatedData = $request->validate([
+                    'searchUser'=>'required | String | max:100'
+                ],[
+                    'searchUser.required'=> 'You must fill it Properly!'
+                ]);
+                $searchUser = $validatedData['searchUser'];
+                $users = User::where(function ($q) use ( $searchUser){
+                                $q->where('name', 'LIKE', "%{ $searchUser}%")
+                                ->orWhere('email', 'LIKE', "%{$searchUser}%");
+                                })      
+                            ->where('id', '!=', auth()->user()->id)
+                            ->whereNotIn('role',['admin','super_admin'])
+                            ->get();
                 return view('user.search', compact('users'));
                
                 // return view('user.friends', compact('searchUser'));
             }
+
+    // send Friend Request in Search
+    public function sendRequestSearch(Request $request, $friend_id){
+        $user = auth()->user();
+        $user_id = $user->id;
+        $alreadyExist = friend::where (function($query) use ($user_id,$friend_id){
+                $query->where('user_id', $user_id)
+                        ->where('friend_id',$friend_id );
+        })
+        ->orWhere(function($query) use ($user_id,$friend_id)
+        {
+                $query->where('user_id', $friend_id)
+                        ->where('friend_id',$user_id );
+        })
+        ->where('status', 'pending')
+        ->exists();
+        if($alreadyExist){
+            return redirect()->back()->with('status', 'Friend request Already Sent');
+        }
+
+        Friend::create([
+            'user_id' => $user_id,
+            'friend_id' => $friend_id,
+            'status' => 'pending',
+        ]);
+        return redirect()->back()->with('status', 'Friend request sent successfully');
+    }
 
     /**
      * Show the form for creating a new resource.
