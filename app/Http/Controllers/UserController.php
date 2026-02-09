@@ -47,10 +47,13 @@ class UserController extends Controller
         })->orWhere('user_id', $user->id)
           ->orderBy('created_at', 'desc')
           ->with(['comments'=> function($q){
-                $q->whereNull('deleted_at');
-          }])
-          
+                $q->whereNull('deleted_at')
+                ->whereNull('parent_id');               
+                }])
           ->get();
+       
+
+        //   return $posts;
 //         $qry=  DB::getQueryLog();
 //         echo '<pre>';
 // print_r($qry);

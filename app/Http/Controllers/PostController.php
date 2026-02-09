@@ -76,15 +76,18 @@ $post = Post::create([
     public function createComment(Request $comment){
        $validatedData = $comment->validate([
             'post_id'=> 'required | string ',
-            'comment' => 'required | string | max:200'
+            'comment' => 'required | string | max:200',
+            'parent_id'=> 'nullable | string '
        ],[
             'post_id.required'=> 'Required Post id does not exist',
             'comment.required'=> 'You must need type a comment'
        ]);
+        
        Comment::create([
         'user_id'=> auth()->id(),
         'comment'=> $validatedData['comment'],
         'post_id'=> $validatedData['post_id'],
+        'parent_id'=> $validatedData['parent_id'] ?? null,
        ]);
        return redirect()->back()->with('status','Comment has been given!');
     }

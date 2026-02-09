@@ -126,8 +126,11 @@
         <hr>
         <div class="comment-section">
             @foreach($post->comments as $comment)
+
                      <div class="comment" style="display:flex; align-items:center; gap:10px;">
                             <p style="margin-top:-10px;margin-bottom:-5px;">{{$comment->user->name}} : {{$comment->comment}}</p>
+                           
+
                             <i class="fa-regular fa-pen-to-square" style="margin-bottom: 5px; cursor: pointer;"
                             data-toggle="modal"
                             data-target="#editComment{{$comment->id}}"
@@ -183,6 +186,64 @@
                                 </div>
                             </div>
                             </div>
+
+                             <!-- Comment to comment -->
+                             <i class="fas fa-reply" style="margin-bottom: 5px; cursor: pointer;"
+                            data-toggle="modal"
+                            data-target="#commentToComment{{$comment->id}}"
+                            ></i>
+                            <!-- The Modal -->
+                            <div class="modal" id="commentToComment{{$comment->id}}">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <!-- Modal Header -->
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">Write Comment</h4>
+                                            <button
+                                                type="button"
+                                                class="close"
+                                                data-dismiss="modal"
+                                            >
+                                                &times;
+                                            </button>
+                                        </div>
+
+                                        <!-- Modal body -->
+                                        <div class="modal-body">
+                                            <form
+                                                action="{{route('giveComment')}}"
+                                                method="POST" enctype="multipart/form-data"
+                                            >
+                                                @csrf
+                                                @method('POST')
+                                                <div class="form-group">
+                                                    <label for="comment">Comment:</label>
+                                                    <input type="text" id='comment' name="comment" placeholder="Write your comment here..." style="width:100%;" required>
+                                                    <input type="text" name="post_id" id="post_id" value="{{$post->id}}" hidden>
+                                                    <input type="text" name="parent_id" id="parent_id" value="{{$comment->id}}" hidden>
+                                                    <input type="submit" value="Comment" class="btn btn-success mt-2"/>
+                                            </form>
+                                        </div>
+                                        <!-- Modal footer -->
+                                        <div class="modal-footer">
+                                            <button
+                                                type="button"
+                                                class="btn btn-danger"
+                                                data-dismiss="modal"
+                                                style="margin-right: 10px; background-color: blue;"
+                                            >
+                                                Close
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                            <!-- end of Comment to comment -->
+
+
+
+
                             <form action="{{route('user.deleteComment',$comment->id)}}" method="post" onsubmit="return confirm('Are you sure you want to delete this comment?');" style="all:unset; display:inline;">
                                 @csrf
                                 @method('DELETE')
@@ -193,7 +254,137 @@
                                 </form>
                             
                             </div>
-                            
+                            <!-- display comment to comment -->
+                            @foreach($comment->commentWithComment as $reply)
+                             <div class="comment" style="display:flex; align-items:center; gap:10px;">
+                                <p style="margin-top:-10px;margin-bottom:-5px; margin-left:20px;">
+                                 {{ $reply->user->name }} : {{ $reply->comment }}
+                                </p>
+                                
+                                <i class="fa-regular fa-pen-to-square" style="margin-bottom: 5px; cursor: pointer;"
+                            data-toggle="modal"
+                            data-target="#editComment{{$reply->id}}"
+                            ></i>
+                            <!-- The Modal -->
+                            <div class="modal" id="editComment{{$reply->id}}">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <!-- Modal Header -->
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">Edit Comment</h4>
+                                            <button
+                                                type="button"
+                                                class="close"
+                                                data-dismiss="modal"
+                                            >
+                                                &times;
+                                            </button>
+                                        </div>
+
+                                        <!-- Modal body -->
+                                        <div class="modal-body">
+                                            <form
+                                                action="{{route('commentUpdate',$reply->id)}}"
+                                                method="POST" enctype="multipart/form-data"
+                                            >
+                                                @csrf
+                                                @method('POST')
+                                                <div class="form-group">
+                                                    <label for="comment">Comment</label>
+                                                    <textarea
+                                                        name="comment"
+                                                        id="comment"
+                                                        class="form-control"
+                                                        rows="3"
+                                                        required
+                                                    >{{ $reply->comment }}</textarea> 
+                                                    <input type="submit" value="Update Comment" class="btn btn-success mt-2"/>
+                                            </form>
+                                        </div>
+                                        <!-- Modal footer -->
+                                        <div class="modal-footer">
+                                            <button
+                                                type="button"
+                                                class="btn btn-danger"
+                                                data-dismiss="modal"
+                                                style="margin-right: 10px; background-color: blue;"
+                                            >
+                                                Close
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+
+                             <!-- Comment to comment -->
+                             <i class="fas fa-reply" style="margin-bottom: 5px; cursor: pointer;"
+                            data-toggle="modal"
+                            data-target="#commentToComment{{$reply->id}}"
+                            ></i>
+                            <!-- The Modal -->
+                            <div class="modal" id="commentToComment{{$reply->id}}">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <!-- Modal Header -->
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">Write Comment</h4>
+                                            <button
+                                                type="button"
+                                                class="close"
+                                                data-dismiss="modal"
+                                            >
+                                                &times;
+                                            </button>
+                                        </div>
+
+                                        <!-- Modal body -->
+                                        <div class="modal-body">
+                                            <form
+                                                action="{{route('giveComment')}}"
+                                                method="POST" enctype="multipart/form-data"
+                                            >
+                                                @csrf
+                                                @method('POST')
+                                                <div class="form-group">
+                                                    <label for="comment">Comment:</label>
+                                                    <input type="text" id='comment' name="comment" placeholder="Write your comment here..." style="width:100%;" required>
+                                                    <input type="text" name="post_id" id="post_id" value="{{$post->id}}" hidden>
+                                                    <input type="text" name="parent_id" id="parent_id" value="{{$comment->id}}" hidden>
+                                                    <input type="submit" value="Comment" class="btn btn-success mt-2"/>
+                                            </form>
+                                        </div>
+                                        <!-- Modal footer -->
+                                        <div class="modal-footer">
+                                            <button
+                                                type="button"
+                                                class="btn btn-danger"
+                                                data-dismiss="modal"
+                                                style="margin-right: 10px; background-color: blue;"
+                                            >
+                                                Close
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                            <!-- end of Comment to comment -->
+
+
+
+
+                            <form action="{{route('user.deleteComment',$reply->id)}}" method="post" onsubmit="return confirm('Are you sure you want to delete this comment?');" style="all:unset; display:inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" style="all:unset; background:none; border:none;cursor:pointer; color:black; font-size:16px; margin-left:5px;">
+                                    
+                                    <i class="fa-solid fa-delete-left" style="margin-bottom: 5px; cursor: pointer;"  ></i>
+                                </button>
+                                </form>
+                            </div>
+                            @endforeach
+                            <!-- end display comment to comment -->
                 @endforeach
             <hr>
             <form action="{{route('giveComment')}}" method="POST">

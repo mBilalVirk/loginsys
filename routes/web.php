@@ -25,7 +25,7 @@ Route::get('/friends', [FriendController::class, 'index'])
     ->name('friends');
     Route::post('/friends/send/{id}', [FriendController::class, 'send'])
     ->name('send.request');
-     Route::get('/friends/sendRequestSearch/{id}', [FriendController::class, 'sendRequestSearch'])
+     Route::post('/friends/sendRequestSearch/{id}', [FriendController::class, 'sendRequestSearch'])
     ->name('sendRequestSearch');
 Route::delete('/friends/delete/{id}',[FriendController::class, 'deleteRequest'])
     ->name('delete.request');
@@ -33,7 +33,7 @@ Route::post('/friends/accept/{id}',[FriendController::class, 'acceptRequest'])
     ->name('accept.request');
 Route::post('/friends/unfriend/{id}',[FriendController::class, 'unFriend'])
     ->name('unfriend.request');
-    route::post('/friends/search', [FriendController::class, 'searchUser'])
+    route::any('/friends/search', [FriendController::class, 'searchUser'])
     ->name('search.user');
 });
 

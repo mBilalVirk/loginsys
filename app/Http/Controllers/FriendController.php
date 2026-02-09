@@ -107,14 +107,16 @@ class FriendController extends Controller
 
         if($alreadyExist){
             return redirect()->back()->with('status', 'Friend request Already Sent');
-        }
-
-        Friend::create([
+        }else{
+            Friend::create([
             'user_id' => $user_id,
             'friend_id' => $friend_id,
             'status' => 'pending',
         ]);
         return redirect()->back()->with('status', 'Friend request sent successfully');
+        }
+
+        
     }
         public function deleteRequest($id){
                 $friend = Friend::findOrFail($id);
@@ -131,6 +133,7 @@ class FriendController extends Controller
     }
         public function unFriend($id){
                 $friend = Friend::findOrFail($id);
+               
                 $friend->delete();
                 return redirect()->back()->with('status', 'Unfriended successfully');
         }
@@ -150,13 +153,36 @@ class FriendController extends Controller
                             ->where('id', '!=', auth()->user()->id)
                             ->whereNotIn('role',['admin','super_admin'])
                             ->get();
-                return view('user.search', compact('users'));
+                $user = auth()->user();            
+                $friends = User::where('id', '!=', $user->id)
+                        ->where('role', '!=', 'super_admin')
+                        ->where('role', '!=', 'admin')
+                        ->whereNull('deleted_at')
+        ->whereNotIn('id', function ($query) use ($user) {
+            $query->select('friend_id')
+                  ->from('friends')
+                  ->where('user_id', $user->id)
+                  ->where('status','accepted')
+                  ->where('status','pending');
+               
+                          })
+                          ->whereNotIn('id', function ($query) use ($user) {
+            $query->select('user_id')
+                  ->from('friends')
+                  ->where('friend_id', $user->id)
+                 ->where('status','accepted')
+                  ->where('status','pending');
+                          })
+                          ->get();
+                $friend_id = $friends->pluck('id');
+                // return $friend_id;
+                return view('user.search', compact('users','friend_id'));
                
                 // return view('user.friends', compact('searchUser'));
             }
 
     // send Friend Request in Search
-    public function sendRequestSearch(Request $request, $friend_id){
+    public function sendRequestSearch($friend_id){
         $user = auth()->user();
         $user_id = $user->id;
         $alreadyExist = friend::where (function($query) use ($user_id,$friend_id){
@@ -169,17 +195,21 @@ class FriendController extends Controller
                         ->where('friend_id',$user_id );
         })
         ->where('status', 'pending')
+        ->where('status', 'accepted')
         ->exists();
+        
         if($alreadyExist){
-            return redirect()->back()->with('status', 'Friend request Already Sent');
-        }
-
-        Friend::create([
+            return redirect()->back()->with('status', 'Friend request Already initiate');
+        }else{
+            Friend::create([
             'user_id' => $user_id,
             'friend_id' => $friend_id,
             'status' => 'pending',
         ]);
         return redirect()->back()->with('status', 'Friend request sent successfully');
+        }
+
+        
     }
 
     /**

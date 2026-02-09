@@ -41,8 +41,8 @@
 @endif
 <form method="POST" action="{{ route('loginUser') }}" autocomplete="off">
     @csrf
-    <input type="email" name="email" placeholder="Email" autocomplete="off">
-    <input type="password" name="password" placeholder="Password" autocomplete="NewPassword">
+    <input type="email" name="email" placeholder="Email" autocomplete="off" required>
+    <input type="password" name="password" placeholder="Password" autocomplete="NewPassword" required>
     <button>Login</button>
 </form>
 
