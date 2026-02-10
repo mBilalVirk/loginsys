@@ -69,7 +69,7 @@ class FriendController extends Controller
     })
     ->where('status', 'accepted')
     ->get();
-        
+  
       
        
         
@@ -154,28 +154,27 @@ class FriendController extends Controller
                             ->whereNotIn('role',['admin','super_admin'])
                             ->get();
                 $user = auth()->user();            
-                $friends = User::where('id', '!=', $user->id)
-                        ->where('role', '!=', 'super_admin')
-                        ->where('role', '!=', 'admin')
-                        ->whereNull('deleted_at')
-        ->whereNotIn('id', function ($query) use ($user) {
-            $query->select('friend_id')
-                  ->from('friends')
-                  ->where('user_id', $user->id)
-                  ->where('status','accepted')
-                  ->where('status','pending');
-               
-                          })
-                          ->whereNotIn('id', function ($query) use ($user) {
-            $query->select('user_id')
-                  ->from('friends')
-                  ->where('friend_id', $user->id)
-                 ->where('status','accepted')
-                  ->where('status','pending');
-                          })
-                          ->get();
-                $friend_id = $friends->pluck('id');
-                // return $friend_id;
+                 $acceptedFriends = Friend::with(['sender', 'receiver'])
+                                    ->where(function($query) use ($user) {
+                                     $query->where('user_id', $user->id)   
+                                    ->orWhere('friend_id', $user->id); 
+                                    })
+                                    ->where('status', 'accepted')
+                                    ->get();
+                    $friend_id = [];
+                    foreach($acceptedFriends as $friendRequest){
+                    // Determine who the friend is
+                    if ($friendRequest->user_id == auth()->id()) {
+                    $friendUser = $friendRequest->receiver; // You sent the request
+                    } else {
+                    $friendUser = $friendRequest->sender; // They sent the request
+                    }
+                    $friend_id[] = $friendUser->id;
+                    }
+                    // return $friend_id;
+
+       
+
                 return view('user.search', compact('users','friend_id'));
                
                 // return view('user.friends', compact('searchUser'));

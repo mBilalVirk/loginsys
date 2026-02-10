@@ -1,7 +1,7 @@
 @extends('layouts.user')
 
 @section('title', 'Home')
-@include('layouts.navbar')
+
 @section('head')
         <link
             rel="stylesheet"
@@ -55,15 +55,16 @@
         <h2>{{ auth()->user()->name }}</h2>
         <p>{{ auth()->user()->email }}</p>
 
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button class="btn logout-btn">Logout</button>
-        </form>
+        
          <a href="{{ route('dashboard') }}" class="link">Home</a>
          <a href="{{ route('userMessages') }}" class="link">Messages</a>
             <a href="{{ route('friends') }}" class="link">Friends</a>
          <a href="{{ route('user.profile', auth()->user()->id) }}" class="link">Profile</a>
         <a href="{{ route('passwordupdate') }}" class="link">Change Password</a>
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button class="btn logout-btn">Logout</button>
+        </form>
     </div>
 
     <!-- UPDATE PROFILE FORM -->
@@ -262,24 +263,24 @@
                                 </p>
                                 
                                 <i class="fa-regular fa-pen-to-square" style="margin-bottom: 5px; cursor: pointer;"
-                            data-toggle="modal"
-                            data-target="#editComment{{$reply->id}}"
-                            ></i>
+                                data-toggle="modal"
+                                data-target="#editComment{{$reply->id}}"
+                                ></i>
                             <!-- The Modal -->
-                            <div class="modal" id="editComment{{$reply->id}}">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <!-- Modal Header -->
-                                        <div class="modal-header">
-                                            <h4 class="modal-title">Edit Comment</h4>
-                                            <button
-                                                type="button"
-                                                class="close"
-                                                data-dismiss="modal"
-                                            >
-                                                &times;
-                                            </button>
-                                        </div>
+                                        <div class="modal" id="editComment{{$reply->id}}">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <!-- Modal Header -->
+                                                    <div class="modal-header">
+                                                    <h4 class="modal-title">Edit Comment</h4>
+                                                    <button
+                                                        type="button"
+                                                        class="close"
+                                                        data-dismiss="modal"
+                                                    >
+                                                        &times;
+                                                    </button>
+                                                </div>
 
                                         <!-- Modal body -->
                                         <div class="modal-body">
@@ -393,7 +394,7 @@
                 <div class="form-group" style="display:flex;">
                     <input type="text" id='comment' name="comment" placeholder="Write your comment here..." style="width:100%;" required>
                     <input type="text" name="post_id" id="post_id" value="{{$post->id}}" hidden>
-                   <input type="submit" value="➡️"style="width:50px;">
+                   <input type="submit" value="⤴️"style="width:50px;">
 
                 </div>
             </form>

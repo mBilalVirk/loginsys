@@ -199,8 +199,18 @@ class UserController extends Controller
 }
     public function userProfile($id)
     {
-        $user = User::findOrFail($id);
-        $posts = Post::where('user_id', $user->id)->orderBy('created_at', 'desc')->get(); 
+        $user = auth()->user();
+        $posts = Post::where('user_id', $user->id)
+         ->orderBy('created_at', 'desc')
+          ->with(['comments'=> function($q){
+                $q->whereNull('deleted_at')
+                ->whereNull('parent_id');
+                              
+                }])
+        ->get(); 
+       
+
+        // return $posts;
         // dd($posts->toArray());  
         return view('user.profile', compact('user', 'posts'));
     }   

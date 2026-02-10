@@ -12,7 +12,9 @@
     @endif
         <form action="{{ route('search.user') }}" method="GET" style="display: flex; align-items: flex-start; gap: 8px;width: 100%;">
             <input type="search" value="{{ request('searchUser') }}" name="searchUser" placeholder="Search friends..." style=" padding: 8px;" />
-            <input type="submit" value="Search">
+             <button type="submit" style="cursor: pointer;">
+                Search
+            </button>
         </form>
         @if($users->isEmpty())
         <p>No users found.</p>
@@ -26,7 +28,7 @@
                 : asset('images/default-user.png') }}" class="friend-img" class="profile-img"/>
             <h2>{{ $user->name }}</h2>
             <p>{{ $user->email }}</p>
-           @if($friend_id->contains($user->id))
+           @if(in_array($user->id, $friend_id))
             <h6>Already Friend or Initiate</h6>
             
            @else

@@ -254,6 +254,7 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success','New admin created successfully');
     } 
+  
     public function fetchTrashedData(){
         $users = USER::onlyTrashed()
                         ->where('role','user')->get();
