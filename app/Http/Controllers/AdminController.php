@@ -251,8 +251,8 @@ class AdminController extends Controller
             'photo' => $validatedData['photo'] ?? null,
             'role' => $validatedData['role'],
         ]);
-
-        return redirect()->back()->with('success','New admin created successfully');
+        return response()->json(['res'=>'New admin created successfully']);
+        // return redirect()->back()->with('success','New admin created successfully');
     } 
   
     public function fetchTrashedData(){

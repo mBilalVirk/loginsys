@@ -23,6 +23,7 @@
     <div class="alert alert-success">
         {{ session('success') }}
     </div>
+    
 @endif
         <div class="modal" id="addAdmin">
                 <div class="modal-dialog">
@@ -41,9 +42,13 @@
 
                         <!-- Modal body -->
                         <div class="modal-body">
-                            <form action="{{ route('admin.createNewAdmin') }}" method="POST" enctype="multipart/form-data">
+                            <!-- <form action="{{ route('admin.createNewAdmin') }}" method="POST" enctype="multipart/form-data" id="admin-form"> -->
+                           <div id="successAlert" class="alert alert-success d-none"></div>
+                            <div id="errorAlert" class="alert alert-danger d-none"></div>
+
+                            <form  enctype="multipart/form-data" id="admin-form">
                                 @csrf
-                                @method('POST')
+                               
                                 <div class="form-group">
                                     <label for="name">Name:</label>
                                     <input
@@ -99,7 +104,7 @@
                                        
                                     />
                                 </div>
-                                <button type="submit" class="btn btn-primary mt-3">
+                                <button type="submit" class="btn btn-primary mt-3" id="form-submit">
                                     Add Admin
                                 </button>
                             </form>
@@ -227,6 +232,33 @@
     </div>
 
 </div>
+<script>
+   $(document).ready(function(){
+        $("#admin-form").submit(function(e){
+            e.preventDefault();
+            const form = $('#admin-form')[0];
+            const data = new FormData(form);
+           
+            $("#form-submit").prop("disabled", true);
+            $.ajax({
+                url:"{{ route('admin.createNewAdmin') }}",
+                type:"POST",
+                data:data,
+                processData:false,
+                contentType:false,
+                success:function(data){
+                    $("successAlert").removeClass('d-none').text(data.res);
+                    $("#form-submit").prop("disabled", false);
+                    $('#admin-form').get(0).reset();
+                },
+                error:function(e){
+                    $("errorAlert").removeClass('d-none').text(e.responseText);
+                    $('#admin-form').get(0).reset();
+                }
+            });
 
+        });
+   });
+</script>
 
 @endsection
