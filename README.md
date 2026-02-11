@@ -1,3 +1,5 @@
+-- Active: 1769664658051@@127.0.0.1@3306@loginsys
+
 # LoginSys & Social Media project
 
 1. Laravel Project Initialization
@@ -236,3 +238,7 @@ public function userPosts(){
 # 10/02/2026 Tasks
 
 1. add comment to comment in post
+
+# 11/02/2026 Tasks
+
+1. Trying Ajax in laravel blade
