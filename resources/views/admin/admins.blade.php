@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Users')
+@section('title', 'Admin')
 
 @section('content')
 
@@ -150,8 +150,8 @@
                     <th colspan="2">Action</th>
                 </tr>
             </thead>
-            <tbody>
-                @foreach($admins as $admin)
+            <tbody id="adminTableBody">
+               @foreach($admins as $admin)
                 <tr>
                     <td>{{ $admin->id }}</td>
                     <td>{{ $admin->name }}</td>
@@ -233,7 +233,9 @@
 
 </div>
 <script>
-   $(document).ready(function(){
+    
+    $(document).ready(function(){
+       loadAdmins();
         $("#admin-form").submit(function(e){
             e.preventDefault();
             const form = $('#admin-form')[0];
@@ -250,15 +252,53 @@
                     $("successAlert").removeClass('d-none').text(data.res);
                     $("#form-submit").prop("disabled", false);
                     $('#admin-form').get(0).reset();
+                    loadAdmins();
                 },
                 error:function(e){
-                    $("errorAlert").removeClass('d-none').text(e.responseText);
+                    $("#errorAlert").removeClass('d-none').text(e.responseText);
                     $('#admin-form').get(0).reset();
                 }
             });
 
         });
+
+        
    });
+function loadAdmins(){
+         $.ajax({
+                url: "{{ route('admin.admins') }}",
+                type: "GET",
+                success: function(data){
+                    console.log(data);
+                   let rows = '';
+                   data.forEach(function(admin){
+
+                        rows +=`<tr>
+                                    <td>${admin.id}</td>
+                                    <td>${admin.name}</td>
+                                    <td>${admin.email}</td>
+                                    <td><img src='/${admin.photo}' width='60' height='60' class="rounded-circle object-fit-cover"/>
+    </td>
+                                    <td>
+                                        <button class="btn btn-primary">Edit</button>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-danger">Delete</button>
+
+                                    </td>
+                                </tr>
+                                `;
+                                
+                   });
+                   $("#adminTableBody").html(rows);
+                },
+                error: function(err){
+                    console.log("fetch data not success!");
+                    console.log(err.responseText);
+                }
+                });
+
+    }
 </script>
 
 @endsection

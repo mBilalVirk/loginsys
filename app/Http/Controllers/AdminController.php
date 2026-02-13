@@ -48,7 +48,8 @@ class AdminController extends Controller
                             ->where('id', '!=', $user->id)
                             ->whereNull('deleted_at')
                             ->get();
-                            return view('admin.admins', compact('admins')); 
+                            // return response()->json($admins); 
+                            return view('admin.admins', compact('admins'));
 
         }else{
             $admins = USER::where('id',$user->id)->whereNull('deleted_at')

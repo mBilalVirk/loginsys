@@ -57,6 +57,11 @@ Route::post('admin/update/{id}',[App\Http\Controllers\AdminController::class, 'u
 Route::delete('admin/delete/{id}',[App\Http\Controllers\AdminController::class, 'delete'])->name('admin.delete');
 Route::get('/admin/setting', [App\Http\Controllers\AdminController::class, 'setting'])->name('admin.setting');
 Route::post('/admin/updateProfile',[App\Http\Controllers\AdminController::class, 'updateProfile'])->name('admin.updateProfile');
+// ajax using code
+Route::get('/admin/adminsview', function () {
+    return view('admin.admins');
+})->name('adminsview');
+//end of ajax using code
 Route::get('/admin/admins',[App\Http\Controllers\AdminController::class, 'fetchAdmin'])->name('admin.admins');
 Route::post('admin/createAdmin',[App\Http\Controllers\AdminController::class, 'createNewAdmin'])->name('admin.createNewAdmin');
 // Route::delete('admin/comment/{id}', [App\Http\Controllers\AdminController::class,'deleteComment'])->name('comment.delete');
