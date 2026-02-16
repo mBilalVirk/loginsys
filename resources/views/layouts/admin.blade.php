@@ -73,7 +73,7 @@
             <a href="{{ route('admin.users') }}">Users</a>
             <a href="{{ route('admin.posts') }}">Posts</a>
             <a href="{{ route('admin.friends') }}">Friends</a>
-            <a href="{{ route('admin.admins') }}">Add New Admin</a>
+            <a href="{{ route('adminsview') }}">Add New Admin</a>
             <a href="{{ route('admin.DeletedData') }}">Deleted Record</a>
             <a href="{{ route('admin.setting') }}">Settings</a>
            

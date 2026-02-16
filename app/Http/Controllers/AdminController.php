@@ -48,8 +48,8 @@ class AdminController extends Controller
                             ->where('id', '!=', $user->id)
                             ->whereNull('deleted_at')
                             ->get();
-                            // return response()->json($admins); 
-                            return view('admin.admins', compact('admins'));
+                            return response()->json($admins); 
+                            // return view('admin.admins', compact('admins'));
 
         }else{
             $admins = USER::where('id',$user->id)->whereNull('deleted_at')
@@ -202,7 +202,8 @@ class AdminController extends Controller
             // if password in not filled, it will not be updated
 
             $user->update($validatedData);
-            return redirect()->back()->with('success', 'Profile updated successfully.');
+            return response()->json(['res' => 'Profile Updated Successfully']); 
+            // return redirect()->back()->with('success', 'Profile updated successfully.');
         }
     /**
      * Show the form for creating a new resource.

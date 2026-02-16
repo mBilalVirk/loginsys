@@ -22,8 +22,14 @@
                             <td>{{ $friend->id }}</td>
                             <td>{{ $friend->sender->name }}</td>
                             <td>{{ $friend->receiver->name }}</td>
-                            <td>{{ $friend->status }}</td> 
-                            
+                            <td>
+                                @if($friend->status == 'accepted')
+                                    <span style="background: green; color: white; padding: 2px 5px; border-radius: 3px;">Friends
+                                @else
+                                    <span style="background: yellow; color: white; padding: 2px 5px; border-radius: 3px;">{{ $friend->status }}</span>
+                                @endif
+                            </td>
+
                             <td>
                                 <form action="{{route('admin.deleteFriend',$friend->id)}}" method="post"
                                 onsubmit="return confirm('Are you sure you want to delete this friends record?')">
