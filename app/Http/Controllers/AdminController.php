@@ -133,7 +133,8 @@ class AdminController extends Controller
 }
 
       $user -> update($validatedData);
-      return redirect()->back()->with('status','User updated successfully.');
+      return response()->json(['res'=>'User updated successfully!']);
+    //   return redirect()->back()->with('status','User updated successfully.');
         // return redirect()->route('admin.index')->with('status','User updated successfully.');
     }
      public function logout(Request $request)
@@ -147,7 +148,8 @@ class AdminController extends Controller
     public function delete($id){
         $user = user::FindOrFail($id);
         $user -> delete();
-        return redirect()->back()->with('status','User deleted successfully.');
+        return response()->json(['res'=>'Delete successfully']);
+        // return redirect()->back()->with('status','User deleted successfully.');
         // return redirect()->route('admin.index')->with('status', 'User deleted successfully');
     }
     public function deleteComment($id){

@@ -1,4 +1,6 @@
-@extends('layouts.admin')
+<div id="admin-layout">
+    @extends('layouts.admin')
+</div>
 
 @section('title', 'Admin')
 
@@ -6,7 +8,8 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3">Dashboard : Admins</h1>
-        
+        <div class="alert alert-success d-none "></div>
+        <div class="alert alert-danger d-none"></div>
          @if(auth()->user()->role == 'super_admin')
             <button
                 type="button"
@@ -25,7 +28,8 @@
     </div>
     
 @endif
-        <div class="modal" id="addAdmin">
+ 
+        <div class="modal fade" id="addAdmin">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <!-- Modal Header -->
@@ -114,7 +118,7 @@
                             <button
                                 type="button"
                                 class="btn btn-danger"
-                                data-dismiss="modal"
+                                data-dismiss="modal" id="model-btn"
                             >
                                 Close
                             </button>
@@ -150,10 +154,52 @@
                     <th colspan="2">Action</th>
                 </tr>
             </thead>
-            <tbody id="adminTableBody">
+            <tbody id="adminTableBody" >
               
             </tbody>
         </table>
+        <!-- model start -->
+         <div class="modal fade" id="editUser" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+
+                                <!-- Modal Header -->
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Edit User</h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+
+                                <!-- Modal body -->
+                                <div class="modal-body">
+                                    <form enctype="multipart/form-data" id="editAdmin">
+                                        @csrf
+                                       
+                                        <div class="form-group">
+                                            <label for="name">Name:</label>
+                                            <input type="text" class="form-control" id="editName" name="name" value="" required>   
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="email">Email</label>
+                                            <input type="email" class="form-control" id="editEmail" name="email" value="">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="photo">Photo</label>
+                                            <input type="file" class="form-control" name="photo" id="photo" >
+                                        </div>
+                                        <button type="submit" class="btn btn-primary mt-3" >Update User</button>
+                                    </form>
+                                </div>
+
+                                <!-- Modal footer -->
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal" id="editClose">Close</button>
+                                </div>
+
+                                </div>
+                            </div>
+                            </div>
+                       
+         <!-- model end -->
     </div>
 
 </div>
@@ -174,14 +220,22 @@
                 processData:false,
                 contentType:false,
                 success:function(data){
-                    $("successAlert").removeClass('d-none').text(data.res);
+                    $("#successAlert").removeClass('d-none').text(data.res);
                     $("#form-submit").prop("disabled", false);
                     $('#admin-form').get(0).reset();
+                    $("#model-btn").click();
                     loadAdmins();
                 },
                 error:function(e){
-                    $("#errorAlert").removeClass('d-none').text(e.responseText);
-                    $('#admin-form').get(0).reset();
+                    const err = e.responseJSON.errors;
+                    $.each(err,function(key,value){
+                        $("#errorAlert").removeClass('d-none').text(value);
+                        $('#admin-form').get(0).reset();
+                        setTimeout(() => {
+                             $("#errorAlert").addClass('d-none')
+                        }, 4000);
+                        $("#form-submit").prop("disabled", true);
+                    });
                 }
             });
 
@@ -205,33 +259,88 @@ function loadAdmins(){
                                     <td><img src='/${admin.photo}' width='60' height='60' class="rounded-circle object-fit-cover"/>
     </td>
                                     <td>
-                                        <button class="btn btn-primary">Edit</button>
+                                        <button class="btn btn-primary" 
+                                            
+                                            data-toggle="modal"
+                                            onclick="editAdmin(${admin.id},'${admin.name}','${admin.email}')"
+                                        >Edit</button>
                                     </td>
                                     <td><button class="btn btn-danger" onclick="deleteAdmin(${admin.id})">Delete</button></td>
                                 </tr>
                                 `;
                                 
                    });
+                   
                    $("#adminTableBody").html(rows);
                 },
                 error: function(err){
                     console.log("fetch data not success!");
                     console.log(err.responseText);
+                   
                 }
                 });
+                
+               
 
-                function deleteAdmin(id){
-                    if(confirm("Are you sure you want to delete this Ad ?")){
+    }
+    function editAdmin(id,name,email){
+        
+        $("#editName").val(name);
+        $("#editEmail").val(email);
+        
+        let modalEl = document.getElementById('editUser');
+        let modal = new bootstrap.Modal(modalEl);
+       
+        modal.show(); 
+        $("#editAdmin").submit(function(e){
+            e.preventDefault();
+            const form = $("#editAdmin")[0];
+            const data = new FormData(form);
+            $.ajax({
+                url:`/admin/update/${id}`,
+                type:"POST",
+                data:data,
+                processData:false,
+                contentType:false,
+                success:function(data){
+                        $(".alert-success").removeClass("d-none");
+                      
+                        $(".alert-success").html(`<span>${data.res}</span>`)
+                        $("#editClose").click();
+                        loadAdmins();
+                        document.activeElement.blur(); // remove focus
+                        modal.hide();
+                        setTimeout(() => {
+                            $(".alert-success").addClass("d-none")
+                        }, 4000);
+                },
+                error:function(err){
+                    console.log(err.responseText);
+                }
+
+            });
+        });       
+    }
+    
+     function deleteAdmin(id){
+               
+                    if(confirm("Are you sure you want to delete this Admin?")){
                         $.ajax({
-                            url:"/admin/delete/${id}",
+                            url:`/admin/delete/${id}`,
                             type:"DELETE",
                             data:{
                                 _token:'{{csrf_token()}}'
                             },
                             success: function(response){
-                                alert('Admin deleted successfully!');
-                                // remove row from table
-                                $(`#row-${id}`).remove();
+                              $(".alert-success").removeClass("d-none").html(`<span>${response.res}</span>`).fadeIn();
+                                
+                               loadAdmins();
+                               setTimeout(() => {
+                                $(".alert-success").addClass("d-none").fadeOut();
+                               }, 4000);
+                            },
+                            error:function(err){
+                                console.log(err.responseText);
                             }
       
                         });
@@ -239,8 +348,6 @@ function loadAdmins(){
                     }
 
                 }
-
-    }
 </script>
 
 @endsection

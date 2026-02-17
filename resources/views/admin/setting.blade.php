@@ -1,4 +1,6 @@
-@extends('layouts.admin')
+<div id="admin-layout">
+    @extends('layouts.admin')
+</div>
 
 @section('title', 'Settings')
 
@@ -70,7 +72,8 @@
                              setTimeout(() => {
                              $(".alert-success").addClass("d-none");
                              }, 4000);
-                            
+                          
+
                         },
                         error:function(err){
                             const errors = err.responseJSON.errors;
