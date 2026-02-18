@@ -318,3 +318,43 @@ function loadAdmins(){
 </script>
 
 ```
+
+# 17/02/2026
+
+```html
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                $("#flip").on("click", function () {
+                    $("#panel").stop(true, false).slideToggle("slow");
+                });
+            });
+        </script>
+        <style>
+            #panel,
+            #flip {
+                padding: 5px;
+                text-align: center;
+                background-color: #e5eecc;
+                border: solid 1px #c3c3c3;
+            }
+
+            #panel {
+                padding: 50px;
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="flip">Click to slide down panel</div>
+        <div id="panel">Hello world!</div>
+    </body>
+</html>
+```
+
+# 18/02/2026
+
+1. Pagination using laravel + Ajax
