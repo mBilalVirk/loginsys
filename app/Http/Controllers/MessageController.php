@@ -40,8 +40,9 @@ class MessageController extends Controller
                             })
                             ->orderBy('created_at')
                             ->get();
-        // return $messages;
-        return view('user.chat',compact('messages'));
+        return $messages;
+        return response()->json($messages);
+        // return view('user.chat',compact('messages'));
     }
     public function create(Request $request){
         $validatedData = $request->validate([

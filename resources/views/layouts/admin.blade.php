@@ -70,10 +70,13 @@
         <!-- Sidebar -->
         <div class="col-md-2 sidebar p-0">
             <a href="{{ route('admin.dashboard') }}">Dashboard</a>
-            <a href="{{ route('admin.users') }}">Users</a>
+            <a href="{{ route('userView') }}">Users</a>
             <a href="{{ route('admin.posts') }}">Posts</a>
             <a href="{{ route('admin.friends') }}">Friends</a>
+            @if(Auth::user()->role == 'super_admin')
             <a href="{{ route('adminsview') }}">Add New Admin</a>
+            @endif
+
             <a href="{{ route('admin.DeletedData') }}">Deleted Record</a>
             <a href="{{ route('admin.setting') }}">Settings</a>
            

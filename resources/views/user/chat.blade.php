@@ -17,6 +17,24 @@
         <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+        <style>
+            .chat-bubble {
+                max-width: 60%;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                white-space: normal;
+                color: #F4FCF8;
+            }
+
+            .chat-me {
+                background: #32CAED;
+            }
+
+            .chat-friend {
+                background: #6c757d;
+            }
+
+        </style>
 </head>
 <body class="bg-light">
 
@@ -35,83 +53,24 @@
                     </div>
 
                     <!-- Messages -->
-                    <div class="card-body" style="height: 350px; overflow-y: auto; position:relative;" >
-                        @foreach($messages as $message)
+                    <div class="card-body" style="height: 350px; overflow-y: auto; position:relative;" id="chatBlock" style="height: 400px;overflow-y: auto;">
+                        {{-- @foreach($messages as $message)
                             @if($message->sender_id == auth()->id())
                         <div class="mb-2 text-end">
                             <span class="badge bg-primary p-2"> You : {{$message->message}}</span>
-
-                            <i class="fa-regular fa-pen-to-square" style="margin-bottom: 5px; cursor: pointer;"
-                            data-toggle="modal"
-                            data-target="#editMessage{{$message->id}}"
-                            ></i>
-                            
-                            <div class="modal" id="editMessage{{$message->id}}" style="width:50%;position:absolute;width: 50%;top: 50%;left:50%;transform: translate(-50%, -50%);">
-                                 <div class="model-dialog" >
-                                    <div  class="modal-content" >
-                                        <!-- Modal Header -->
-                                        <div class="modal-header">
-                                            <h3>Rewrite your Message!</h3>
-                                            <button
-                                                type="button"
-                                                class="close"
-                                                data-dismiss="modal"
-                                            >
-                                                &times;
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                        <form action="{{route('messageUpdate',$message->id)}}" method="POST">
-                                            @csrf 
-                                            @method('POST')
-                                            <input type="text" name="message" id="" value="{{$message->message}}"
-                                            style="width:100%; border:none;" >
-                                            
-                                        </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        
-
-                            <form action="{{route('deleteMessage',$message->id)}}" method="post" onsubmit="return confirm('Are you sure you want to delete this Message?');" style="all:unset; display:inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" style="all:unset; background:none; border:none;cursor:pointer; color:black; font-size:16px; margin-left:5px;">
-                                    
-                                    <i class="fa-solid fa-delete-left" style="margin-bottom: 5px; cursor: pointer;"  ></i>
-                                </button>
-                                </form>
-                        </div>
                         @else
                         <div class="mb-2 text-start">
                             <span class="badge bg-secondary p-2">{{$message->sender->name}} : {{$message->message}}</span>
-                             <i class="fa-regular fa-pen-to-square" style="margin-bottom: 5px; cursor: pointer;"
-                            data-toggle="modal"
-                            data-target="#editMessage"
-                            ></i>
-                            <form action="{{route('deleteMessage',$message->id)}}" method="post" onsubmit="return confirm('Are you sure you want to delete this Message?');" style="all:unset; display:inline;">    
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" style="all:unset; background:none; border:none;cursor:pointer; color:black; font-size:16px; margin-left:5px;">
-                                    
-                                    <i class="fa-solid fa-delete-left" style="margin-bottom: 5px; cursor: pointer;"  ></i>
-                                </button>
-                                </form>
-                        </div>
                         @endif
-                        @endforeach
-                        
+                        @endforeach --}}
                     </div>
                     <!-- Message Input -->
                     <div class="card-footer">
-                        <form class="d-flex gap-2" action="{{route('sendMessage')}}" method="POST">
+                        <form class="d-flex gap-2"  id="messageForm">
                             @csrf 
-                            @method("POST")
                             <input type="text" name="message" class="form-control" placeholder="Type a message...">
                             <input type="text" name="receiver_id" id="" value="{{ request()->route('id') }}" hidden>
-                            <button class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i>
-</button>
+                            <button class="btn btn-primary" type="submit"><i class="fa-solid fa-paper-plane"></i></button>
                         </form>
                     </div>
 
@@ -123,5 +82,82 @@
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<script>
+$(document).ready(function(){
+
+    // Make sure to wrap Blade variable in quotes
+    let id = "{{ request()->route('id') }}";
+    let authId = "{{auth()->id()}}"
+    
+    loadMessages();
+    
+    let lastMessageId = 0;
+
+    function loadMessages() {
+
+        let chatMessage = "";
+        $.ajax({
+            url: `/user/chat/${id}` ,
+            type: "GET",
+            dataType: "json",
+            success: function(data){
+                data.forEach(function(message){
+                   
+                        chatMessage += `
+
+                            <div class="mb-2 ${message.sender_id == authId ? 'text-end' : 'text-start'}">
+                                <span class="badge ${message.sender_id == authId ? 'chat-me' : 'chat-friend'} p-2 chat-bubble">
+                                    ${message.sender_id == authId ? 'You' : 'Friend'}
+                                    : ${message.message}
+                                </span>
+                            </div>
+                            
+                        `;
+                    
+                    
+                });
+               $("#chatBlock").html(chatMessage);
+               $("#chatBox").scrollTop($("#chatBox")[0].scrollHeight);
+            },
+            error: function(err){
+                console.log("AJAX Error:", err);
+            }
+        });
+    }
+
+    
+        $("#messageForm").submit(function(e){
+            e.preventDefault();
+            const form = $("#messageForm")[0];
+            const data = new FormData(form);
+            $.ajax({
+                url:`{{route('sendMessage')}}`,
+                type:"POST",
+                data:data,
+                processData:false,
+                contentType:false,
+                success:function(data){
+                        
+                        loadMessages();
+                        $("#messageForm")[0].reset();
+
+                        
+                },
+                error:function(err){
+                    console.log("Message not send");
+                }
+            });
+
+        });
+
+    
+
+    
+});
+</script>
+
 </body>
 </html>

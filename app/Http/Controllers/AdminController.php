@@ -31,13 +31,14 @@ class AdminController extends Controller
     {
         $user = auth()->user();
         if($user->role == 'super_admin'){
-            $users = user::where('id', '!=', $user->id)->whereNull('deleted_at')->get();
+            $users = user::where('id', '!=', $user->id)->whereNull('deleted_at')->paginate(5);
         }else{
              $users = user::where('role', '!=', 'admin')
                             ->where('role', '!=', 'super_admin')
-                            ->whereNull('deleted_at')->get();
+                            ->whereNull('deleted_at')->paginate(5);
         }
-        return view('admin.users', compact('users','user')); 
+        return response()->json($users); 
+        // return view('admin.users', compact('users','user')); 
        
     }
       public function fetchAdmin()
@@ -55,7 +56,8 @@ class AdminController extends Controller
             $admins = USER::where('id',$user->id)->whereNull('deleted_at')
                             ->whereNull('deleted_at')
                             ->get();
-                    return view('admin.admins', compact('admins'));
+                            return response()->json($admins); 
+                    // return view('admin.admins', compact('admins'));
 
         }
                         
@@ -164,9 +166,12 @@ class AdminController extends Controller
         //     'message' => 'Your comment was deleted successfully.'
         // ]);
     }
-    public function userPosts(){
-        $posts = USER::with('posts.comments')->get();
-      //  return $posts;
+    public function userPosts(Request $request){
+        $posts = USER::with('posts.comments')->paginate(3);
+    //    return $posts;
+      if($request->expectsJson()){
+        return response->json($posts);
+      }
         return view('admin.posts', compact('posts'));
     }
         public function setting(){

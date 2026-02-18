@@ -73,8 +73,8 @@
    @if($posts->isEmpty())
     <p>No posts available.</p>
 @else
-    <table class="table table-bordered">
-        <thead>
+    <table class="table table-bordered table-striped align-middle text-center">
+        <thead class="table-dark">
             <tr>
                 <th>User name</th>
                 <th>User Email</th>
@@ -132,8 +132,8 @@
 
                                         <!-- Modal body -->
                                         <div class="modal-body">
-                                            <table class="table table-bordered">
-                                                <thead>
+                                            <table class="table table-bordered table-striped align-middle text-center">
+                                                <thead class="table-dark">
                                                     <tr>
                                                         <th>Comments</th>
                                                         <th>Posts</th>
@@ -277,6 +277,10 @@
             @endforeach
         </tbody>
     </table>
+    <div>
+    {{ $posts->links('pagination::bootstrap-4') }}
+</div>
+
 @endif
 
 

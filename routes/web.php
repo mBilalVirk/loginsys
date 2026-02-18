@@ -51,7 +51,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
     
 Route::get('/admin/posts', [App\Http\Controllers\AdminController::class, 'userPosts'])->name('admin.posts');
 // Route::get('/admin/dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])->middleware('auth')->name('admin.dashboard');
-Route::get('/admin/users', [App\Http\Controllers\AdminController::class, 'fetch'])->name('admin.users');
+Route::get('/admin/users', function(){
+    return view('admin.users');
+    })->name('userView');
+    Route::get('/admin/users/data', [App\Http\Controllers\AdminController::class, 'fetch'])->name('admin.users');
+
 Route::get('/admin/edit/{id}', [App\Http\Controllers\AdminController::class, 'edit'])->name('admin.edit');
 Route::post('admin/update/{id}',[App\Http\Controllers\AdminController::class, 'userUpdate'])->name('admin.userUpdate');
 Route::delete('admin/delete/{id}',[App\Http\Controllers\AdminController::class, 'delete'])->name('admin.delete');
@@ -126,7 +130,10 @@ Route::middleware('auth')->group(function(){
 Route::middleware('auth')->group(function(){
       Route::get('/user/message', [App\Http\Controllers\MessageController::class, 'index'])->name('userMessages');
       Route::post('/user/message/send',[App\Http\Controllers\MessageController::class, 'create'])->name('sendMessage');
-      Route::get('/user/message/chat/{id}',[App\Http\Controllers\MessageController::class, 'chat'])->name('chat');
+      Route::get('/user/chat/friend/{id}', function(){
+        return view('user.chat');
+      })->name('chat');
+      Route::get('user/chat/{id}',[App\Http\Controllers\MessageController::class, 'chat'])->name('chatMessages');
       Route::delete('/user/message/chat/delete/{id}',[App\Http\Controllers\MessageController::class, 'delete'])->name('deleteMessage');
       Route::post('/user/massage/chat/update/{id}',[App\Http\Controllers\MessageController::class, 'update'])->name('messageUpdate');
 });
