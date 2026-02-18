@@ -38,6 +38,10 @@ class MessageController extends Controller
                             $q  ->where('sender_id',$friend_id)
                                 ->where('receiver_id',$user_id);
                             })
+                            ->when($request->last_id, function($q) use ($request){
+                                $q->where('id', '>', $request->last_id);
+                                })
+                            ->with('sender')
                             ->orderBy('created_at')
                             ->get();
         return $messages;

@@ -93,6 +93,10 @@ $(document).ready(function(){
     let authId = "{{auth()->id()}}"
     
     loadMessages();
+    setInterval(function() {
+    loadMessages();
+}, 2000);
+
     
     let lastMessageId = 0;
 
@@ -102,10 +106,11 @@ $(document).ready(function(){
         $.ajax({
             url: `/user/chat/${id}` ,
             type: "GET",
+            data: { last_id: lastMessageId },
             dataType: "json",
             success: function(data){
                 data.forEach(function(message){
-                   
+                        if(data.length > 0){
                         chatMessage += `
 
                             <div class="mb-2 ${message.sender_id == authId ? 'text-end' : 'text-start'}">
@@ -117,9 +122,10 @@ $(document).ready(function(){
                             
                         `;
                     
-                    
+                        }
                 });
                $("#chatBlock").html(chatMessage);
+               lastMessageId = message.id;
                $("#chatBox").scrollTop($("#chatBox")[0].scrollHeight);
             },
             error: function(err){
