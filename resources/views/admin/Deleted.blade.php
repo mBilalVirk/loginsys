@@ -15,7 +15,7 @@
                         </div>
                         </div>
                 <!-- Model start -->
-                <div class="modal" id="viewUsers{{$users->count()}}">
+                <div class="modal fade" id="viewUsers{{$users->count()}}">
                                 <div class="modal-dialog modal-lg">
                                     <div class="modal-content">
                                         <!-- Modal Header -->
@@ -113,7 +113,7 @@
                      </div>
                     <!-- Model start -->
                      
-                <div class="modal" id="viewPost">
+                <div class="modal fade" id="viewPost">
                                 <div class="modal-dialog modal-lg">
                                     <div class="modal-content">
                                         <!-- Modal Header -->
@@ -206,7 +206,7 @@
                      </div>
                      <!-- Model start -->
                      
-                <div class="modal" id="viewComments{{$comments->count()}}">
+                <div class="modal fade" id="viewComments{{$comments->count()}}">
                                 <div class="modal-dialog modal-lg">
                                     <div class="modal-content">
                                         <!-- Modal Header -->
@@ -301,7 +301,7 @@
                     </div>
                 </div>
                 <!-- Model start -->
-                <div class="modal" id="viewAdmin{{$admins->count()}}">
+                <div class="modal fade" id="viewAdmin{{$admins->count()}}">
                                 <div class="modal-dialog modal-lg">
                                     <div class="modal-content">
                                         <!-- Modal Header -->
@@ -398,7 +398,7 @@
                     </div>
                 </div>
                 <!-- Model start -->
-                <div class="modal" id="viewFriends{{$friends->count()}}">
+                <div class="modal fade" id="viewFriends{{$friends->count()}}">
                                 <div class="modal-dialog modal-lg">
                                     <div class="modal-content">
                                         <!-- Modal Header -->

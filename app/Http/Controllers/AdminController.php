@@ -24,6 +24,7 @@ class AdminController extends Controller
         $postCount = Post::count();
         $adminCount = User::where('role', 'admin')->count();
         $comments = Comment::count();
+        
         return view('admin.dashboard', compact('userCount', 'postCount', 'adminCount','comments'));
         
     }
@@ -313,7 +314,8 @@ class AdminController extends Controller
     public function fetchFriends()
     {
         $friends = Friend::with(['sender', 'receiver'])->get();
-        return view('admin.friends', compact('friends'));
+        return response()->json($friends);
+        // return view('admin.friends', compact('friends'));
     }
     public function deleteFriend($id){
         $friend = Friend::FindOrFail($id);

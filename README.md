@@ -358,3 +358,7 @@ function loadAdmins(){
 # 18/02/2026
 
 1. Pagination using laravel + Ajax
+
+# 19/02/2026
+
+1. Message Update With Ajax

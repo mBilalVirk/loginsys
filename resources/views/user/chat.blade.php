@@ -17,6 +17,15 @@
         <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+        
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        
         <style>
             .chat-bubble {
                 max-width: 60%;
@@ -51,6 +60,8 @@
                     <div class="card-header fw-bold">
                         Chat
                     </div>
+                    <div class="alert alert-success d-none" role="alert"></div>
+                   
 
                     <!-- Messages -->
                     <div class="card-body" style="height: 350px; overflow-y: auto; position:relative;" id="chatBlock" style="height: 400px;overflow-y: auto;">
@@ -64,6 +75,37 @@
                         @endif
                         @endforeach --}}
                     </div>
+                    {{-- model start --}}
+                    <div class="modal fade" id="editMessageModel" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+
+                                <!-- Modal Header -->
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Edit Message</h4>
+                                    
+                                </div>
+
+                                <!-- Modal body -->
+                                <div class="modal-body">
+                                    <form enctype="multipart/form-data" id="editMsgForm">
+                                        @csrf
+                                       
+                                        <div class="form-group">
+                                            <label for="message">Message:</label>
+                                            <input type="text" class="form-control" id="editMsg" name="message" value="" required>   
+                                        </div>
+                                        
+                                        <button type="submit" class="btn btn-primary mt-3" >Update</button>
+                                    </form>
+                                </div>
+
+                                
+
+                                </div>
+                            </div>
+                            </div>
+                    {{-- model end --}}
                     <!-- Message Input -->
                     <div class="card-footer">
                         <form class="d-flex gap-2"  id="messageForm">
@@ -89,51 +131,71 @@
 $(document).ready(function(){
 
     // Make sure to wrap Blade variable in quotes
-    let id = "{{ request()->route('id') }}";
+ 
+    
+    loadMessages();
+  
+    setInterval(loadMessages, 3000);
+    
+    
+});
+   let id = "{{ request()->route('id') }}";
     let authId = "{{auth()->id()}}"
-    
-    loadMessages();
-    setInterval(function() {
-    loadMessages();
-}, 2000);
 
-    
-    let lastMessageId = 0;
-
-    function loadMessages() {
+let lastMessageId = 0;
+    function loadMessages(lastMessageId) {
 
         let chatMessage = "";
         $.ajax({
-            url: `/user/chat/${id}` ,
+            url: `/user/chat/${id}?last_id=${lastMessageId}` ,
             type: "GET",
             data: { last_id: lastMessageId },
             dataType: "json",
             success: function(data){
+                
+
+                if(data.length > 0){
                 data.forEach(function(message){
-                        if(data.length > 0){
                         chatMessage += `
 
                             <div class="mb-2 ${message.sender_id == authId ? 'text-end' : 'text-start'}">
                                 <span class="badge ${message.sender_id == authId ? 'chat-me' : 'chat-friend'} p-2 chat-bubble">
-                                    ${message.sender_id == authId ? 'You' : 'Friend'}
-                                    : ${message.message}
+                                    ${message.sender_id == authId ? 'You' : 'Friend' }
+                                    : ${escapeHtml(message.message)}
                                 </span>
+                                ${message.sender_id == authId ? `<i class="fa-regular fa-pen-to-square" style="margin-bottom: 5px; cursor: pointer;"                                
+                                    data-toggle="modal"
+                                    onclick='editMessage(${message.id}, ${JSON.stringify(message.message)})'
+                            ></i>  <i class="fa-solid fa-delete-left" style="margin-bottom: 5px; cursor: pointer;"  onclick="deleteMessage(${message.id})"></i>` : ''}
+                            
+                                    
+                                    
+                               
                             </div>
                             
                         `;
                     
-                        }
+                        lastMessageId = message.id;
+                        
+                       
                 });
-               $("#chatBlock").html(chatMessage);
-               lastMessageId = message.id;
-               $("#chatBox").scrollTop($("#chatBox")[0].scrollHeight);
+               $("#chatBlock").append(chatMessage);
+               $("#chatBlock").scrollTop($("#chatBlock")[0].scrollHeight);
+                        }
             },
             error: function(err){
                 console.log("AJAX Error:", err);
             }
         });
     }
-
+    function escapeHtml(unsafe) {
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
     
         $("#messageForm").submit(function(e){
             e.preventDefault();
@@ -159,10 +221,70 @@ $(document).ready(function(){
 
         });
 
-    
+function editMessage(id,message){
+        
+        $("#editMsg").val(message);
+        
+        
+        let modalEl = document.getElementById('editMessageModel');
+        let modal = new bootstrap.Modal(modalEl);
+       
+        modal.show(); 
+        $("#editMsgForm").submit(function(e){
+            e.preventDefault();
+            
+            const form = $("#editMsgForm")[0];
+            const data = new FormData(form);
+            $.ajax({
+                url:`/user/massage/chat/update/${id}`,
+                type:"POST",
+                data:data,
+                processData:false,
+                contentType:false,
+                success:function(data){
+                        
+                        $("#editClose").click();
+                        loadMessages();
+                        document.activeElement.blur(); 
+                        modal.hide();
+                        setTimeout(() => {
+                            $(".alert-success").addClass("d-none")
+                        }, 4000);
+                },
+                error:function(err){
+                    console.log(err.responseText);
+                }
 
-    
-});
+            });
+        });       
+    }
+
+    function deleteMessage(id){
+               
+                    if(confirm("Are you sure you want to delete this Message?")){
+                        $.ajax({
+                            url:`/user/message/chat/delete/${id}`,
+                            type:"DELETE",
+                            data:{
+                                _token:'{{csrf_token()}}'
+                            },
+                            success: function(response){
+                              $(".alert-success").removeClass("d-none").html(`<span>${response.res}</span>`).fadeIn();
+                                
+                               loadMessages();
+                               setTimeout(() => {
+                                $(".alert-success").addClass("d-none").fadeOut();
+                               }, 4000);
+                            },
+                            error:function(err){
+                                console.log(err.responseText);
+                            }
+      
+                        });
+
+                    }
+
+                }
 </script>
 
 </body>

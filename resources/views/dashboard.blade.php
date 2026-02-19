@@ -137,7 +137,7 @@
                             data-target="#editComment{{$comment->id}}"
                             ></i>
                             <!-- The Modal -->
-                            <div class="modal" id="editComment{{$comment->id}}">
+                            <div class="modal fade" id="editComment{{$comment->id}}">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <!-- Modal Header -->

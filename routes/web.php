@@ -80,6 +80,10 @@ Route::Delete('admin/permanentDelete/post/{id}', [App\Http\Controllers\AdminCont
 Route::Delete('admin/permanentDelete/comment/{id}', [App\Http\Controllers\AdminController::class,'permanentDeleteComment'])->name('admin.permanentDeleteComment');
 Route::Delete('admin/permanentDelete/admin/{id}', [App\Http\Controllers\AdminController::class,'permanentDeleteAdmin'])->name('admin.permanentDeleteAdmin');
 
+Route::get('/admin/friend/view',function(){
+    return view("admin.friends");
+})->name("friendsView");
+
 Route::get('/admin/friends', [App\Http\Controllers\AdminController::class, 'fetchFriends'])->name('admin.friends');
 Route::delete('admin/friend/delete/{id}', [App\Http\Controllers\AdminController::class,'deleteFriend'])->name('admin.deleteFriend');
 Route::post('/admin/restore/friend/{id}', [App\Http\Controllers\AdminController::class,'restoreFriend'])->name('admin.restoreFriend');
