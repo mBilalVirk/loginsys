@@ -114,6 +114,10 @@ Route::middleware('auth' ,'user')->group(function(){
         // ->middleware('auth')
         // ->name('admin.index');
     Route::get('/user/profile/{id}', [App\Http\Controllers\UserController::class, 'userProfile'])->middleware('auth')->name('user.profile');
+    Route::get('/user/profileview/user/{id}', [App\Http\Controllers\UserController::class, 'getProfile'])->middleware('auth')->name('getProfile');
+    Route::get('user/profilepage/{id}', function(){
+        return view("user.profilePage");
+    })->name('profileView');
     
 });
 

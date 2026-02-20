@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Friend;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Events\MessageSent; 
 
 class MessageController extends Controller
 {
@@ -32,7 +33,7 @@ class MessageController extends Controller
         $user_id = auth()->user()->id;
         // return $user_id;
         
-       
+        $lastId;
         $messages = Message::where(function($q) use ($user_id, $friend_id) {
         $q->where(function($q) use ($user_id, $friend_id) {
             $q->where('sender_id', $user_id)
@@ -68,7 +69,7 @@ class MessageController extends Controller
                 'message' => $validatedData['message'],
             ]
         );
-
+        // broadcast(new MessageSent($message))->toOthers();
         return redirect()->back();
     }
     public function delete($id){

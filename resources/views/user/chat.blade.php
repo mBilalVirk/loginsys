@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+ <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Messages</title>
@@ -50,7 +51,7 @@
     <div class="container py-4">
         <div class="nav">
             <a href="{{ route('dashboard') }}" class="mb-2 m-3 ">Home</a>
-            <a href="{{  route('userMessages')  }}" class="mb-2  m-3">Messages</a>
+            <a href="{{  route('userMessages')  }}" class="mb-2  m-3">Friends</a>
         </div>
         <div class="row">
             
@@ -128,34 +129,30 @@
 
 
 <script>
-$(document).ready(function(){
 
-    // Make sure to wrap Blade variable in quotes
- 
-    
+$(document).ready(function(){
     loadMessages();
-  
-    setInterval(loadMessages, 3000);
-    
-    
+    //setInterval(loadMessages, 3000);
 });
    let id = "{{ request()->route('id') }}";
     let authId = "{{auth()->id()}}"
 
 let lastMessageId = 0;
+
     function loadMessages(lastMessageId) {
 
         let chatMessage = "";
         $.ajax({
             url: `/user/chat/${id}?last_id=${lastMessageId}` ,
             type: "GET",
-            data: { last_id: lastMessageId },
             dataType: "json",
             success: function(data){
                 
 
-                if(data.length > 0){
+                if (data.length > 0 ){
                 data.forEach(function(message){
+                        
+                        
                         chatMessage += `
 
                             <div class="mb-2 ${message.sender_id == authId ? 'text-end' : 'text-start'}">
@@ -167,18 +164,18 @@ let lastMessageId = 0;
                                     data-toggle="modal"
                                     onclick='editMessage(${message.id}, ${JSON.stringify(message.message)})'
                             ></i>  <i class="fa-solid fa-delete-left" style="margin-bottom: 5px; cursor: pointer;"  onclick="deleteMessage(${message.id})"></i>` : ''}
-                            
-                                    
-                                    
-                               
                             </div>
-                            
+                                                      
                         `;
                     
                         lastMessageId = message.id;
+
+                        
                         
                        
                 });
+               $("#chatBlock").html('');
+                
                $("#chatBlock").append(chatMessage);
                $("#chatBlock").scrollTop($("#chatBlock")[0].scrollHeight);
                         }
@@ -208,7 +205,7 @@ let lastMessageId = 0;
                 processData:false,
                 contentType:false,
                 success:function(data){
-                        
+                        console.log("Msg send!");
                         loadMessages();
                         $("#messageForm")[0].reset();
 
@@ -285,6 +282,12 @@ function editMessage(id,message){
                     }
 
                 }
+
+                window.Echo.private('chat.' + id) // use receiver's id or chat id
+                .listen('.message.sent', (e) => {
+                    appendMessage(e.message, e.message.sender_id == authId);
+                });
+                
 </script>
 
 </body>

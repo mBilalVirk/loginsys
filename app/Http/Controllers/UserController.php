@@ -208,12 +208,20 @@ class UserController extends Controller
                               
                 }])
         ->get(); 
-       
-
         // return $posts;
         // dd($posts->toArray());  
         return view('user.profile', compact('user', 'posts'));
-    }   
+    } 
+    public function getProfile($id)
+    {
+        $user = auth()->user();
+        $getUser = USER::where('id', $id)->get();
+        if(!$user){
+        return response()->json(['error' => 'User not found'], 404);
+    }
+        return response()->json($getUser);
+    } 
+    
    public function updatePhoto(Request $request)
    {
        $user = auth()->user();
