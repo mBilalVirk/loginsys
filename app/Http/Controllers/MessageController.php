@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\MessageDeleted;
+use App\Events\MessageSent; 
+use App\Events\MessageUpdated; 
+use App\Models\Friend;
 use App\Models\Message;
 use App\Models\User;
-use App\Models\Friend;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Events\MessageSent; 
 
 class MessageController extends Controller
 {
@@ -54,27 +56,30 @@ class MessageController extends Controller
         return response()->json($messages);
         // return view('user.chat',compact('messages'));
     }
-    public function create(Request $request){
-        $validatedData = $request->validate([
-            'receiver_id'=> 'string | required',
-            'message'=> 'string | required | max:500',
-        ],[
-            'receiver_id.required'=> 'Receiver does not exist',
-            'message.required'=> 'You must need type a message'
-        ]);
-        Message::create(
-            [
-                'sender_id' => auth()->id(),
-                'receiver_id' => $validatedData['receiver_id'],
-                'message' => $validatedData['message'],
-            ]
-        );
-        // broadcast(new MessageSent($message))->toOthers();
-        return redirect()->back();
-    }
+    public function create(Request $request)
+{
+    $validatedData = $request->validate([
+        'receiver_id'=> 'required|string',
+        'message'=> 'required|string|max:500',
+    ],[
+        'receiver_id.required'=> 'Receiver does not exist',
+        'message.required'=> 'You must type a message'
+    ]);
+
+    
+    $message = Message::create([
+        'sender_id' => auth()->id(),
+        'receiver_id' => $validatedData['receiver_id'],
+        'message' => $validatedData['message'],
+    ]);
+
+    broadcast(new MessageSent($message))->toOthers();
+    return response()->json($message);
+}
     public function delete($id){
         $message = Message::findOrFail($id);
         $message->delete();
+        broadcast(new MessageDeleted($message));
         return response()->json(['res'=> 'Message Deleted!']);
         // return redirect()->back();
 
@@ -90,6 +95,7 @@ class MessageController extends Controller
             'message.required'=> 'You must need type a message'
         ]);
         $message->update($validatedData);
+        broadcast(new MessageUpdated($message));
         return redirect()->back();
     }
 }

@@ -13,28 +13,18 @@ class MessageSent implements ShouldBroadcast
 
     public $message;
 
-    /**
-     * Create a new event instance.
-     */
     public function __construct($message)
     {
         $this->message = $message;
     }
 
-    /**
-     * Broadcast channel
-     */
-    public function broadcastOn(): array
+    public function broadcastOn()
     {
-        return [
-            new PrivateChannel('chat.' . $this->message->receiver_id),
-        ];
+        // This must match the front-end channel
+        return [new PrivateChannel('chat.' . $this->message->receiver_id)];
     }
 
-    /**
-     * Optional custom event name
-     */
-    public function broadcastAs(): string
+    public function broadcastAs()
     {
         return 'message.sent';
     }

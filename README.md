@@ -362,3 +362,8 @@ function loadAdmins(){
 # 19/02/2026
 
 1. Message Update With Ajax
+
+# 23/02/2026
+
+1. build chatting app using laravel websockets. 'reverb'
+2. User can send update and delete msg in realtime.

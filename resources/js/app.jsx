@@ -1,0 +1,33 @@
+// import "./bootstrap";
+// import Echo from "laravel-echo";
+// import Pusher from "pusher-js";
+
+// window.Pusher = Pusher;
+
+// window.Echo = new Echo({
+//     broadcaster: "reverb",
+//     key: import.meta.env.VITE_REVERB_APP_KEY,
+//     wsHost: window.location.hostname,
+//     wsPort: 8080,
+//     forceTLS: false,
+//     encrypted: false,
+//     disableStats: true,
+// });
+import React from "react";
+import ReactDOM from "react-dom/client";
+import Login from "./pages/login";
+import Home from "./pages/home";
+import Register from "./pages/register";
+function App() {
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+            </Routes>
+        </BrowserRouter>
+    );
+}
+
+ReactDOM.createRoot(document.getElementById("app")).render(<App />);

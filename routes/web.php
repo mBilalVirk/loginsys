@@ -11,6 +11,9 @@ use App\Http\Controllers\MessageController;
 Route::get('/', function () {
     return view('login');
 })->name('login');
+Route::get('/welcome', function () {
+    return view('welcome');
+})->name('login');
 Route::get('/register', function () {
     return view('register');
 })->name('register');
