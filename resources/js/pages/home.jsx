@@ -1,6 +1,6 @@
+import React from "react";
 import { Link } from "react-router-dom";
-
-function home() {
+const home = () => {
     return (
         <div>
             <h1>Home Page</h1>
@@ -8,4 +8,6 @@ function home() {
             <Link to="/register">Go to Register</Link>
         </div>
     );
-}
+};
+
+export default home;

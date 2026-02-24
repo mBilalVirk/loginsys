@@ -367,3 +367,17 @@ function loadAdmins(){
 
 1. build chatting app using laravel websockets. 'reverb'
 2. User can send update and delete msg in realtime.
+
+# 24/02/2026
+
+1. Api in project
+
+```PHP
+php artisan install:api
+
+```
+
+2. create folder app/Http/Api
+3. add UserController
+4. create route api.php in routes folder
+5. create form in vite using tailwind templet
