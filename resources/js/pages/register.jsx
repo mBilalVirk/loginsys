@@ -1,9 +1,51 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 const register = () => {
+    const [input, setInput] = useState({
+        name: "",
+        email: "",
+        password: "",
+        password_confirmation: "",
+        image: null,
+    });
+    const handleChange = (e) => {
+        setInput({
+            ...input,
+            [e.target.name]: e.target.value,
+        });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        try {
+            const formData = new FormData();
+            formData.append("name", input.name);
+            formData.append("email", input.email);
+            formData.append("password", input.password);
+            formData.append(
+                "password_confirmation",
+                input.password_confirmation,
+            );
+            formData.append("image", input.image);
+            fetch("/api/user/register", {
+                method: "POST",
+                body: formData,
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log("Success:", data);
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
     return (
         <>
-            <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+            <div className="flex min-h-full flex-col justify-center px-6 py-5 lg:px-8">
                 <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                     <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-black">
                         Register your account
@@ -11,7 +53,13 @@ const register = () => {
                 </div>
 
                 <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                    <form action="#" method="POST" className="space-y-6">
+                    <form
+                        action="#"
+                        method="POST"
+                        className="space-y-6"
+                        encType="multipart/form-data"
+                        onSubmit={handleSubmit}
+                    >
                         <div>
                             <label
                                 htmlFor="email"
@@ -26,6 +74,7 @@ const register = () => {
                                     type="text"
                                     required
                                     className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-blue-800 outline-1 -outline-offset-1 outline-blue-400 placeholder-blue-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                                    onChange={handleChange}
                                 />
                             </div>
                         </div>
@@ -44,6 +93,7 @@ const register = () => {
                                     type="email"
                                     required
                                     className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-blue-800 outline-1 -outline-offset-1 outline-blue-400 placeholder-blue-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                                    onChange={handleChange}
                                 />
                             </div>
                         </div>
@@ -64,6 +114,7 @@ const register = () => {
                                     type="password"
                                     required
                                     className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-blue-800 outline-1 -outline-offset-1 outline-blue-400 placeholder-blue-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                                    onChange={handleChange}
                                 />
                             </div>
                         </div>
@@ -84,6 +135,28 @@ const register = () => {
                                     type="password"
                                     required
                                     className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-blue-800 outline-1 -outline-offset-1 outline-blue-400 placeholder-blue-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                                    onChange={handleChange}
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <div className="flex items-center justify-between">
+                                <label
+                                    htmlFor="password"
+                                    className="block text-sm/6 font-medium text-black"
+                                >
+                                    Image
+                                </label>
+                            </div>
+                            <div className="mt-2">
+                                <input
+                                    id="image"
+                                    name="image"
+                                    type="file"
+                                    required
+                                    className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base  outline-1 -outline-offset-1 outline-blue-400 placeholder-blue-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                                    onChange={handleChange}
                                 />
                             </div>
                         </div>

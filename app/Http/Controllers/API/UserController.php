@@ -172,4 +172,37 @@ class UserController extends Controller
             ], 400);
         }
     } 
+
+    public function update(Request $request)
+    {
+        
+
+        $user = auth()->user();
+
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+             'photo'=> 'image|mimes:jpeg,png,jpg|max:2048' 
+        ],[
+            'name.required' => 'Name is required',
+            'email.required' => 'Email is required',
+            'email.email' => 'Please enter a valid email address',
+            'email.unique' => 'This email is already registered',
+        ]);
+        if ($request->hasFile('photo')) {
+
+    $imageName = time().'_'.$request->photo->getClientOriginalName();
+    $request->photo->move(public_path('images'), $imageName);
+
+    
+    $validatedData['photo'] = 'images/'.$imageName;
+} 
+        $user->update($validatedData);
+
+       return response()->json([
+                'success'=> true,
+                'message'=> 'Profile has been updated',
+                'data' => $user
+            ], 200);
+    }
 }
