@@ -72,6 +72,7 @@ class UserController extends Controller
             'message' => 'Logout successful',
 
         ], 200);
+        
     }
 
     public function fetch()
@@ -161,7 +162,7 @@ class UserController extends Controller
         if($user){
             return response()->json([
                 'success'=> true,
-                'message'=> 'User has been registered',
+                'message'=> 'User has been registered. Now you can login!',
                 'data' => $user
             ], 200);
         }else{

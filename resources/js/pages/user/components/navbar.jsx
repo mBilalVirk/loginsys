@@ -1,11 +1,62 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { Toast } from "primereact/toast";
+import { useRef } from "react";
 
 const Navbar = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
 
+    const navigate = useNavigate();
+    useEffect(() => {}, []);
+
+    const toast = useRef(null);
+
+    const logOut = async (e) => {
+        const user = JSON.parse(localStorage.getItem("user-info"));
+        const token = user.data.token;
+
+        try {
+            const logout = await fetch("/api/user/logout", {
+                method: "POST",
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const data = await logout.json();
+            if (logout.ok) {
+                toast.current.show({
+                    severity: "success",
+                    summary: "Success",
+                    detail: data.message || "Login successful",
+                    life: 3000,
+                });
+                localStorage.removeItem("user-info");
+                navigate("/");
+            } else {
+                toast.current.show({
+                    severity: "error",
+                    summary: "error",
+                    detail: data.message || "Something wrong!",
+                    life: 3000,
+                });
+            }
+        } catch (error) {
+            toast.current.show({
+                severity: "error",
+                summary: "error",
+                detail: "Something wrong!",
+                life: 3000,
+            });
+            console.error(error);
+        }
+    };
     return (
-        <nav className="relative bg-[#3F84CD] container">
+        <nav className="relative bg-[#3F84CD] container m-auto mb-1">
+            <Toast ref={toast} />
             <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
                 <div className="relative flex h-16 items-center justify-between">
                     {/* Mobile menu button */}
@@ -32,16 +83,13 @@ const Navbar = () => {
                         <div className="hidden sm:ml-6 sm:block">
                             <div className="flex space-x-4">
                                 <a className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">
-                                    Dashboard
+                                    Home
                                 </a>
                                 <a className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white">
-                                    Team
+                                    Friends
                                 </a>
                                 <a className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white">
-                                    Projects
-                                </a>
-                                <a className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white">
-                                    Calendar
+                                    Messages
                                 </a>
                             </div>
                         </div>
@@ -71,9 +119,12 @@ const Navbar = () => {
                                     <a className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         Settings
                                     </a>
-                                    <a className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <button
+                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                        onClick={logOut}
+                                    >
                                         Sign out
-                                    </a>
+                                    </button>
                                 </div>
                             )}
                         </div>

@@ -1,9 +1,86 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
+import { Toast } from "primereact/toast";
+import { useNavigate } from "react-router-dom";
 const login = () => {
+    const toast = useRef(null);
+    const navigate = useNavigate();
+    const [input, setInput] = useState({
+        email: "",
+        password: "",
+    });
+
+    const handleChange = (e) => {
+        setInput({
+            ...input,
+            [e.target.name]: e.target.value,
+        });
+    };
+    const login = async (e) => {
+        e.preventDefault();
+
+        try {
+            const response = await fetch("/api/user/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+                body: JSON.stringify({
+                    email: input.email,
+                    password: input.password,
+                }),
+            });
+
+            let data;
+            try {
+                data = await response.json();
+            } catch {
+                data = {};
+            }
+
+            if (response.ok) {
+                localStorage.setItem("user-info", JSON.stringify(data));
+
+                toast.current.show({
+                    severity: "success",
+                    summary: "Success",
+                    detail: data.message || "Login successful",
+                    life: 3000,
+                });
+
+                setTimeout(() => {
+                    navigate("/home");
+                }, 1000);
+            } else if (response.status === 401) {
+                toast.current.show({
+                    severity: "error",
+                    summary: "Login Failed",
+                    detail: data.message || "Invalid credentials",
+                    life: 3000,
+                });
+            } else {
+                toast.current.show({
+                    severity: "error",
+                    summary: "Error",
+                    detail: data.message || "Something went wrong",
+                    life: 3000,
+                });
+            }
+        } catch (error) {
+            toast.current.show({
+                severity: "error",
+                summary: "Server Error",
+                detail: "Unable to connect to server",
+                life: 3000,
+            });
+            console.error("Login error:", error);
+        }
+    };
     return (
         <>
             <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+                <Toast ref={toast} />
                 <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                     <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-black">
                         Sign in to your account
@@ -11,7 +88,12 @@ const login = () => {
                 </div>
 
                 <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                    <form action="#" method="POST" className="space-y-6">
+                    <form
+                        action="#"
+                        method="POST"
+                        className="space-y-6"
+                        onSubmit={login}
+                    >
                         <div>
                             <label
                                 htmlFor="email"
@@ -27,6 +109,7 @@ const login = () => {
                                     required
                                     autoComplete="email"
                                     className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-blue-800 outline-1 -outline-offset-1 outline-blue-400 placeholder-blue-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                                    onChange={handleChange}
                                 />
                             </div>
                         </div>
@@ -56,6 +139,7 @@ const login = () => {
                                     required
                                     autoComplete="current-password"
                                     className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-blue-800 outline-1 -outline-offset-1 outline-blue-400 placeholder-blue-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                                    onChange={handleChange}
                                 />
                             </div>
                         </div>

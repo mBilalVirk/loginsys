@@ -368,9 +368,7 @@ function loadAdmins(){
 1. build chatting app using laravel websockets. 'reverb'
 2. User can send update and delete msg in realtime.
 
-# 24/02/2026
-
-1. Api in project
+3. Api in project
 
 ```PHP
 php artisan install:api
@@ -381,3 +379,15 @@ php artisan install:api
 3. add UserController
 4. create route api.php in routes folder
 5. create form in vite using tailwind templet
+
+# 25/02/2026
+
+1. Trying to used front-end library like react or Vite
+2. create api using sanctum
+3. create login, logout, and register api
+
+# 26/02/2026
+
+1. create front-end login, register to understand how work api with front-end.
+2. Register a new user. using Front-end vite.
+3. try to understand primereact front-end library.
