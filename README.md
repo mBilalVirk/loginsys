@@ -391,3 +391,5 @@ php artisan install:api
 1. create front-end login, register to understand how work api with front-end.
 2. Register a new user. using Front-end vite.
 3. try to understand primereact front-end library.
+4. After Successful register a user using `vite@latest` app
+5. Now User can register and login
