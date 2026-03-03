@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 const login = () => {
     const toast = useRef(null);
     const navigate = useNavigate();
+
+    const [showPassword, setShowPassword] = useState(false);
     const [input, setInput] = useState({
         email: "",
         password: "",
@@ -131,16 +133,27 @@ const login = () => {
                                     </a>
                                 </div>
                             </div>
-                            <div className="mt-2">
+                            <div className="mt-2 relative">
                                 <input
                                     id="password"
                                     name="password"
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     required
                                     autoComplete="current-password"
                                     className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-blue-800 outline-1 -outline-offset-1 outline-blue-400 placeholder-blue-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
                                     onChange={handleChange}
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setShowPassword(!showPassword)
+                                    }
+                                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-blue-600"
+                                >
+                                    <i
+                                        className={`pi ${showPassword ? "pi-eye-slash" : "pi-eye"}`}
+                                    ></i>
+                                </button>
                             </div>
                         </div>
 

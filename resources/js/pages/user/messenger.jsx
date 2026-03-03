@@ -1,59 +1,138 @@
-import React from "react";
+import React, { useState } from "react";
 
-const messenger = () => {
+const Messenger = () => {
+    const [open, setOpen] = useState(false);
+    const [selectedFriend, setSelectedFriend] = useState(null);
+    const [message, setMessage] = useState("");
+    const [friends, setFriends] = useState([]);
+
+    const fetchFriends = async () => {
+        try {
+            const response = await fetch("/api/user/friends", {
+                method: "GET",
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${JSON.parse(localStorage.getItem("user-info")).data.token}`,
+                },
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setFriends(data);
+            } else {
+                console.error("Failed to fetch friends:", data.message);
+            }
+        } catch (error) {
+            console.error("Error fetching friends:", error);
+        }
+    };
+    const fetchMessages = async (friendId) => {
+        try {
+            const response = await fetch(`/api/user/messages/${friendId}`, {
+                method: "GET",
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${JSON.parse(localStorage.getItem("user-info")).data.token}`,
+                },
+            });
+            const data = await response.json();
+            if (response.ok) {
+                // setMessages(data);
+            } else {
+                console.error("Failed to fetch messages:", data.message);
+            }
+        } catch (error) {
+            console.error("Error fetching messages:", error);
+        }
+    };
+    React.useEffect(() => {
+        fetchFriends();
+    }, []);
+
     return (
-        <main className="bg-gray-100 lg:row-start-2 flex h-full">
-            {/* Chat List */}
-            <div className="w-80 bg-white border-r flex flex-col">
-                <div className="p-4 font-bold text-lg border-b">Chats</div>
-                <div className="flex-1 overflow-y-auto">
-                    <div className="p-4 hover:bg-gray-100 cursor-pointer">
-                        <p className="font-semibold">Ali</p>
-                        <p className="text-sm text-gray-500">
-                            Last message preview...
-                        </p>
-                    </div>
-                    <div className="p-4 hover:bg-gray-100 cursor-pointer">
-                        <p className="font-semibold">Ahmed</p>
-                        <p className="text-sm text-gray-500">
-                            Another message preview...
-                        </p>
-                    </div>
-                </div>
+        <div className="fixed bottom-0 right-6 w-80">
+            {/* Header */}
+            <div
+                onClick={() => setOpen(!open)}
+                className="flex items-center justify-between px-4 py-3 bg-blue-600 text-white rounded-t-2xl cursor-pointer"
+            >
+                <i className="pi pi-comment text-sm"></i>
+                <span className="font-semibold">Messenger</span>
+                <i
+                    className={`pi ${open ? "pi-chevron-down" : "pi-chevron-up"}`}
+                ></i>
             </div>
-            {/* Conversation Area */}
-            <div className="flex-1 flex flex-col">
-                {/* Chat Header */}
-                <div className="p-4 bg-white border-b font-semibold">Ali</div>
-                {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
-                    {/* Receiver message */}
-                    <div className="flex">
-                        <div className="bg-white p-3 rounded-2xl shadow max-w-xs">
-                            Hello 👋
+
+            {/* Popup Body */}
+            {open && (
+                <div className="bg-white shadow-xl rounded-t-2xl h-96 flex flex-col">
+                    {/* If no friend selected → Show Friend List */}
+                    {!selectedFriend && (
+                        <div className="p-3 overflow-y-auto">
+                            <h3 className="font-semibold mb-2">Friends</h3>
+
+                            {friends.map((friend) => (
+                                <div
+                                    key={friend.id}
+                                    onClick={() => setSelectedFriend(friend)}
+                                    className="p-2 hover:bg-gray-100 rounded cursor-pointer"
+                                >
+                                    {friend.name}
+                                </div>
+                            ))}
                         </div>
-                    </div>
-                    {/* Sender message */}
-                    <div className="flex justify-end">
-                        <div className="bg-blue-500 text-white p-3 rounded-2xl shadow max-w-xs">
-                            Hi bro!
-                        </div>
-                    </div>
+                    )}
+
+                    {/* If friend selected → Show Chat */}
+                    {selectedFriend && (
+                        <>
+                            {/* Chat Header */}
+                            <div className="p-3 border-b flex justify-between items-center">
+                                <span className="font-semibold">
+                                    {selectedFriend.name}
+                                </span>
+                                <button
+                                    onClick={() => setSelectedFriend(null)}
+                                    className="text-sm text-blue-600"
+                                >
+                                    Back
+                                </button>
+                            </div>
+
+                            {/* Messages */}
+                            <div className="flex-1 p-3 overflow-y-auto space-y-2">
+                                {messages.map((msg, index) => (
+                                    <div
+                                        key={index}
+                                        className={`p-2 rounded-lg w-fit ${
+                                            msg.from === "me"
+                                                ? "bg-blue-600 text-white ml-auto"
+                                                : "bg-gray-200"
+                                        }`}
+                                    >
+                                        {msg.text}
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Input */}
+                            <div className="p-2 border-t flex gap-2">
+                                <input
+                                    type="text"
+                                    value={message}
+                                    onChange={(e) => setMessage(e.target.value)}
+                                    className="flex-1 border rounded px-2 py-1"
+                                    placeholder="Type message..."
+                                />
+                                <button className="bg-blue-600 text-white px-3 rounded">
+                                    Send
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </div>
-                {/* Message Input */}
-                <div className="p-4 bg-white border-t flex gap-2">
-                    <input
-                        type="text"
-                        placeholder="Type a message..."
-                        className="flex-1 border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    />
-                    <button className="bg-blue-500 text-white px-5 py-2 rounded-full">
-                        Send
-                    </button>
-                </div>
-            </div>
-        </main>
+            )}
+        </div>
     );
 };
 
-export default messenger;
+export default Messenger;

@@ -33,5 +33,10 @@ class Friend extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'friend_id');
     }
+    // Friend.php
+public function friendUser()
+{
+    return $this->belongsTo(User::class, 'friend_id', 'id');
+}
 
 }

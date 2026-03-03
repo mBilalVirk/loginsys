@@ -22,7 +22,7 @@ const Navbar = () => {
                 method: "POST",
                 headers: {
                     Accept: "application/json",
-                    "Content-Type": "application/json",
+                    // "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
             });
@@ -113,17 +113,19 @@ const Navbar = () => {
 
                             {profileOpen && (
                                 <div className="absolute right-0 mt-2 w-48 rounded-md bg-white py-1 shadow-lg">
-                                    <a className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                        Your Profile
+                                    <a className=" block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        <i className="pi pi-user"></i> : Your
+                                        Profile
                                     </a>
-                                    <a className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                        Settings
+                                    <a className=" block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        <i className="pi pi-cog"></i> : Settings
                                     </a>
                                     <button
-                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                        className=" block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         onClick={logOut}
                                     >
-                                        Sign out
+                                        <i className="pi pi-sign-out"></i>: Sign
+                                        out
                                     </button>
                                 </div>
                             )}
@@ -136,16 +138,13 @@ const Navbar = () => {
             {mobileOpen && (
                 <div className="sm:hidden bg-gray-700 px-2 pt-2 pb-3 space-y-1">
                     <a className="block rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white">
-                        Dashboard
+                        Home
                     </a>
                     <a className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-white/5 hover:text-white">
-                        Team
+                        Friends
                     </a>
                     <a className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-white/5 hover:text-white">
-                        Projects
-                    </a>
-                    <a className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-white/5 hover:text-white">
-                        Calendar
+                        Messages
                     </a>
                 </div>
             )}

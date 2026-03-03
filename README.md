@@ -393,3 +393,8 @@ php artisan install:api
 3. try to understand primereact front-end library.
 4. After Successful register a user using `vite@latest` app
 5. Now User can register and login
+
+# 03/03/2026
+
+1. Create createPost component, and show post component
+2.

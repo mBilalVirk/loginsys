@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\User;
+use App\Models\Friend;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -206,4 +207,23 @@ class UserController extends Controller
                 'data' => $user
             ], 200);
     }
+
+    public function friends()
+{
+    return Friend::where('user_id', auth()->id())
+        ->orWhere('friend_id', auth()->id())
+        ->where('status', 'accepted')
+        ->with('friendUser:id,name,email,photo') 
+        ->get()
+        ->map(function ($friend) {
+            return [
+                'id' => $friend->friendUser->id,
+                'name' => $friend->friendUser->name,
+                'email' => $friend->friendUser->email,
+                'photo' => $friend->friendUser->photo,
+            ];
+        });
+
+    
+}
 }
