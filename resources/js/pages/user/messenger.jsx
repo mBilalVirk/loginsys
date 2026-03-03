@@ -3,7 +3,7 @@ import React, { useState } from "react";
 const Messenger = () => {
     const [open, setOpen] = useState(false);
     const [selectedFriend, setSelectedFriend] = useState(null);
-    const [message, setMessage] = useState("");
+    const [messages, setMessages] = useState([]);
     const [friends, setFriends] = useState([]);
 
     const fetchFriends = async () => {
@@ -26,8 +26,9 @@ const Messenger = () => {
         }
     };
     const fetchMessages = async (friendId) => {
+        console.log("Fetching messages for friend ID:", friendId);
         try {
-            const response = await fetch(`/api/user/messages/${friendId}`, {
+            const response = await fetch(`/api/user/chat/${friendId}`, {
                 method: "GET",
                 headers: {
                     Accept: "application/json",
@@ -35,8 +36,9 @@ const Messenger = () => {
                 },
             });
             const data = await response.json();
+            console.log(data);
             if (response.ok) {
-                // setMessages(data);
+                setMessages(data);
             } else {
                 console.error("Failed to fetch messages:", data.message);
             }
@@ -46,6 +48,9 @@ const Messenger = () => {
     };
     React.useEffect(() => {
         fetchFriends();
+        if (selectedFriend) {
+            fetchMessages(selectedFriend.id);
+        }
     }, []);
 
     return (
@@ -118,8 +123,10 @@ const Messenger = () => {
                             <div className="p-2 border-t flex gap-2">
                                 <input
                                     type="text"
-                                    value={message}
-                                    onChange={(e) => setMessage(e.target.value)}
+                                    value={messages}
+                                    onChange={(e) =>
+                                        setMessages(e.target.value)
+                                    }
                                     className="flex-1 border rounded px-2 py-1"
                                     placeholder="Type message..."
                                 />
