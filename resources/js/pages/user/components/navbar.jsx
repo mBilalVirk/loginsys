@@ -7,13 +7,16 @@ import { useRef } from "react";
 const Navbar = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
-
+    const userInfo = JSON.parse(localStorage.getItem("user-info"));
+    const authUserName = userInfo.data.user.name;
+    const authUserImg = userInfo.data.user.photo;
     const navigate = useNavigate();
     useEffect(() => {}, []);
 
     const toast = useRef(null);
 
     const logOut = async (e) => {
+        console.log("logout click!");
         const user = JSON.parse(localStorage.getItem("user-info"));
         const token = user.data.token;
 
@@ -106,16 +109,16 @@ const Navbar = () => {
                         <div className="relative ml-3">
                             <img
                                 onClick={() => setProfileOpen(!profileOpen)}
-                                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e"
+                                src={`/${authUserImg}`}
                                 alt=""
                                 className="h-8 w-8 rounded-full cursor-pointer"
                             />
 
                             {profileOpen && (
-                                <div className="absolute right-0 mt-2 w-48 rounded-md bg-white py-1 shadow-lg">
+                                <div className="absolute right-0 mt-2 w-48 rounded-md bg-white py-1 shadow-lg z-50">
                                     <a className=" block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                        <i className="pi pi-user"></i> : Your
-                                        Profile
+                                        <i className="pi pi-user"></i> :{" "}
+                                        <span>{`${authUserName}`}</span>
                                     </a>
                                     <a className=" block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         <i className="pi pi-cog"></i> : Settings

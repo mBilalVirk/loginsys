@@ -50,32 +50,63 @@ class MessageController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        //
-    }
+    public function create(Request $request)
+{
+    $validatedData = $request->validate([
+        'receiver_id'=> 'required|string',
+        'message'=> 'required|string|max:500',
+    ],[
+        'receiver_id.required'=> 'Receiver does not exist',
+        'message.required'=> 'You must type a message'
+    ]);
+
+    
+    $message = Message::create([
+        'sender_id' => auth()->id(),
+        'receiver_id' => $validatedData['receiver_id'],
+        'message' => $validatedData['message'],
+    ]);
+
+    broadcast(new MessageSent($message))->toOthers();
+    return response()->json([
+        'success' => true,
+        'message' => 'Message sent successfully',
+        'data' => $message
+    ], 201);
+}
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        //
-    }
+     public function delete($id){
+        $message = Message::findOrFail($id);
+        $message->delete();
+        broadcast(new MessageDeleted($message));
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Message deleted successfully',
+            'data' => $message
+        ], 200);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
     }
+    public function update(Request $request, $id){
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $message = Message::FindOrFail($id);
+        $validatedData = $request->validate([
+            
+            'message'=> 'string | required | max:500',
+        ],[
+            
+            'message.required'=> 'You must need type a message'
+        ]);
+        $message->update($validatedData);
+
+        broadcast(new MessageUpdated($message));
+        return response()->json([
+            'success' => true,
+            'message' => 'Message updated successfully',
+            'data' => $message
+        ], 200);
     }
 }

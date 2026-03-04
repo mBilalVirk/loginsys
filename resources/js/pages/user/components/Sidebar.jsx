@@ -16,8 +16,19 @@ const Sidebar = () => {
                 },
             });
             const data = await response.json();
+            const userInfo = JSON.parse(localStorage.getItem("user-info"));
+            const authUserId = userInfo.data.id;
             if (response.ok) {
-                setFriends(data);
+                const acceptedFriends = data.accepted_friends.map(
+                    (friendship) => {
+                        if (friendship.sender.id === authUserId) {
+                            return friendship.receiver; // other person
+                        } else {
+                            return friendship.sender; // other person
+                        }
+                    },
+                );
+                setFriends(acceptedFriends);
             } else {
                 console.error("Failed to fetch friends:", data.message);
             }

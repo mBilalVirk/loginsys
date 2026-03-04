@@ -398,3 +398,8 @@ php artisan install:api
 
 1. Create createPost component, and show post component
 2. Create Messenger,
+
+# 04/03/2026
+
+1. want to create realtime chatting with laravel + vite@react
+2.

@@ -13,6 +13,7 @@
 //     encrypted: false,
 //     disableStats: true,
 // });
+
 import React, { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -25,7 +26,7 @@ import PrivateRoute from "./pages/user/privateRoute";
 import "primereact/resources/themes/lara-light-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
-
+import "./echo.js";
 function App() {
     return (
         <BrowserRouter basename="/vite">
