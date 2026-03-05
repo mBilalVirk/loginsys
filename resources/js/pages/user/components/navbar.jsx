@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { Link } from "react-router-dom";
 import { Toast } from "primereact/toast";
 import { useRef } from "react";
-
+import NotificationBell from "../../NotificationBell";
+import Logo from "../../../../../public/logo.png";
 const Navbar = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
@@ -58,7 +59,7 @@ const Navbar = () => {
         }
     };
     return (
-        <nav className="relative bg-[#3F84CD] container m-auto mb-1">
+        <nav className="relative bg-blue-500 container m-auto mb-1 rounded-b-md sticky top-0  z-50">
             <Toast ref={toast} />
             <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
                 <div className="relative flex h-16 items-center justify-between">
@@ -85,15 +86,12 @@ const Navbar = () => {
 
                         <div className="hidden sm:ml-6 sm:block">
                             <div className="flex space-x-4">
-                                <a className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">
+                                <Link
+                                    to="/home"
+                                    className="rounded-md  px-3 py-2 text-sm font-medium text-white"
+                                >
                                     Home
-                                </a>
-                                <a className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white">
-                                    Friends
-                                </a>
-                                <a className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white">
-                                    Messages
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -104,7 +102,8 @@ const Navbar = () => {
                         <button className="rounded-full p-1 text-gray-400 hover:text-white">
                             🔔
                         </button>
-
+                        <span>|</span>
+                        {/* <NotificationBell /> */}
                         {/* Profile */}
                         <div className="relative ml-3">
                             <img
@@ -116,10 +115,13 @@ const Navbar = () => {
 
                             {profileOpen && (
                                 <div className="absolute right-0 mt-2 w-48 rounded-md bg-white py-1 shadow-lg z-50">
-                                    <a className=" block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <Link
+                                        to="/profile"
+                                        className=" block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                    >
                                         <i className="pi pi-user"></i> :{" "}
                                         <span>{`${authUserName}`}</span>
-                                    </a>
+                                    </Link>
                                     <a className=" block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         <i className="pi pi-cog"></i> : Settings
                                     </a>

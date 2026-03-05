@@ -68,5 +68,22 @@ class AdminController extends Controller
         ], 200);
 
     }
+
+    public function fetch()
+    {
+        $user = auth()->user();
+        if($user->role == 'super_admin'){
+            $users = user::where('id', '!=', $user->id)->whereNull('deleted_at')->paginate(5);
+        }else{
+             $users = user::where('role', '!=', 'admin')
+                            ->where('role', '!=', 'super_admin')
+                            ->whereNull('deleted_at')->paginate(5);
+        }
+        return response()->json([
+            'success'=>true,
+            'user' => $users,
+        ],200);
+       
+    }
     
 }

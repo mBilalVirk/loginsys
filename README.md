@@ -403,3 +403,7 @@ php artisan install:api
 
 1. want to create realtime chatting with laravel + vite@react
 2.
+
+# 05/03/2026
+
+1. Create real time chat-app using api and vite

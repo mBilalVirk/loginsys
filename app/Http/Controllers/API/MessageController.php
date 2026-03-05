@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Notifications\NewMessageNotification;
+
 use Illuminate\Http\Request;
 use App\Events\MessageDeleted;
 use App\Events\MessageSent; 
@@ -66,7 +68,9 @@ class MessageController extends Controller
         'receiver_id' => $validatedData['receiver_id'],
         'message' => $validatedData['message'],
     ]);
-
+    // Notify the receiver
+    $receiver = User::find($request->receiver_id);
+    $receiver->notify(new NewMessageNotification($message));
     broadcast(new MessageSent($message))->toOthers();
     return response()->json([
         'success' => true,
@@ -80,6 +84,12 @@ class MessageController extends Controller
      */
      public function delete($id){
         $message = Message::findOrFail($id);
+        if(!$message){
+            return response()->json([
+                'success' => false,
+                'message' => 'Message not found',
+            ], 404);
+        }
         $message->delete();
         broadcast(new MessageDeleted($message));
         
@@ -90,9 +100,16 @@ class MessageController extends Controller
         ], 200);
 
     }
-    public function update(Request $request, $id){
+    public function updateApi(Request $request, $id){
 
         $message = Message::FindOrFail($id);
+        
+        if($message->sender_id != auth()->id() ){
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized',
+            ], 403);
+        }
         $validatedData = $request->validate([
             
             'message'=> 'string | required | max:500',

@@ -27,6 +27,7 @@ import "primereact/resources/themes/lara-light-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import "./echo.js";
+import Profile from "./pages/user/profile";
 function App() {
     return (
         <BrowserRouter basename="/vite">
@@ -38,6 +39,14 @@ function App() {
                     element={
                         <PrivateRoute>
                             <Home />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/profile"
+                    element={
+                        <PrivateRoute>
+                            <Profile />
                         </PrivateRoute>
                     }
                 />

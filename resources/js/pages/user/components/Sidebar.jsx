@@ -16,8 +16,10 @@ const Sidebar = () => {
                 },
             });
             const data = await response.json();
+            console.log("Friends data:", data);
             const userInfo = JSON.parse(localStorage.getItem("user-info"));
-            const authUserId = userInfo.data.id;
+            const authUserId = userInfo.data.user.id;
+
             if (response.ok) {
                 const acceptedFriends = data.accepted_friends.map(
                     (friendship) => {

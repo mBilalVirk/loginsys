@@ -10,6 +10,77 @@ const Messenger = () => {
     const [friends, setFriends] = useState([]);
     const messagesEndRef = React.useRef(null);
     const [message, setMessage] = useState("");
+    // update msg
+    const [editingId, setEditingId] = useState(null);
+    const editMessage = (id, text) => {
+        setMessage(text);
+        setEditingId(id);
+    };
+    const updateMessage = async () => {
+        try {
+            const response = await fetch(
+                `/api/user/message/update/${editingId}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Accept: "application/json",
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                    }),
+                },
+            );
+
+            const data = await response.json();
+
+            setMessages((prev) =>
+                prev.map((msg) =>
+                    msg.id === editingId ? { ...msg, message: message } : msg,
+                ),
+            );
+
+            setEditingId(null);
+            setMessage("");
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    // end of update msg
+    //delete msg function
+    const deleteMessage = async (id) => {
+        try {
+            const response = await fetch(`/api/user/message/delete/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                    Authorization: `Bearer ${JSON.parse(localStorage.getItem("user-info")).data.token}`,
+                },
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                toast.current.show({
+                    severity: "success",
+                    summary: "Success",
+                    detail: data.message,
+                    life: 3000,
+                });
+            } else {
+                toast.current.show({
+                    severity: "error",
+                    summary: "Error",
+                    detail: data.message || "You can't delete this message!",
+                    life: 3000,
+                });
+            }
+            setMessages((prev) => prev.filter((msg) => msg.id !== id));
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    // end of delete msg funciton
     React.useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
@@ -68,7 +139,10 @@ const Messenger = () => {
         e.preventDefault(); // prevent page reload
 
         if (!message.trim()) return; // don't send empty messages
-
+        if (editingId) {
+            updateMessage();
+            return;
+        }
         try {
             const response = await fetch("/api/user/message/send", {
                 method: "POST",
@@ -120,23 +194,34 @@ const Messenger = () => {
     const userInfo = JSON.parse(localStorage.getItem("user-info"));
     const authId = userInfo?.data?.user?.id;
     React.useEffect(() => {
-        if (!authId) return;
+        if (!authId || !selectedFriend) return;
 
-        console.log("Listening on: chat." + authId);
+        console.log("Listening on:", "chat." + authId);
+        console.log("Listening on:", "chat." + selectedFriend);
 
-        const channel = window.Echo.private("chat." + authId).listen(
+        const myChannel = window.Echo.private("chat." + authId).listen(
             ".message.sent",
             (e) => {
-                console.log("New message received:", e);
+                console.log("Message received on my channel:", e);
 
                 setMessages((prev) => [...prev, e.message]);
             },
         );
 
+        const friendChannel = window.Echo.private(
+            "chat." + selectedFriend,
+        ).listen(".message.sent", (e) => {
+            console.log("Message received on friend channel:", e);
+
+            setMessages((prev) => [...prev, e.message]);
+        });
+
         return () => {
-            window.Echo.leave("private-chat." + authId);
+            window.Echo.leave("chat." + authId);
+            window.Echo.leave("chat." + selectedFriend);
         };
-    }, [authId]);
+    }, [authId, selectedFriend]);
+
     return (
         <div className="fixed bottom-0 right-6 w-80">
             <Toast ref={toast} />
@@ -203,11 +288,27 @@ const Messenger = () => {
                                                 ? "bg-blue-600 text-white ml-auto"
                                                 : "bg-gray-200"
                                         }`}
-                                        id="message"
                                     >
                                         {msg.message}
+
+                                        <i
+                                            className="pi pi-pencil ml-2"
+                                            style={{ cursor: "pointer" }}
+                                            onClick={() =>
+                                                editMessage(msg.id, msg.message)
+                                            }
+                                        ></i>
+
+                                        <i
+                                            className="pi pi-trash ml-2"
+                                            style={{ cursor: "pointer" }}
+                                            onClick={() =>
+                                                deleteMessage(msg.id)
+                                            }
+                                        ></i>
                                     </div>
                                 ))}
+
                                 <div ref={messagesEndRef} />
                             </div>
 
@@ -229,7 +330,7 @@ const Messenger = () => {
                                         placeholder="Type message..."
                                     />
                                     <button className="bg-blue-600 text-white px-3 rounded">
-                                        Send
+                                        {editingId ? "Update" : "Send"}
                                     </button>
                                 </form>
                             </div>

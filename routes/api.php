@@ -10,9 +10,13 @@ use Illuminate\Support\Facades\Route;
 
     Route::POST('/user/login', [UserController::class,'login']);
     Route::POST('/user/register', [UserController::class,'register']);
-    Route::POST('/admin/login', [AdminController::class,'login']);
+   
     
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('user/notifications', [NotificationController::class, 'index']);
+
+
+
     Route::POST('/user/logout', [UserController::class,'logout']);
     Route::get('/user/fetch', [UserController::class,'fetch']);
     Route::Post('/user/update', [UserController::class,'update']);
@@ -23,9 +27,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('user/chat/{id}',[MessageController::class, 'chat']);
     Route::post('user/message/send',[MessageController::class, 'create']);
-    Route::put('user/message/update/{id}',[MessageController::class, 'update']);
+    Route::put('user/message/update/{id}',[MessageController::class, 'updateApi']);
     Route::delete('user/message/delete/{id}',[MessageController::class, 'delete']);
 
 
-    Route::POST('/admin/logout', [AdminController::class,'logout']);
+    Route::POST('/admin/logout', [AdminController::class,'logout'])->middleware('admin');
+    Route::POST('/admin/login', [AdminController::class,'login']);
+    Route::GET('/admin/fetch', [AdminController::class,'fetch'])->middleware('admin');
+
 });
