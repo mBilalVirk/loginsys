@@ -47,6 +47,8 @@ const PostForm = () => {
                 });
                 setContent("");
                 setPhoto(null);
+                // After post is successfully created
+                window.dispatchEvent(new Event("post-created"));
             } else {
                 console.error(result.message);
             }

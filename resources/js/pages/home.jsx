@@ -2,14 +2,16 @@ import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import Messenger from "./user/messenger";
 import Navebar from "./user/components/navbar";
-import Sidebar from "./user/components/sidebar";
+import Sidebar from "./user/components/Sidebar";
 import WritePost from "./user/components/PostForm";
 import Post from "./user/components/Post";
+import PostList from "../pages/user/components/post/PostList";
 const home = () => {
     useEffect(() => {
         const user = localStorage.getItem("user-info");
         // console.log(user);
     }, []);
+
     return (
         <>
             <Navebar />
@@ -22,17 +24,11 @@ const home = () => {
                     <Sidebar />
                     <div className="flex flex-col gap-4">
                         <WritePost />
-                        <Post />
+                        {/* <Post /> */}
+                        <PostList />
                     </div>
                 </div>
                 <Messenger />
-                <main className="bg-black text-white p-6 lg:p-10 lg:row-start-2">
-                    Main content
-                </main>
-
-                <aside className="bg-red-500 p-6 lg:p-8 lg:row-start-2">
-                    Right sidebar
-                </aside>
 
                 <footer className="col-span-1 lg:col-span-3 bg-gray-700 py-8 text-center text-white">
                     Footer — © 2026 Your Company

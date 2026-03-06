@@ -22,4 +22,9 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
-    })->create();
+    })->withBroadcasting(                              // ← Add this block
+        __DIR__.'/../routes/channels.php',
+        ['middleware' => ['auth:sanctum']]           // Sanctum token auth
+        // Optional: if you want the auth route under /api/...
+        // 'prefix' => 'api',
+    )->create();

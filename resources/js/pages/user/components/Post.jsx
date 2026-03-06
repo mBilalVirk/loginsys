@@ -49,6 +49,16 @@ const Post = () => {
 
     useEffect(() => {
         fetchPosts();
+        // Listen for new posts
+        const handleNewPost = () => {
+            fetchPosts(); // fetch again whenever new post is created
+        };
+
+        window.addEventListener("post-created", handleNewPost);
+
+        return () => {
+            window.removeEventListener("post-created", handleNewPost);
+        };
     }, []);
 
     return (

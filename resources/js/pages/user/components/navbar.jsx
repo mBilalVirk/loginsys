@@ -59,7 +59,7 @@ const Navbar = () => {
         }
     };
     return (
-        <nav className="relative bg-blue-500 container m-auto mb-1 rounded-b-md sticky top-0  z-50">
+        <nav className="relative bg-blue-500 container m-auto mb-1 rounded-b-md">
             <Toast ref={toast} />
             <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
                 <div className="relative flex h-16 items-center justify-between">

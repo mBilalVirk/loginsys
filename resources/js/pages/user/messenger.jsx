@@ -25,6 +25,7 @@ const Messenger = () => {
                     headers: {
                         "Content-Type": "application/json",
                         Accept: "application/json",
+                        Authorization: `Bearer ${JSON.parse(localStorage.getItem("user-info")).data.token}`,
                     },
                     body: JSON.stringify({
                         message: message,
@@ -33,15 +34,25 @@ const Messenger = () => {
             );
 
             const data = await response.json();
+            if (response.ok) {
+                setMessages((prev) =>
+                    prev.map((msg) =>
+                        msg.id === editingId
+                            ? { ...msg, message: message }
+                            : msg,
+                    ),
+                );
 
-            setMessages((prev) =>
-                prev.map((msg) =>
-                    msg.id === editingId ? { ...msg, message: message } : msg,
-                ),
-            );
-
-            setEditingId(null);
-            setMessage("");
+                setEditingId(null);
+                setMessage("");
+            } else {
+                toast.current.show({
+                    severity: "error",
+                    summary: "Error",
+                    detail: data.message || "Failed to update message!",
+                    life: 5000,
+                });
+            }
         } catch (error) {
             console.log(error);
         }
@@ -197,9 +208,9 @@ const Messenger = () => {
         if (!authId || !selectedFriend) return;
 
         console.log("Listening on:", "chat." + authId);
-        console.log("Listening on:", "chat." + selectedFriend);
+        console.log("Listening on:", "chat." + selectedFriend.id.toString());
 
-        const myChannel = window.Echo.private("chat." + authId).listen(
+        const myChannel = window.Echo.private(`chat.${authId}`).listen(
             ".message.sent",
             (e) => {
                 console.log("Message received on my channel:", e);
@@ -208,17 +219,31 @@ const Messenger = () => {
             },
         );
 
-        const friendChannel = window.Echo.private(
-            "chat." + selectedFriend,
-        ).listen(".message.sent", (e) => {
-            console.log("Message received on friend channel:", e);
+        // const friendChannel = window.Echo.private(
+        //     "chat." + selectedFriend.id.toString(),
+        // ).listen(".message.sent", (e) => {
+        //     console.log("Message received on friend channel:", e);
 
-            setMessages((prev) => [...prev, e.message]);
+        //     setMessages((prev) => [...prev, e.message]);
+        // });
+        // Listen for message updates
+        myChannel.listen(".message.updated", (e) => {
+            setMessages((prev) =>
+                prev.map((m) =>
+                    m.id === e.message.id
+                        ? { ...m, message: e.message.message }
+                        : m,
+                ),
+            );
         });
 
+        // Listen for message deletions
+        myChannel.listen(".message.deleted", (e) => {
+            setMessages((prev) => prev.filter((m) => m.id !== e.messageId));
+        });
         return () => {
             window.Echo.leave("chat." + authId);
-            window.Echo.leave("chat." + selectedFriend);
+            // window.Echo.leave("chat." + selectedFriend.id.toString());
         };
     }, [authId, selectedFriend]);
 
@@ -239,7 +264,7 @@ const Messenger = () => {
 
             {/* Popup Body */}
             {open && (
-                <div className="bg-white shadow-xl rounded-t-2xl h-96 flex flex-col">
+                <div className="bg-white shadow-xl  h-96 flex flex-col">
                     {/* If no friend selected → Show Friend List */}
                     {!selectedFriend && (
                         <div className="p-3 overflow-y-auto">

@@ -13,8 +13,7 @@ use Illuminate\Support\Facades\Route;
    
     
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('user/notifications', [NotificationController::class, 'index']);
-
+    
 
 
     Route::POST('/user/logout', [UserController::class,'logout']);
@@ -23,6 +22,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/friends', [FriendController::class,'index']);
 
     Route::post('/user/post',[PostController::class, 'store']);
+    Route::post('/user/comment',[PostController::class, 'createComment']);
+    Route::delete('/user/comment/delete/{id}',[PostController::class, 'deleteComment']);
 
 
     Route::get('user/chat/{id}',[MessageController::class, 'chat']);

@@ -107,7 +107,7 @@ class MessageController extends Controller
         if($message->sender_id != auth()->id() ){
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized',
+                'message' => 'You only change your messages!',
             ], 403);
         }
         $validatedData = $request->validate([

@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { InputText } from "primereact/inputtext";
 import { classNames } from "primereact/utils";
+import { Link } from "react-router-dom";
 const Sidebar = () => {
     const [friends, setFriends] = useState([]);
     const [searchFriends, setSearchFriends] = useState("");
@@ -16,7 +17,7 @@ const Sidebar = () => {
                 },
             });
             const data = await response.json();
-            console.log("Friends data:", data);
+            // console.log("Friends data:", data);
             const userInfo = JSON.parse(localStorage.getItem("user-info"));
             const authUserId = userInfo.data.user.id;
 
@@ -64,27 +65,29 @@ const Sidebar = () => {
             {/* Friend List */}
             <div className="space-y-3">
                 {friends.map((friend) => (
-                    <div
-                        key={friend.id}
-                        className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 cursor-pointer"
-                    >
-                        <div className="relative">
-                            <img
-                                src={"/" + friend.photo}
-                                alt={friend.name}
-                                className="w-10 h-10 rounded-full object-cover"
-                            />
+                    <Link to={`/profile`} key={friend.id}>
+                        <div
+                            key={friend.id}
+                            className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 cursor-pointer"
+                        >
+                            <div className="relative">
+                                <img
+                                    src={"/" + friend.photo}
+                                    alt={friend.name}
+                                    className="w-10 h-10 rounded-full object-cover"
+                                />
 
-                            {/* Online Indicator */}
-                            {friend.online && (
-                                <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
-                            )}
+                                {/* Online Indicator */}
+                                {friend.online && (
+                                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+                                )}
+                            </div>
+
+                            <span className="text-sm font-medium">
+                                {friend.name}
+                            </span>
                         </div>
-
-                        <span className="text-sm font-medium">
-                            {friend.name}
-                        </span>
-                    </div>
+                    </Link>
                 ))}
             </div>
         </div>

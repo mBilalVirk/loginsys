@@ -51,7 +51,48 @@ $post = Post::create([
         'data' => $post
     ], 201);
     } 
+public function createComment(Request $comment){
+       $validatedData = $comment->validate([
+            'post_id'=> 'required | string ',
+            'comment' => 'required | string | max:200',
+            'parent_id'=> 'nullable | string '
+       ],[
+            'post_id.required'=> 'Required Post id does not exist',
+            'comment.required'=> 'You must need type a comment'
+       ]);
+        
+       $comment = Comment::create([
+        'user_id'=> auth()->id(),
+        'comment'=> $validatedData['comment'],
+        'post_id'=> $validatedData['post_id'],
+        'parent_id'=> $validatedData['parent_id'] ?? null,
+       ]);
+       return response()->json([
+        'success' => true,
+        'message' => 'Comment',
+        'data' => $comment
+       ],201);
+    }
+    public function deleteComment($id){
+                $comment = Comment::FindOrFail($id);
+                 $user_id = $comment->user_id;
+                if(auth()->id() == $user_id){
+                $comment->delete();
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Comment has been Deleted',
+                    
+                ],201);
+                }else{
+                    return response()->json([
+                    'success' => false,
+                    'message' => 'You cant Delete This comment',
+                    
+                ],400);
 
+                }
+
+            }
     /**
      * Display the specified resource.
      */

@@ -1,12 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import Navbar from "./components/navbar";
 import Messenger from "./messenger";
-import Sidebar from "./components/sidebar";
+import Sidebar from "./components/Sidebar";
 import WritePost from "./components/PostForm";
 import Post from "./components/Post";
 
 const Profile = () => {
-    // Add safety check
     const userData = JSON.parse(localStorage.getItem("user-info"));
     const user = userData?.data?.user;
     const authUserName = userData.data.user.name;
