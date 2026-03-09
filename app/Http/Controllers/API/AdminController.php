@@ -73,17 +73,50 @@ class AdminController extends Controller
     {
         $user = auth()->user();
         if($user->role == 'super_admin'){
-            $users = user::where('id', '!=', $user->id)->whereNull('deleted_at')->paginate(5);
+            $users = user::where('id', '!=', $user->id)->whereNull('deleted_at')->get();
         }else{
              $users = user::where('role', '!=', 'admin')
                             ->where('role', '!=', 'super_admin')
-                            ->whereNull('deleted_at')->paginate(5);
+                            ->whereNull('deleted_at')->get();
         }
         return response()->json([
             'success'=>true,
             'user' => $users,
         ],200);
        
+    }
+     public function countUsersPosts()
+    {
+        $userCount = User::where('role', 'user')->count();
+        $postCount = Post::count();
+        $adminCount = User::where('role', 'admin')->count();
+        $comments = Comment::count();
+        
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'user_count' => $userCount,
+                'post_count' => $postCount,
+                'admin_count' => $adminCount,
+                'comment_count' => $comments,
+            ],
+        ]);
+        
+    }
+     public function delete($id){
+        $user = user::FindOrFail($id);
+        $user -> delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'User deleted successfully',
+        ], 200);
+    }
+      public function userPosts(Request $request){
+        $posts = USER::with('posts.comments')->get();
+        return response()->json([
+            'success' => true,
+            'data' => $posts,
+        ], 200);
     }
     
 }

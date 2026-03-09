@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 
     Route::POST('/user/login', [UserController::class,'login']);
     Route::POST('/user/register', [UserController::class,'register']);
-   
+    Route::POST('/admin/login', [AdminController::class,'login']);
     
 Route::middleware('auth:sanctum')->group(function () {
     
@@ -33,7 +33,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     Route::POST('/admin/logout', [AdminController::class,'logout'])->middleware('admin');
-    Route::POST('/admin/login', [AdminController::class,'login']);
+   
     Route::GET('/admin/fetch', [AdminController::class,'fetch'])->middleware('admin');
+    Route::GET('/admin/stats', [AdminController::class,'countUsersPosts'])->middleware('admin');
+    Route::DELETE('/admin/delete/{id}', [AdminController::class,'delete'])->middleware('admin');
+    Route::get('/admin/post', [AdminController::class,'userPosts'])->middleware('admin');
 
+});
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
 });

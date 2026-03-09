@@ -407,3 +407,10 @@ php artisan install:api
 # 05/03/2026
 
 1. Create real time chat-app using api and vite
+
+# 09/03/2026
+
+1. add admin panel
+2. Use front-end `Vite@latest`
+3. login and admin Panel
+4. try to create CRUD operations

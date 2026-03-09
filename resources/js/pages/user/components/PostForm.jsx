@@ -10,6 +10,7 @@ const PostForm = () => {
     const [photo, setPhoto] = useState(null);
     const [loading, setLoading] = useState(false);
     const toast = useRef(null);
+    const fileUploadRef = useRef(null);
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log("Submit");
@@ -45,8 +46,10 @@ const PostForm = () => {
                     detail: result.message || "Post Has been Created!",
                     life: 3000,
                 });
+
                 setContent("");
                 setPhoto(null);
+                fileUploadRef.current.clear();
                 // After post is successfully created
                 window.dispatchEvent(new Event("post-created"));
             } else {
@@ -82,6 +85,7 @@ const PostForm = () => {
                 {/* Image Upload */}
                 <div className="grid grid-cols-1 content-between gap-5">
                     <FileUpload
+                        ref={fileUploadRef}
                         mode="basic"
                         name="photo"
                         accept="image/*"

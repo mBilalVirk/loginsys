@@ -28,7 +28,9 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import "./echo";
 import Profile from "./pages/user/profile";
-
+import AdminLogin from "./pages/admin/login";
+import AdminPanel from "./pages/admin/AdminPanel";
+import AdminRoute from "./pages/admin/AdminRoute";
 function App() {
     return (
         <BrowserRouter basename="/vite">
@@ -49,6 +51,17 @@ function App() {
                         <PrivateRoute>
                             <Profile />
                         </PrivateRoute>
+                    }
+                />
+            </Routes>
+            <Routes>
+                <Route path="/adminlogin" element={<AdminLogin />} />
+                <Route
+                    path="/admin/*"
+                    element={
+                        <AdminRoute>
+                            <AdminPanel />
+                        </AdminRoute>
                     }
                 />
             </Routes>
