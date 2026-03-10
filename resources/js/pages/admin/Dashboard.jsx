@@ -102,7 +102,7 @@ const Dashboard = () => {
                             </tr>
                         </thead>
 
-                        <tbody>
+                        {/* <tbody>
                             <tr className="border-b">
                                 <td className="py-2">Bilal Hassan</td>
                                 <td>bilal@email.com</td>
@@ -124,7 +124,7 @@ const Dashboard = () => {
                                     </button>
                                 </td>
                             </tr>
-                        </tbody>
+                        </tbody> */}
                     </table>
                 </div>
             </div>

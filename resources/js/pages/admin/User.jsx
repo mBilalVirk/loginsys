@@ -176,6 +176,7 @@ const User = () => {
                             {selectedUser.name}
                         </h3>
                         <p>Email: {selectedUser.email}</p>
+                        <p>Total number of Post: {selectedUser.posts.length}</p>
 
                         {/* Add more details if needed */}
                     </div>

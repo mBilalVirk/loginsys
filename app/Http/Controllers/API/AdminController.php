@@ -73,7 +73,7 @@ class AdminController extends Controller
     {
         $user = auth()->user();
         if($user->role == 'super_admin'){
-            $users = user::where('id', '!=', $user->id)->whereNull('deleted_at')->get();
+            $users = user::where('id', '!=', $user->id)->whereNull('deleted_at')->with('posts')->get();
         }else{
              $users = user::where('role', '!=', 'admin')
                             ->where('role', '!=', 'super_admin')
@@ -118,5 +118,82 @@ class AdminController extends Controller
             'data' => $posts,
         ], 200);
     }
+    public function fetchAdmin()
+    {
+        $user = auth()->user();
+        if($user->role =='super_admin'){
+            $admins = user::where('role', 'admin')
+                            ->where('id', '!=', $user->id)
+                            ->whereNull('deleted_at')
+                            ->get();
+                           return response()->json([
+                            'success' => true,
+                            'data' => $admins,
+                        ], 200);
+                           
+        }else{
+            $admins = USER::where('id',$user->id)->whereNull('deleted_at')
+                            ->whereNull('deleted_at')
+                            ->get();
+                            return response()->json([
+                            'success' => true,
+                            'data' => $admins,
+                        ], 200);
+
+        }
+                        
+       
+    }
+     public function createNewAdmin(Request $request)
+    {
+        
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+           'password' => [
+            'required',
+            'string',
+            'min:8', 
+            'confirmed',
+            'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$/'
+    ],
+            'photo'=> 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            
+        ],[
+            'name.required' => 'Name is required',
+            'email.required' => 'Email is required',
+            'email.email' => 'Please enter a valid email address',
+            'email.unique' => 'This email is already registered',
+            'password.required' => 'Password is required',
+            'password.min' => 'Password must be at least 8 characters',
+            'password.confirmed' => 'Password confirmation does not match',
+            'password.regex' => 'Password must include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character',
+            
+        ]);
+        // return $validatedData;
+        if ($request->hasFile('photo')) {
+            // if ($user->photo && file_exists(public_path($user->photo))) {
+            // unlink(public_path($user->photo));}
+
+            $imageName = time().'_'.$request->photo->getClientOriginalName();
+            $request->photo->move(public_path('images'), $imageName);
+    
+            
+            $validatedData['photo'] = 'images/'.$imageName;
+        }
+        $validatedData['role'] = 'admin';
+        $user = User::create([
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'password' => $validatedData['password'],
+            'photo' => $validatedData['photo'] ?? null,
+            'role' => $validatedData['role'],
+        ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Admin created successfully',
+            'data' => $user,
+        ], 201);
+    } 
     
 }

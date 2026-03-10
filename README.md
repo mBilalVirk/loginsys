@@ -414,3 +414,9 @@ php artisan install:api
 2. Use front-end `Vite@latest`
 3. login and admin Panel
 4. try to create CRUD operations
+5. admin can view post/ users/
+
+# 10/03/2026
+
+1. admin can add admin and delete admin
+2. admin can view users and post

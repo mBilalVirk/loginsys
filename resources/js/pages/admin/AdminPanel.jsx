@@ -7,6 +7,8 @@ import { Routes, Route, Link, useNavigate } from "react-router-dom";
 
 import User from "./User";
 import Post from "./Post";
+import { Admins } from "./Admins";
+import Setting from "./Setting";
 const AdminPanel = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -17,7 +19,24 @@ const AdminPanel = () => {
     const role = AdminInfo.data.user.role;
     const image = AdminInfo.data.user.photo;
     const name = AdminInfo.data.user.name;
+    const sidebarRef = useRef(null);
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (
+                sidebarOpen &&
+                sidebarRef.current &&
+                !sidebarRef.current.contains(event.target)
+            ) {
+                setSidebarOpen(false);
+            }
+        };
 
+        document.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [sidebarOpen]);
     // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -79,6 +98,7 @@ const AdminPanel = () => {
             <Toast ref={toast} />
             {/* Sidebar */}
             <aside
+                ref={sidebarRef}
                 className={`bg-gray-900 text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform 
                 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} 
                 md:relative md:translate-x-0 transition duration-200 ease-in-out`}
@@ -110,21 +130,21 @@ const AdminPanel = () => {
                         <span className="ml-2">Post</span>
                     </Link>
 
-                    <a
-                        href="#"
-                        className="block py-2 px-4 hover:bg-gray-700 rounded"
+                    <Link
+                        to="/admin/admins"
+                        className="flex items-center gap-2 py-2 px-4 hover:bg-gray-700 rounded"
                     >
-                        <i className="pi pi-comments"></i>
-                        <span className="ml-2">Comments</span>
-                    </a>
+                        <i className="pi pi-user pi-2x"></i>
+                        <span className="ml-2">admins</span>
+                    </Link>
 
-                    <a
-                        href="#"
-                        className="block py-2 px-4 hover:bg-gray-700 rounded"
+                    <Link
+                        to="/admin/settings"
+                        className="flex items-center gap-2 py-2 px-4 hover:bg-gray-700 rounded"
                     >
                         <i className="pi pi-cog"></i>
                         <span className="ml-2">Settings</span>
-                    </a>
+                    </Link>
                 </nav>
             </aside>
 
@@ -173,7 +193,7 @@ const AdminPanel = () => {
                             {dropdownOpen && (
                                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-50">
                                     <span className="block px-4 py-2 text-gray-700">
-                                        <i className="pi pi-user pi-2x"></i>{" "}
+                                        <i className="pi pi-user pi-2x"></i>
                                         {"    "}
                                         {name}
                                     </span>
@@ -181,18 +201,24 @@ const AdminPanel = () => {
                                         href="#"
                                         className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                                     >
+                                        <i className="pi pi-user pi-2x"></i>
+                                        {"  "}
                                         Profile
                                     </a>
                                     <a
                                         href="#"
                                         className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                                     >
+                                        <i className="pi pi-cog"></i>
+                                        {"    "}
                                         Settings
                                     </a>
                                     <button
                                         className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                                         onClick={logOut}
                                     >
+                                        <i className="pi pi-sign-out"></i>
+                                        {"   "}
                                         Logout
                                     </button>
                                 </div>
@@ -208,6 +234,8 @@ const AdminPanel = () => {
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/users" element={<User />} />
                         <Route path="/posts" element={<Post />} />
+                        <Route path="/admins" element={<Admins />} />
+                        <Route path="/settings" element={<Setting />} />
                         {/* You can add more pages like /posts, /comments */}
                     </Routes>
                 </main>
