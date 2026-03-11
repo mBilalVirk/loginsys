@@ -67,6 +67,8 @@ Route::get('/admin/edit/{id}', [App\Http\Controllers\AdminController::class, 'ed
 Route::post('admin/update/{id}',[App\Http\Controllers\AdminController::class, 'userUpdate'])->name('admin.userUpdate');
 Route::delete('admin/delete/{id}',[App\Http\Controllers\AdminController::class, 'delete'])->name('admin.delete');
 Route::get('/admin/setting', [App\Http\Controllers\AdminController::class, 'setting'])->name('admin.setting');
+Route::get('/admin/search', [App\Http\Controllers\AdminController::class, 'search'])->name('admin.search');
+Route::get('/admin/searching', [App\Http\Controllers\AdminController::class, 'searchData'])->name('admin.searchData');
 Route::post('/admin/updateProfile',[App\Http\Controllers\AdminController::class, 'updateProfile'])->name('admin.updateProfile');
 // ajax using code
 Route::get('/admin/adminsview', function () {

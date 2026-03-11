@@ -64,11 +64,12 @@
     
 </nav>
 
+<!-- Sidebar + Main Content -->
 <div class="container-fluid">
     <div class="row">
 
         <!-- Sidebar -->
-        <div class="col-md-2 sidebar p-0">
+        <nav class="col-12 col-sm-4 col-md-3 col-lg-2 sidebar p-0">
             <a href="{{ route('admin.dashboard') }}">Dashboard</a>
             <a href="{{ route('userView') }}">Users</a>
             <a href="{{ route('admin.posts') }}">Posts</a>
@@ -76,17 +77,15 @@
             @if(Auth::user()->role == 'super_admin')
             <a href="{{ route('adminsview') }}">Add New Admin</a>
             @endif
-
             <a href="{{ route('admin.DeletedData') }}">Deleted Record</a>
+            <a href="{{ route('admin.search') }}">Search</a>
             <a href="{{ route('admin.setting') }}">Settings</a>
-           
-        </div>
+        </nav>
 
         <!-- Main Content -->
-        <div class="col-md-10 p-4">
-           @yield('content')
-
-        </div>
+        <main class="col-12 col-sm-8 col-md-9 col-lg-10 p-4">
+            @yield('content')
+        </main>
 
     </div>
 </div>

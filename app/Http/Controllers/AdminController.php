@@ -14,7 +14,7 @@ class AdminController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index() 
+    public function index()
     {
         return view('admin.login');
     }
@@ -24,123 +24,109 @@ class AdminController extends Controller
         $postCount = Post::count();
         $adminCount = User::where('role', 'admin')->count();
         $comments = Comment::count();
-        
-        return view('admin.dashboard', compact('userCount', 'postCount', 'adminCount','comments'));
-        
+
+        return view('admin.dashboard', compact('userCount', 'postCount', 'adminCount', 'comments'));
     }
     public function fetch()
     {
         $user = auth()->user();
-        if($user->role == 'super_admin'){
+        if ($user->role == 'super_admin') {
             $users = user::where('id', '!=', $user->id)->whereNull('deleted_at')->paginate(5);
-        }else{
-             $users = user::where('role', '!=', 'admin')
-                            ->where('role', '!=', 'super_admin')
-                            ->whereNull('deleted_at')->paginate(5);
+        } else {
+            $users = user::where('role', '!=', 'admin')->where('role', '!=', 'super_admin')->whereNull('deleted_at')->paginate(5);
         }
-        return response()->json($users); 
-        // return view('admin.users', compact('users','user')); 
-       
+        return response()->json($users);
+        // return view('admin.users', compact('users','user'));
     }
-      public function fetchAdmin()
+    public function fetchAdmin()
     {
         $user = auth()->user();
-        if($user->role =='super_admin'){
-            $admins = user::where('role', 'admin')
-                            ->where('id', '!=', $user->id)
-                            ->whereNull('deleted_at')
-                            ->get();
-                            return response()->json($admins); 
-                            // return view('admin.admins', compact('admins'));
-
-        }else{
-            $admins = USER::where('id',$user->id)->whereNull('deleted_at')
-                            ->whereNull('deleted_at')
-                            ->get();
-                            return response()->json($admins); 
-                    // return view('admin.admins', compact('admins'));
-
+        if ($user->role == 'super_admin') {
+            $admins = user::where('role', 'admin')->where('id', '!=', $user->id)->whereNull('deleted_at')->get();
+            return response()->json($admins);
+            // return view('admin.admins', compact('admins'));
+        } else {
+            $admins = USER::where('id', $user->id)->whereNull('deleted_at')->whereNull('deleted_at')->get();
+            return response()->json($admins);
+            // return view('admin.admins', compact('admins'));
         }
-                        
-       
     }
     public function adminlogin(Request $request)
-{
-    $credentials = $request->validate(
-        [
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-        ],
-        [
-            'email.required' => 'Email is required',
-            'email.email'    => 'Please enter a valid email address',
-            'password.required' => 'Password is required',
-        ]
-    );
-    // return $credentials;
-    $user = USER::where('email',$credentials['email'])->first();
-    if($user == null){
-                return back()->withErrors([
+    {
+        $credentials = $request->validate(
+            [
+                'email' => 'required|string|email',
+                'password' => 'required|string',
+            ],
+            [
+                'email.required' => 'Email is required',
+                'email.email' => 'Please enter a valid email address',
+                'password.required' => 'Password is required',
+            ],
+        );
+        // return $credentials;
+        $user = USER::where('email', $credentials['email'])->first();
+        if ($user == null) {
+            return back()
+                ->withErrors([
+                    'email' => 'Invalid email or Password',
+                ])
+                ->onlyInput('email');
+        }
+        if ($user->role !== 'admin' && $user->role !== 'super_admin') {
+            return redirect()->back()->with('status', 'You are not allowed to login as admin');
+        } else {
+            if (auth()->attempt($credentials)) {
+                $request->session()->regenerate();
+                return redirect()->route('admin.dashboard');
+            }
+        }
+        if (!auth()->attempt($credentials)) {
+            return back()->withErrors([
                 'email' => 'Invalid email or Password',
-            ])->onlyInput('email');
-            }
-    if ($user->role !== 'admin' && $user->role !== 'super_admin') {
-            return redirect()
-            ->back()
-            ->with('status', 'You are not allowed to login as admin');
-    }else{
-        if (auth()->attempt($credentials)) {
-            $request->session()->regenerate();
-            return redirect()->route('admin.dashboard');
-            }
-    }
-    if (!auth()->attempt($credentials)) {
-        return back()->withErrors([
-            'email' => 'Invalid email or Password',
             ]);
-            }
-            
-}
+        }
+    }
 
-
-
-    public function edit(Request $request, $id){
+    public function edit(Request $request, $id)
+    {
         $user = user::FindOrFail($id);
         return view('admin.edit', compact('user'));
     }
-     public function userUpdate(Request $request, $id){
+    public function userUpdate(Request $request, $id)
+    {
         $user = user::FindOrFail($id);
         $validatedData = $request->validate(
             [
-                'name'=>'required|string|max:255',
+                'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-                'photo'=> 'nullable|image|mimes:jpeg,png,jpg|max:2048'
-            ],[
-                'name.required'=>'Name is Required',
-                'email.required'=>'Email is Required',
-                'name.email'=>'Please enter a valid email',
-                'name.unique'=>'Email already Exist'
-            ]
-      );
-    //   return $validatedData;
-     if ($request->hasFile('photo')) {
-    if ($user->photo && file_exists(public_path($user->photo))) {
-    unlink(public_path($user->photo));
-}
+                'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            ],
+            [
+                'name.required' => 'Name is Required',
+                'email.required' => 'Email is Required',
+                'name.email' => 'Please enter a valid email',
+                'name.unique' => 'Email already Exist',
+            ],
+        );
+        //   return $validatedData;
+        if ($request->hasFile('photo')) {
+            if ($user->photo && file_exists(public_path($user->photo))) {
+                unlink(public_path($user->photo));
+            }
 
-    $imageName = time().'_'.$request->photo->getClientOriginalName();
-    $request->photo->move(public_path('images'), $imageName);
+            $imageName = time() . '_' . $request->photo->getClientOriginalName();
+            $request->photo->move(public_path('images'), $imageName);
 
-    
-    $validatedData['photo'] = 'images/'.$imageName;
-}
+            $validatedData['photo'] = 'images/' . $imageName;
+        }
 
-      $user -> update($validatedData);
-      return response()->json(['res'=>'User updated successfully!']);
-    //   return redirect()->back()->with('status','User updated successfully.');
+        $user->update($validatedData);
+        return response()->json(['res' => 'User updated successfully!']);
+        //   return redirect()->back()->with('status','User updated successfully.');
         // return redirect()->route('admin.index')->with('status','User updated successfully.');
     }
-     public function logout(Request $request)
+    public function logout(Request $request)
     {
         auth()->logout();
         session()->invalidate();
@@ -148,17 +134,19 @@ class AdminController extends Controller
         return redirect()->route('admin.login');
     }
 
-    public function delete($id){
+    public function delete($id)
+    {
         $user = user::FindOrFail($id);
-        $user -> delete();
-        return response()->json(['res'=>'Delete successfully']);
+        $user->delete();
+        return response()->json(['res' => 'Delete successfully']);
         // return redirect()->back()->with('status','User deleted successfully.');
         // return redirect()->route('admin.index')->with('status', 'User deleted successfully');
     }
-    public function deleteComment($id){
+    public function deleteComment($id)
+    {
         $comment = Comment::FindOrFail($id);
         $comment->delete();
-        
+
         return redirect()->back()->with('status', 'Comment deleted successfully');
         // return "<h1>Comment deleted successfully</h1>";
         //         return redirect()->back()->with('toast', [
@@ -167,91 +155,140 @@ class AdminController extends Controller
         //     'message' => 'Your comment was deleted successfully.'
         // ]);
     }
-    public function userPosts(Request $request){
+    public function userPosts(Request $request)
+    {
         $posts = USER::with('posts.comments')->paginate(3);
-    //    return $posts;
-      if($request->expectsJson()){
-        return response->json($posts);
-      }
+        //    return $posts;
+        if ($request->expectsJson()) {
+            return response->json($posts);
+        }
         return view('admin.posts', compact('posts'));
     }
-        public function setting(){
+    public function setting()
+    {
+        return view('admin.setting');
+    }
+    public function search()
+    {
+        return view('admin.search');
+    }
+    public function searchData(Request $request)
+    {
+        $user = auth()->user();
+        $category = $request->input('category');
+        $query = $request->input('search');
 
-            return view('admin.setting');
+        $results = [];
+        if ($category === 'users') {
+            $results = User::where('role', 'user')
+                ->where(function ($q) use ($query) {
+                    $q->where('name', 'like', "%$query%")->orWhere('email', 'like', "%$query%");
+                })
+                ->get();
+        } elseif ($category === 'posts') {
+            $results = Post::where('content', 'like', "%$query%")
+                ->orWhereHas('user', function ($q) use ($query) {
+                    $q->where('name', 'like', "%$query%");
+                })
+                ->with('user')
+                ->get();
+        } elseif ($category === 'admins') {
+            $results = User::where('role', 'admin')
+                ->where(function ($q) use ($query) {
+                    $q->where('name', 'like', "%$query%")->orWhere('email', 'like', "%$query%");
+                })
+                ->get();
         }
-        public function updateProfile(Request $request){
-            $user = auth()->user();
-            $validatedData = $request->validate([
+        if ($results) {
+            return response()->json(
+                [
+                    'success' => true,
+                    'data' => $results,
+                ],
+                200,
+            );
+        } else {
+            return response()->json(
+                [
+                    'success' => false,
+                    'data' => $results,
+                ],
+                400,
+            );
+        }
+    }
+    public function updateProfile(Request $request)
+    {
+        $user = auth()->user();
+        $validatedData = $request->validate(
+            [
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
                 'password' => 'nullable|string|min:8|confirmed',
-                'photo'=> 'nullable|image|mimes:jpeg,png,jpg|max:2048'
-            ],[
+                'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            ],
+            [
                 'name.required' => 'Name is required',
                 'email.required' => 'Email is required',
                 'email.email' => 'Please enter a valid email address',
                 'email.unique' => 'This email is already registered',
                 'password.min' => 'Password must be at least 8 characters',
                 'password.confirmed' => 'Password confirmation does not match',
-            ]);
+            ],
+        );
 
-             if (!$request->filled('password')) {
-        unset($validatedData['password']);
-    } else {
-        $validatedData['password'] = Hash::make($validatedData['password']);
-    }       if ($request->hasFile('photo')) {
+        if (!$request->filled('password')) {
+            unset($validatedData['password']);
+        } else {
+            $validatedData['password'] = Hash::make($validatedData['password']);
+        }
+        if ($request->hasFile('photo')) {
             if ($user->photo && file_exists(public_path($user->photo))) {
-            unlink(public_path($user->photo));}
-            $imageName = time().'_'.$request->photo->getClientOriginalName();
+                unlink(public_path($user->photo));
+            }
+            $imageName = time() . '_' . $request->photo->getClientOriginalName();
             $request->photo->move(public_path('images'), $imageName);
-            $validatedData['photo'] = 'images/'.$imageName;
+            $validatedData['photo'] = 'images/' . $imageName;
         }
 
-            // if password in not filled, it will not be updated
+        // if password in not filled, it will not be updated
 
-            $user->update($validatedData);
-            return response()->json(['res' => 'Profile Updated Successfully']); 
-            // return redirect()->back()->with('success', 'Profile updated successfully.');
-        }
+        $user->update($validatedData);
+        return response()->json(['res' => 'Profile Updated Successfully']);
+        // return redirect()->back()->with('success', 'Profile updated successfully.');
+    }
     /**
      * Show the form for creating a new resource.
      */
     public function createNewAdmin(Request $request)
     {
-        
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-           'password' => [
-            'required',
-            'string',
-            'min:8', 
-            'confirmed',
-            'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$/'
-    ],
-            'photo'=> 'nullable|image|mimes:jpeg,png,jpg|max:2048'
-            
-        ],[
-            'name.required' => 'Name is required',
-            'email.required' => 'Email is required',
-            'email.email' => 'Please enter a valid email address',
-            'email.unique' => 'This email is already registered',
-            'password.required' => 'Password is required',
-            'password.min' => 'Password must be at least 8 characters',
-            'password.confirmed' => 'Password confirmation does not match',
-            'password.regex' => 'Password must include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character',
-            
-        ]);
+        $validatedData = $request->validate(
+            [
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => ['required', 'string', 'min:8', 'confirmed', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$/'],
+                'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            ],
+            [
+                'name.required' => 'Name is required',
+                'email.required' => 'Email is required',
+                'email.email' => 'Please enter a valid email address',
+                'email.unique' => 'This email is already registered',
+                'password.required' => 'Password is required',
+                'password.min' => 'Password must be at least 8 characters',
+                'password.confirmed' => 'Password confirmation does not match',
+                'password.regex' => 'Password must include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character',
+            ],
+        );
         // return $validatedData;
         if ($request->hasFile('photo')) {
             // if ($user->photo && file_exists(public_path($user->photo))) {
             // unlink(public_path($user->photo));}
 
-            $imageName = time().'_'.$request->photo->getClientOriginalName();
+            $imageName = time() . '_' . $request->photo->getClientOriginalName();
             $request->photo->move(public_path('images'), $imageName);
-    
-            
-            $validatedData['photo'] = 'images/'.$imageName;
+
+            $validatedData['photo'] = 'images/' . $imageName;
         }
         $validatedData['role'] = 'admin';
         $user = User::create([
@@ -261,55 +298,66 @@ class AdminController extends Controller
             'photo' => $validatedData['photo'] ?? null,
             'role' => $validatedData['role'],
         ]);
-        return response()->json(['res'=>'New admin created successfully']);
+        return response()->json(['res' => 'New admin created successfully']);
         // return redirect()->back()->with('success','New admin created successfully');
-    } 
-  
-    public function fetchTrashedData(){
-        $users = USER::onlyTrashed()
-                        ->where('role','user')->get();
+    }
+
+    public function fetchTrashedData()
+    {
+        $users = USER::onlyTrashed()->where('role', 'user')->get();
         $posts = POST::onlyTrashed()->get();
-        $admins = USER::onlyTrashed()
-                        ->where('role','admin')->get();
+        $admins = USER::onlyTrashed()->where('role', 'admin')->get();
         $comments = COMMENT::onlyTrashed()->get();
         $friends = Friend::onlyTrashed()->get();
-        return view('admin.Deleted', compact('users','posts', 'admins', 'comments','friends'));
+        return view('admin.Deleted', compact('users', 'posts', 'admins', 'comments', 'friends'));
     }
-    public function restoreUser($id){
+    public function restoreUser($id)
+    {
         $user = USER::withTrashed()->find($id);
         $user->restore();
-        return redirect()->back()->with('status','User Restore Successfully!');
-    }public function permanentDeleteUser($id){
+        return redirect()->back()->with('status', 'User Restore Successfully!');
+    }
+    public function permanentDeleteUser($id)
+    {
         $user = USER::withTrashed()->find($id);
         $user->forceDelete();
-        return redirect()->back()->with('status','User Permanently Deleted!');
+        return redirect()->back()->with('status', 'User Permanently Deleted!');
     }
-    public function restorePost($id){
+    public function restorePost($id)
+    {
         $post = POST::withTrashed()->find($id);
         $post->restore();
-        return redirect()->back()->with('status','Post Restore Successfully!');
-    }public function permanentDeletePost($id){
+        return redirect()->back()->with('status', 'Post Restore Successfully!');
+    }
+    public function permanentDeletePost($id)
+    {
         $post = POST::withTrashed()->find($id);
         $post->forceDelete();
-        return redirect()->back()->with('status','Post Permanently Deleted!');
+        return redirect()->back()->with('status', 'Post Permanently Deleted!');
     }
-    public function restoreComment($id){
+    public function restoreComment($id)
+    {
         $comment = COMMENT::withTrashed()->find($id);
         $comment->restore();
-        return redirect()->back()->with('status','Comment Restore Successfully!');
-    }public function permanentDeleteComment($id){
+        return redirect()->back()->with('status', 'Comment Restore Successfully!');
+    }
+    public function permanentDeleteComment($id)
+    {
         $comment = COMMENT::withTrashed()->find($id);
         $comment->forceDelete();
-        return redirect()->back()->with('status','Comment Permanently Deleted!');
+        return redirect()->back()->with('status', 'Comment Permanently Deleted!');
     }
-    public function restoreAdmin($id){
+    public function restoreAdmin($id)
+    {
         $admin = USER::withTrashed()->find($id);
         $admin->restore();
-        return redirect()->back()->with('status','Admin Restore Successfully!');
-    }public function permanentDeleteAdmin($id){
+        return redirect()->back()->with('status', 'Admin Restore Successfully!');
+    }
+    public function permanentDeleteAdmin($id)
+    {
         $admin = USER::withTrashed()->find($id);
         $admin->forceDelete();
-        return redirect()->back()->with('status','Admin Permanently Deleted!');
+        return redirect()->back()->with('status', 'Admin Permanently Deleted!');
     }
     public function fetchFriends()
     {
@@ -317,20 +365,24 @@ class AdminController extends Controller
         return response()->json($friends);
         // return view('admin.friends', compact('friends'));
     }
-    public function deleteFriend($id){
+    public function deleteFriend($id)
+    {
         $friend = Friend::FindOrFail($id);
-        $friend -> delete();
-        return redirect()->back()->with('status','Friend deleted successfully.');
+        $friend->delete();
+        return redirect()->back()->with('status', 'Friend deleted successfully.');
         // return redirect()->route('admin.index')->with('status', 'User deleted successfully');
     }
-    public function restoreFriend($id){
+    public function restoreFriend($id)
+    {
         $friend = Friend::withTrashed()->find($id);
         $friend->restore();
-        return redirect()->back()->with('status','Friendship Restore Successfully!');
-    }public function permanentDeleteFriend($id){
+        return redirect()->back()->with('status', 'Friendship Restore Successfully!');
+    }
+    public function permanentDeleteFriend($id)
+    {
         $friend = Friend::withTrashed()->find($id);
         $friend->forceDelete();
-        return redirect()->back()->with('status','Friendship Permanently Deleted!');
+        return redirect()->back()->with('status', 'Friendship Permanently Deleted!');
     }
     /**
      * Store a newly created resource in storage.
@@ -351,12 +403,10 @@ class AdminController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-   
 
     /**
      * Update the specified resource in storage.
      */
-   
 
     /**
      * Remove the specified resource from storage.
