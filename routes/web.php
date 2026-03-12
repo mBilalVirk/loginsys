@@ -6,7 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\MessageController;
 
-
+Route::get('generatepdf', [App\Http\Controllers\GeneratePDFcontroller::class, 'GeneratePDF']);
 
 Route::get('/vite/{any?}', function () {
     return view('vite'); 

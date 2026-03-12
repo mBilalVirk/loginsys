@@ -46,7 +46,7 @@ class AdminController extends Controller
             return response()->json($admins);
             // return view('admin.admins', compact('admins'));
         } else {
-            $admins = USER::where('id', $user->id)->whereNull('deleted_at')->whereNull('deleted_at')->get();
+            $admins = User::where('id', $user->id)->whereNull('deleted_at')->whereNull('deleted_at')->get();
             return response()->json($admins);
             // return view('admin.admins', compact('admins'));
         }
@@ -65,7 +65,7 @@ class AdminController extends Controller
             ],
         );
         // return $credentials;
-        $user = USER::where('email', $credentials['email'])->first();
+        $user = User::where('email', $credentials['email'])->first();
         if ($user == null) {
             return back()
                 ->withErrors([
@@ -157,7 +157,7 @@ class AdminController extends Controller
     }
     public function userPosts(Request $request)
     {
-        $posts = USER::with('posts.comments')->paginate(3);
+        $posts = User::with('posts.comments')->paginate(3);
         //    return $posts;
         if ($request->expectsJson()) {
             return response->json($posts);
@@ -304,58 +304,58 @@ class AdminController extends Controller
 
     public function fetchTrashedData()
     {
-        $users = USER::onlyTrashed()->where('role', 'user')->get();
-        $posts = POST::onlyTrashed()->get();
-        $admins = USER::onlyTrashed()->where('role', 'admin')->get();
-        $comments = COMMENT::onlyTrashed()->get();
+        $users = User::onlyTrashed()->where('role', 'user')->get();
+        $posts = Post::onlyTrashed()->get();
+        $admins = User::onlyTrashed()->where('role', 'admin')->get();
+        $comments = Comment::onlyTrashed()->get();
         $friends = Friend::onlyTrashed()->get();
         return view('admin.Deleted', compact('users', 'posts', 'admins', 'comments', 'friends'));
     }
     public function restoreUser($id)
     {
-        $user = USER::withTrashed()->find($id);
+        $user = User::withTrashed()->find($id);
         $user->restore();
         return redirect()->back()->with('status', 'User Restore Successfully!');
     }
     public function permanentDeleteUser($id)
     {
-        $user = USER::withTrashed()->find($id);
+        $user = User::withTrashed()->find($id);
         $user->forceDelete();
         return redirect()->back()->with('status', 'User Permanently Deleted!');
     }
     public function restorePost($id)
     {
-        $post = POST::withTrashed()->find($id);
+        $post = Post::withTrashed()->find($id);
         $post->restore();
         return redirect()->back()->with('status', 'Post Restore Successfully!');
     }
     public function permanentDeletePost($id)
     {
-        $post = POST::withTrashed()->find($id);
+        $post = Post::withTrashed()->find($id);
         $post->forceDelete();
         return redirect()->back()->with('status', 'Post Permanently Deleted!');
     }
     public function restoreComment($id)
     {
-        $comment = COMMENT::withTrashed()->find($id);
+        $comment = Comment::withTrashed()->find($id);
         $comment->restore();
         return redirect()->back()->with('status', 'Comment Restore Successfully!');
     }
     public function permanentDeleteComment($id)
     {
-        $comment = COMMENT::withTrashed()->find($id);
+        $comment = Comment::withTrashed()->find($id);
         $comment->forceDelete();
         return redirect()->back()->with('status', 'Comment Permanently Deleted!');
     }
     public function restoreAdmin($id)
     {
-        $admin = USER::withTrashed()->find($id);
+        $admin = User::withTrashed()->find($id);
         $admin->restore();
         return redirect()->back()->with('status', 'Admin Restore Successfully!');
     }
     public function permanentDeleteAdmin($id)
     {
-        $admin = USER::withTrashed()->find($id);
+        $admin = User::withTrashed()->find($id);
         $admin->forceDelete();
         return redirect()->back()->with('status', 'Admin Permanently Deleted!');
     }

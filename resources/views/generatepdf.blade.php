@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ $title ?? 'Invoice' }}</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet">
+    <style>
+        /* Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f5f6fa;
+            color: #333;
+        }
+
+        .invoice-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 40px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Header */
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .invoice-header .title {
+            font-size: 28px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            color: #2f3640;
+        }
+
+        .invoice-header .date {
+            font-size: 14px;
+            color: #718093;
+            margin-top: 4px;
+        }
+
+        .invoice-number {
+            font-size: 18px;
+            color: #718093;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table thead {
+            background-color: #2f3640;
+            color: #fff;
+        }
+
+        table thead th {
+            text-align: left;
+            padding: 12px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        table tbody tr {
+            border-bottom: 1px solid #dcdde1;
+        }
+
+        table tbody td {
+            padding: 12px;
+            font-size: 14px;
+            color: #2f3640;
+        }
+
+        table tbody tr:nth-child(even) {
+            background-color: #f1f2f6;
+        }
+
+        /* Footer / Total */
+        .invoice-footer {
+            margin-top: 30px;
+            text-align: right;
+            font-size: 14px;
+            color: #718093;
+        }
+
+        /* Responsive */
+        @media only screen and (max-width: 768px) {
+            .invoice-container {
+                padding: 20px;
+            }
+
+            .invoice-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .invoice-number {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="invoice-container">
+        <!-- Header -->
+        <div class="invoice-header">
+            <div>
+                <h2 class="title">INVOICE</h2>
+                <p class="date">{{ $date }}</p>
+            </div>
+            <div class="invoice-number">#{{ $invoice_number ?? '08279' }}</div>
+        </div>
+
+        <!-- Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>NAME</th>
+                    <th>EMAIL</th>
+                    <th>AMOUNT</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($users as $user)
+                    <tr>
+                        <td>{{ $user->id }}</td>
+                        <td>{{ $user->name }}</td>
+                        <td>{{ $user->email }}</td>
+                        <td>{{ rand(100, 1000) }}$</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+
+        <!-- Footer -->
+        <div class="invoice-footer">
+            <p>Thank you for your business!</p>
+        </div>
+    </div>
+</body>
+
+</html>

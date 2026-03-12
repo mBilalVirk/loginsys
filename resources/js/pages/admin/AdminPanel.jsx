@@ -9,6 +9,7 @@ import User from "./User";
 import Post from "./Post";
 import { Admins } from "./Admins";
 import Setting from "./Setting";
+import Search from "./Search";
 const AdminPanel = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -145,6 +146,14 @@ const AdminPanel = () => {
                         <i className="pi pi-cog"></i>
                         <span className="ml-2">Settings</span>
                     </Link>
+
+                    <Link
+                        to="/admin/search"
+                        className="flex items-center gap-2 py-2 px-4 hover:bg-gray-700 rounded"
+                    >
+                        <i className="pi pi-search"></i>
+                        <span className="ml-2">Search</span>
+                    </Link>
                 </nav>
             </aside>
 
@@ -236,6 +245,7 @@ const AdminPanel = () => {
                         <Route path="/posts" element={<Post />} />
                         <Route path="/admins" element={<Admins />} />
                         <Route path="/settings" element={<Setting />} />
+                        <Route path="/search" element={<Search />} />
                         {/* You can add more pages like /posts, /comments */}
                     </Routes>
                 </main>

@@ -40,6 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/admin/post', [AdminController::class,'userPosts'])->middleware('admin');
     Route::get('/admin/fetchadmin', [AdminController::class,'fetchAdmin'])->middleware('admin');
     Route::post('/admin/create', [AdminController::class,'createNewAdmin'])->middleware('admin');
+    Route::get('/admin/search', [AdminController::class,'search'])->middleware('admin');
 
 });
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
