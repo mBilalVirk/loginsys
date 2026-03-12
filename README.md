@@ -428,5 +428,12 @@ php artisan install:api
 # 12/03/2026
 
 1. Search in admin panel front-end vite@latest
-2. pdf generator. `https://github.com/barryvdh/laravel-dompdf`
-3. cmd `composer require barryvdh/laravel-dompdf`
+2. pdf generator.
+3. ```cmd
+   https://github.com/barryvdh/laravel-dompdf
+   ```
+
+```````
+1. cmd `composer require barryvdh/laravel-dompdf`
+2. cmd ``````
+```````
