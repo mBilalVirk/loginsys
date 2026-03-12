@@ -432,8 +432,3 @@ php artisan install:api
 3. ```cmd
    https://github.com/barryvdh/laravel-dompdf
    ```
-
-```````
-1. cmd `composer require barryvdh/laravel-dompdf`
-2. cmd ``````
-```````
