@@ -8,7 +8,7 @@ use App\Models\Friend;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
-
+use App\Charts\UsersChart;
 class AdminController extends Controller
 {
     /**
@@ -24,8 +24,8 @@ class AdminController extends Controller
         $postCount = Post::count();
         $adminCount = User::where('role', 'admin')->count();
         $comments = Comment::count();
-
-        return view('admin.dashboard', compact('userCount', 'postCount', 'adminCount', 'comments'));
+        $chart = new UsersChart();
+        return view('admin.dashboard', compact('userCount', 'postCount', 'adminCount', 'comments','chart'));
     }
     public function fetch()
     {

@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import { Toast } from "primereact/toast";
 
 const Search = () => {
     const [searchData, setSearchData] = useState([]);
     const [searched, setSearched] = useState(false);
     const [open, setOpen] = useState(false);
     const [category, setCategory] = useState("Categories");
+    const toast = useRef(null);
     const [input, setInput] = useState({
         search: "",
     });
@@ -29,8 +31,26 @@ const Search = () => {
             category: category,
             search: input.search,
         };
+        if (category === "Categories") {
+            toast.current.show({
+                severity: "error",
+                summary: "error",
+                detail: "Please select a category before searching.!",
+                life: 3000,
+            });
+            return; // Stop request
+        }
 
-        console.log(formData);
+        if (!input.search.trim()) {
+            toast.current.show({
+                severity: "error",
+                summary: "error",
+                detail: "Please enter a search term.!",
+                life: 3000,
+            });
+            return;
+        }
+        // console.log(formData);
 
         // Example API call
         // const res = await fetch(`/api/search?type=${category}&query=${input.search}`);
@@ -48,20 +68,33 @@ const Search = () => {
             );
             const data = await response.json();
             if (response.ok) {
-                console.log(data.data);
+                // console.log(data.data);
                 setSearchData(data.data);
                 setSearched(true);
             } else {
                 setSearchData([]);
-                console.log("Not Fetch anything");
+                toast.current.show({
+                    severity: "error",
+                    summary: "error",
+                    detail: data.message || "Something wrong!",
+                    life: 3000,
+                });
+                // console.log("Not Fetch anything");
             }
         } catch (error) {
-            console.log(error);
+            toast.current.show({
+                severity: "error",
+                summary: "error",
+                detail: "Something wrong!",
+                life: 3000,
+            });
+            // console.log(error);
         }
     };
 
     return (
         <div className="bg-white rounded shadow p-6">
+            <Toast ref={toast} />
             <h2 className="text-lg font-semibold mb-4">Search:</h2>
 
             <div className="relative mt-2 w-full max-w-sm min-w-[400px] m-auto">
@@ -127,6 +160,7 @@ const Search = () => {
                         onChange={handleChange}
                         className="w-full bg-transparent text-slate-700 text-sm border border-slate-200 rounded-md px-28 py-2 focus:outline-none"
                         placeholder="Search..."
+                        required
                     />
 
                     {/* Submit Button */}

@@ -208,7 +208,15 @@ class AdminController extends Controller
         $user = auth()->user();
         $category = $request->get('category');
         $query = $request->get('query');
-
+        if(!$query || $category == 'Categories'){
+             return response()->json(
+                [
+                    'success' => false,
+                    'message'=> 'Please filled proper input-field!'
+                ],
+                400,
+            );
+        }
         $results = [];
         if ($category === 'users') {
             $results = User::where('role', 'user')
