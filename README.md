@@ -429,6 +429,36 @@ php artisan install:api
 
 1. Search in admin panel front-end vite@latest
 2. pdf generator.
-3. ```cmd
+3. ```
    https://github.com/barryvdh/laravel-dompdf
    ```
+4. ```cmd
+       php artisan vendor:publish --provider="Barryvdh\DomPDF\ServiceProvider"
+   ```
+5. Generate PFD controller. Generate data what kind of pdf data are you want to generate
+
+```php
+
+    $users = User::get();
+    $data = [
+        'title'=> 'Users',
+        'date' => date('y/m/d'),
+        'users'=> $users
+    ];
+    $pdf = Pdf::loadView('generatepdf', $data); //generate the pdf
+    return $pdf->download('user.pdf'); //download the pdf
+    return $pdf->stream('user.pdf'); // preview the pdf on browser
+```
+
+6.  | Function                    | What it does                                                                |
+    | --------------------------- | --------------------------------------------------------------------------- |
+    | `stream('filename.pdf')`    | Shows the PDF in the browser directly. Users can view or save it.           |
+    | `download('filename.pdf')`  | Forces download of the PDF to the user’s computer.                          |
+    | `output()`                  | Returns the raw PDF as a string (useful if you want to attach it to email). |
+    | `save('path/filename.pdf')` | Saves the PDF to the server filesystem.                                     |
+
+```php
+$pdf = PDF::loadView('invoice', $data)
+          ->setPaper('A4', 'landscape') //you can formate the document like landscape portrait also paper size
+          ->setWarnings(false);
+```
