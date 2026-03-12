@@ -436,6 +436,7 @@ php artisan install:api
        php artisan vendor:publish --provider="Barryvdh\DomPDF\ServiceProvider"
    ```
 5. Generate PFD controller. Generate data what kind of pdf data are you want to generate
+6. Create view where you can design the output the pdf. in `.blade.php`
 
 ```php
 
@@ -461,4 +462,37 @@ php artisan install:api
 $pdf = PDF::loadView('invoice', $data)
           ->setPaper('A4', 'landscape') //you can formate the document like landscape portrait also paper size
           ->setWarnings(false);
+```
+
+7. Trying to add chart in laravel
+
+```cmd
+composer require consoletvs/charts
+php artisan make:chart UsersChart
+```
+
+8. Show the Admin and user Ration in chart. Use `app/chart/UserChart.php`
+
+```php
+$this->labels(['Admins', 'Users']); // X-axis labels
+
+        $admins = User::where('role', 'admin')->count();
+        $users = User::where('role', 'user')->count();
+
+        $this->dataset('User Roles', 'bar', [$admins, $users])
+            ->backgroundColor(['#f87979', '#7acbf9']);
+```
+
+9. import `use App\Charts\UsersChart;` in UserController
+10. Create a variable and assign the chart `$chart = new UsersChart();`
+11. Return the the variable to the view
+12. In view past this code
+
+```php
+<div style="width: 600px; margin: auto;">
+        {!! $chart->container() !!}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {!! $chart->script() !!}
 ```
