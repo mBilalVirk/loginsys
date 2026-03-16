@@ -496,3 +496,7 @@ $this->labels(['Admins', 'Users']); // X-axis labels
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     {!! $chart->script() !!}
 ```
+
+# 16/03/2026
+
+1. Complete some coursera courses.
