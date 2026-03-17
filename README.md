@@ -500,3 +500,57 @@ $this->labels(['Admins', 'Users']); // X-axis labels
 # 16/03/2026
 
 1. Complete some coursera courses.
+
+# 17/03/2026
+
+1. Adding pdf in different Views.
+2. Generate Excel. first check `C:\xampp\php\php.ini` uncomment `extension=gd and extension=zip`.
+3. Install this: `https://docs.laravel-excel.com/3.1/getting-started/installation.html`.
+4. Run this: ` php artisan make:export UserExport`.
+5. You can export/import excel using different method. Know we try to do with from view.
+6. `UserExport` Need Some changes. Like change impliments must be `Fromview`.
+7. Here is code of `UserExport`.
+
+```php
+<?php
+
+namespace App\Exports;
+
+use App\Models\User;
+use Illuminate\View\View;
+use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+
+class UserExport implements FromView, ShouldAutoSize
+{
+    use Exportable;
+
+    private $data;
+
+    public function __construct()
+    {
+        $users = User::all(); // fetch all users
+        $this->data = [
+            'title' => 'Users',
+            'date' => date('Y/m/d'),
+            'users' => $users
+        ];
+    }
+
+    public function view(): View
+    {
+        return view('exportexcel', [
+            'data' => $this->data // pass to view
+        ]);
+    }
+}
+```
+
+8. Controller Code.
+
+```php
+ public function ExportExcel(){
+        return Excel::download(new UserExport, 'user.xlsx');
+    }
+```

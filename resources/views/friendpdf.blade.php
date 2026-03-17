@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title ?? 'Invoice' }}</title>
+    <title>{{ $title ?? 'Friends' }}</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet">
     <style>
         /* Reset & Base */
@@ -119,7 +119,7 @@
         <!-- Header -->
         <div class="invoice-header">
             <div>
-                <h2 class="title">USER INFO</h2>
+                <h2 class="title">Friends INFO</h2>
                 <p class="date">{{ $date }}</p>
             </div>
             <div class="invoice-number">#{{ $invoice_number ?? '08279' }}</div>
@@ -130,18 +130,18 @@
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>NAME</th>
-                    <th>EMAIL</th>
-                    <th>TOTAL NUMBER OF FRIENDS</th>
+                    <th>Sender</th>
+                    <th>Receiver</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($users as $user)
+                @foreach ($friends as $friend)
                     <tr>
-                        <td>{{ $user->id }}</td>
-                        <td>{{ $user->name }}</td>
-                        <td>{{ $user->email }}</td>
-                        <td>{{ $user->acceptedFriends->count() }}</td>
+                        <td>{{ $friend->id }}</td>
+                        <td>{{ $friend->sender->name }}</td>
+                        <td>{{ $friend->receiver->name }}</td>
+                        <td>{{ $friend->status }}</td>
                     </tr>
                 @endforeach
             </tbody>

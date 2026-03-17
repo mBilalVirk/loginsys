@@ -11,6 +11,8 @@
                 <div class="card-body">
                     <h5 class="card-title">Users</h5>
                     <p class="card-text fs-4">{{ $userCount }}</p>
+
+                    <a class="btn btn-warning flex text-white" href="generatepdf">Donwload PFD</a>
                 </div>
             </div>
         </div>
