@@ -1,14 +1,16 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\User;
-use App\Models\Post;
+use App\Charts\PostCommentChart;
+use App\Charts\UsersChart;
 use App\Models\Comment;
 use App\Models\Friend;
+use App\Models\Post;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Http\Request;
-use App\Charts\UsersChart;
+
 class AdminController extends Controller
 {
     /**
@@ -25,7 +27,8 @@ class AdminController extends Controller
         $adminCount = User::where('role', 'admin')->count();
         $comments = Comment::count();
         $chart = new UsersChart();
-        return view('admin.dashboard', compact('userCount', 'postCount', 'adminCount', 'comments','chart'));
+        $postChart = new PostCommentChart();
+        return view('admin.dashboard', compact('userCount', 'postCount', 'adminCount', 'comments', 'chart', 'postChart'));
     }
     public function fetch()
     {

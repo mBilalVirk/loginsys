@@ -3,7 +3,18 @@
 @section('title', 'Admin Dashboard')
 
 @section('content')
-    <h3>Dashboard</h3>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>Dashboard:</h3>
+        <div>
+            <a class="btn btn-warning flex text-white" href="adminpdf">
+                <i class="fa-solid fa-file-pdf"></i> Admin PDF
+            </a>
+
+            <a class="btn btn-success flex text-white" href="useradminexport">
+                <i class="fa-solid fa-file-excel"></i> Export User/Admin
+            </a>
+        </div>
+    </div>
     <hr>
     <div class="row">
         <div class="col-md-4">
@@ -12,7 +23,7 @@
                     <h5 class="card-title">Users</h5>
                     <p class="card-text fs-4">{{ $userCount }}</p>
 
-                    <a class="btn btn-warning flex text-white" href="generatepdf">Donwload PFD</a>
+
                 </div>
             </div>
         </div>
@@ -44,12 +55,21 @@
             </div>
         </div>
     </div>
-    <div style="width: 600px; margin: auto;">
-        {!! $chart->container() !!}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div style="width: 500px; margin: auto;">
+
+            {!! $chart->container() !!}
+
+        </div>
+        <div style="width: 500px; margin: auto;">
+            {!! $postChart->container() !!}
+
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     {!! $chart->script() !!}
+    {!! $postChart->script() !!}
 
 
 @endsection

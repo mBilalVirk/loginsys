@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Events\MessageDeleted;
-use App\Events\MessageSent; 
-use App\Events\MessageUpdated; 
+use App\Events\MessageSent;
+use App\Events\MessageUpdated;
 use App\Models\Friend;
 use App\Models\Message;
 use App\Models\User;
@@ -13,87 +13,87 @@ use Illuminate\Support\Facades\DB;
 
 class MessageController extends Controller
 {
-    public function index(){
-       
-         $user = auth()->user();
+    public function index()
+    {
+        $user = auth()->user();
         //  return $user;
         $friends = Friend::with(['sender', 'receiver'])
-            ->where(function($query) use ($user) {
-                $query->where('user_id', $user->id)   
-                    ->orWhere('friend_id', $user->id); 
+            ->where(function ($query) use ($user) {
+                $query->where('user_id', $user->id)->orWhere('friend_id', $user->id);
             })
             ->where('status', 'accepted')
             ->get();
-            // return $friends;
-                         
+        // return $friends;
+
         $messages = Message::all();
-       
+
         return view('user.messages', compact('messages', 'friends'));
     }
-    public function chat(Request $request,$friend_id){
-        
+    public function chat(Request $request, $friend_id)
+    {
         $user_id = auth()->user()->id;
         // return $user_id;
-        
+
         $lastId;
-        $messages = Message::where(function($q) use ($user_id, $friend_id) {
-        $q->where(function($q) use ($user_id, $friend_id) {
-            $q->where('sender_id', $user_id)
-              ->where('receiver_id', $friend_id);
-        })->orWhere(function($q) use ($user_id, $friend_id) {
-            $q->where('sender_id', $friend_id)
-              ->where('receiver_id', $user_id);
-        });
-    })
-    ->when($request->last_id, function($q) use ($request) {
-        $q->where('id', '>', $request->last_id);
-    })
-    ->with('sender')
-    ->orderBy('created_at')
-    ->get();
+        $messages = Message::where(function ($q) use ($user_id, $friend_id) {
+            $q->where(function ($q) use ($user_id, $friend_id) {
+                $q->where('sender_id', $user_id)->where('receiver_id', $friend_id);
+            })->orWhere(function ($q) use ($user_id, $friend_id) {
+                $q->where('sender_id', $friend_id)->where('receiver_id', $user_id);
+            });
+        })
+            ->when($request->last_id, function ($q) use ($request) {
+                $q->where('id', '>', $request->last_id);
+            })
+            ->with('sender')
+            ->orderBy('created_at')
+            ->get();
 
         // return $messages;
         return response()->json($messages);
         // return view('user.chat',compact('messages'));
     }
     public function create(Request $request)
-{
-    $validatedData = $request->validate([
-        'receiver_id'=> 'required|string',
-        'message'=> 'required|string|max:500',
-    ],[
-        'receiver_id.required'=> 'Receiver does not exist',
-        'message.required'=> 'You must type a message'
-    ]);
+    {
+        $validatedData = $request->validate(
+            [
+                'receiver_id' => 'required|string',
+                'message' => 'required|string|max:500',
+            ],
+            [
+                'receiver_id.required' => 'Receiver does not exist',
+                'message.required' => 'You must type a message',
+            ],
+        );
 
-    
-    $message = Message::create([
-        'sender_id' => auth()->id(),
-        'receiver_id' => $validatedData['receiver_id'],
-        'message' => $validatedData['message'],
-    ]);
+        $message = Message::create([
+            'sender_id' => auth()->id(),
+            'receiver_id' => $validatedData['receiver_id'],
+            'message' => $validatedData['message'],
+        ]);
 
-    broadcast(new MessageSent($message))->toOthers();
-    return response()->json($message);
-}
-    public function delete($id){
+        broadcast(new MessageSent($message))->toOthers();
+        return response()->json($message);
+    }
+    public function delete($id)
+    {
         $message = Message::findOrFail($id);
         $message->delete();
         broadcast(new MessageDeleted($message));
-        return response()->json(['res'=> 'Message Deleted!']);
+        return response()->json(['res' => 'Message Deleted!']);
         // return redirect()->back();
-
     }
-    public function update(Request $request, $id){
-
+    public function update(Request $request, $id)
+    {
         $message = Message::FindOrFail($id);
-        $validatedData = $request->validate([
-            
-            'message'=> 'string | required | max:500',
-        ],[
-            
-            'message.required'=> 'You must need type a message'
-        ]);
+        $validatedData = $request->validate(
+            [
+                'message' => 'string | required | max:500',
+            ],
+            [
+                'message.required' => 'You must need type a message',
+            ],
+        );
         $message->update($validatedData);
         broadcast(new MessageUpdated($message));
         return redirect()->back();

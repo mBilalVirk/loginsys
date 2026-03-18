@@ -6,8 +6,13 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3>Dashboard : Friends</h3>
         <div>
-            <a class="btn btn-warning flex text-white" href="friendpdf">Download PDF</a>
-            <a class="btn btn-success flex text-white" href="#">Download Excel</a>
+            <a class="btn btn-warning flex text-white" href="friendpdf">
+                <i class="fa-solid fa-file-pdf"></i> Download PDF
+            </a>
+
+            <a class="btn btn-success flex text-white" href="friendexport">
+                <i class="fa-solid fa-file-excel"></i> Download Excel
+            </a>
         </div>
     </div>
     <div id="successAlert" class="alert alert-success d-none"></div>

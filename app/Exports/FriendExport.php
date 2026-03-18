@@ -2,13 +2,12 @@
 
 namespace App\Exports;
 
-use App\Models\User;
-use Illuminate\View\View;
+use App\Models\Friend;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-
-class UserExport implements FromView, ShouldAutoSize
+use Illuminate\View\View;
+class FriendExport implements FromView, ShouldAutoSize
 {
     use Exportable;
 
@@ -16,22 +15,17 @@ class UserExport implements FromView, ShouldAutoSize
 
     public function __construct()
     {
-        $users = User::all(); // fetch all users
+        $friends = Friend::with(['sender', 'receiver'])->get();
         $this->data = [
             'title' => 'Users',
             'date' => date('Y/m/d'),
-            'users' => $users,
+            'friends' => $friends,
         ];
     }
-
     public function view(): View
     {
-        return view('exportexcel', [
-            'data' => $this->data, // pass to view
+        return view('friendexport', [
+            'data' => $this->data,
         ]);
-    }
-    public function title(): string
-    {
-        return 'Users';
     }
 }

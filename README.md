@@ -554,3 +554,7 @@ class UserExport implements FromView, ShouldAutoSize
         return Excel::download(new UserExport, 'user.xlsx');
     }
 ```
+
+# 18/03/2026
+
+1. Add pdf and csv,xlsx for different tables

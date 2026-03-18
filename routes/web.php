@@ -9,6 +9,10 @@ use App\Http\Controllers\MessageController;
 Route::get('admin/generatepdf', [App\Http\Controllers\GeneratePDFcontroller::class, 'GeneratePDF']);
 Route::get('admin/friend/friendpdf', [App\Http\Controllers\GeneratePDFcontroller::class, 'FriendPDF']);
 Route::get('admin/exportexcel', [App\Http\Controllers\GeneratePDFcontroller::class, 'ExportExcel']);
+Route::get('admin/adminexport', [App\Http\Controllers\GeneratePDFcontroller::class, 'AdminExport']);
+Route::get('admin/useradminexport', [App\Http\Controllers\GeneratePDFcontroller::class, 'UserAdminExport']);
+Route::get('admin/friend/friendexport', [App\Http\Controllers\GeneratePDFcontroller::class, 'FriendExport']);
+Route::get('admin/adminpdf', [App\Http\Controllers\GeneratePDFcontroller::class, 'AdminPDF']);
 
 Route::get('/vite/{any?}', function () {
     return view('vite'); 

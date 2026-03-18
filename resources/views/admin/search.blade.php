@@ -1,32 +1,29 @@
-<div id="admin-layout">
-    @extends('layouts.admin')
-</div>
+@extends('layouts.admin')
 
 @section('title', 'Admin')
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4 absolute">
         <h1 class="h3">Dashboard : Search</h1>
-        <div class="alert alert-success d-none "></div>
+        <div class="alert alert-success d-none"></div>
         <div class="alert alert-danger d-none"></div>
     </div>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <form class="container mt-3" style="max-width:700px;" id="searchForm">
         <div class="input-group">
 
-            <!-- Dropdown Button -->
-            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                id="categoryBtn">
-                Categories
-            </button>
-
-            <!-- Dropdown Menu -->
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item category-option" href="#" data-value="admins">Admins</a></li>
-                <li><a class="dropdown-item category-option" href="#" data-value="users">Users</a></li>
-                <li><a class="dropdown-item category-option" href="#" data-value="posts">Posts</a></li>
-            </ul>
+            <!-- Dropdown -->
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                    aria-expanded="false" id="categoryBtn">
+                    Categories
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item category-option" href="#" data-value="admins">Admins</a></li>
+                    <li><a class="dropdown-item category-option" href="#" data-value="users">Users</a></li>
+                    <li><a class="dropdown-item category-option" href="#" data-value="posts">Posts</a></li>
+                </ul>
+            </div>
 
             <!-- Hidden input -->
             <input type="hidden" name="category" id="categoryInput" value="">
@@ -35,16 +32,18 @@
             <input type="search" class="form-control" name="search" placeholder="Search...">
 
             <!-- Search button -->
-            <button class="btn btn-primary">Search</button>
+            <button class="btn btn-primary" type="submit">Search</button>
 
         </div>
     </form>
+
     <div class="container mt-3">
         <h4>Search Result:</h4>
         <div id="searchResult" class="row g-3 gap-3">
             <!-- Cards will be appended here dynamically -->
         </div>
     </div>
+
     <script>
         document.querySelectorAll(".category-option").forEach(item => {
             item.addEventListener("click", function(e) {
@@ -53,13 +52,11 @@
                 let value = this.dataset.value;
                 let text = this.textContent;
 
-                // store value
                 document.getElementById("categoryInput").value = value;
-
-                // show selected category on button
                 document.getElementById("categoryBtn").textContent = text;
             });
         });
+
         $("#searchForm").on("submit", function(e) {
             e.preventDefault();
 
@@ -71,14 +68,12 @@
             $.ajax({
                 url: "{{ route('admin.searchData') }}",
                 method: "GET",
-
                 data: {
-
                     category,
                     search
                 },
                 success: function(response) {
-                    $("#searchResult").empty(); // clear previous results
+                    $("#searchResult").empty();
 
                     if (response.success) {
                         if (response.data.length > 0) {
@@ -90,9 +85,9 @@
                                     card = `
 <div class="col-12 col-sm-6 col-md-4 col-lg-3">
     <div class="card h-100">
-        <img 
-            src="${item.photo ? '/' + item.photo : 'https://via.placeholder.com/300x150'}" 
-            class="card-img-top" 
+        <img
+            src="${item.photo ? '/' + item.photo : 'https://via.placeholder.com/300x150'}"
+            class="card-img-top"
             alt="Post Image"
             style="height:150px; object-fit:cover;"
         />
@@ -102,8 +97,7 @@
             <p class="card-text"><small class="text-muted">${new Date(item.created_at).toLocaleString()}</small></p>
         </div>
     </div>
-</div>
-`;
+</div>`;
                                 }
                                 // User/Admin card
                                 else if (item.name && item.email) {
@@ -116,8 +110,7 @@
             ${item.role ? `<p class="card-text"><strong>Role:</strong> ${item.role}</p>` : ''}
         </div>
     </div>
-</div>
-`;
+</div>`;
                                 }
                                 // Fallback
                                 else {
@@ -128,8 +121,7 @@
             <pre>${JSON.stringify(item, null, 2)}</pre>
         </div>
     </div>
-</div>
-`;
+</div>`;
                                 }
 
                                 $("#searchResult").append(card);
@@ -142,12 +134,9 @@
                 error: function(err) {
                     console.log("fetch data not success!");
                     console.log(err.responseText);
-
                 }
             });
         });
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script></script>
 @endsection

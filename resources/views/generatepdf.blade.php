@@ -119,7 +119,7 @@
         <!-- Header -->
         <div class="invoice-header">
             <div>
-                <h2 class="title">USER INFO</h2>
+                <h2 class="title">{{ $title }} INFO</h2>
                 <p class="date">{{ $date }}</p>
             </div>
             <div class="invoice-number">#{{ $invoice_number ?? '08279' }}</div>
@@ -132,7 +132,13 @@
                     <th>ID</th>
                     <th>NAME</th>
                     <th>EMAIL</th>
-                    <th>TOTAL NUMBER OF FRIENDS</th>
+                    <th>
+                        @if ($title == 'Admin')
+                            Role
+                        @else
+                            TOTAL NUMBER OF FRIENDS
+                        @endif
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -141,7 +147,13 @@
                         <td>{{ $user->id }}</td>
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
-                        <td>{{ $user->acceptedFriends->count() }}</td>
+                        <td>
+                            @if ($title == 'Admin')
+                                {{ $user->role }}
+                            @else
+                                {{ $user->acceptedFriends->count() }}
+                            @endif
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
