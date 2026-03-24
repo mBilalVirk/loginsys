@@ -558,3 +558,57 @@ class UserExport implements FromView, ShouldAutoSize
 # 18/03/2026
 
 1. Add pdf and csv,xlsx for different tables
+
+# 24/03/2026
+
+1. Try to use Fortify-Laravel: `https://laravel.com/docs/13.x/fortify`.
+2. Installation & Configuration:
+
+`cmd
+composer require laravel/fortify
+php artisan fortify:install
+php artisan vendor:publish --provider="Laravel\Fortify\FortifyServiceProvider"
+php artisan migrate
+`
+
+3. This creates:
+
+`config/fortify.php`
+
+`app/Actions/Fortify/` (action classes)
+
+`database/migrations/` (adds 2FA columns to users table)
+
+4. Register the Service Provider
+
+```php
+// Laravel 11 - bootstrap/providers.php
+return [
+    App\Providers\AppServiceProvider::class,
+    App\Providers\FortifyServiceProvider::class, // 👈 add this
+];
+```
+
+5. Configure config/fortify.php for API
+
+```php
+return [
+    'guard' => 'sanctum', // use sanctum for API token auth or web
+
+    'middleware' => ['api'], // 👈 change from 'web' to 'api'
+
+    'prefix' => 'api', // 👈 all fortify routes prefixed with /api
+
+    'features' => [
+        Features::registration(),
+        Features::resetPasswords(),
+        Features::emailVerification(),
+        Features::updateProfileInformation(),
+        Features::updatePasswords(),
+        // Features::twoFactorAuthentication(), // enable if needed
+    ],
+];
+```
+
+5. Try to reset password using api and `https://mailtrap.io/`.
+6.
