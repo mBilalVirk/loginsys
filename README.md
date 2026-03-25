@@ -614,4 +614,5 @@ return [
 
 # 25/03/2026
 
-1.
+1. Checking the staging process. To create new thing we can create a branch of the github.
+2. and push the code. not in main branch.
