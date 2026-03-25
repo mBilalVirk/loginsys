@@ -616,3 +616,6 @@ return [
 
 1. Checking the staging process. To create new thing we can create a branch of the github.
 2. and push the code. not in main branch.
+3. Git is a software and github is host online to serve git.
+4. Some companies use gitlab instead of github.
+   `https://docs.chaicode.com/youtube/chai-aur-git/introduction/`
