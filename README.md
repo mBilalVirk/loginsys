@@ -611,4 +611,8 @@ return [
 ```
 
 5. Try to reset password using api and `https://mailtrap.io/`.
-6.
+
+# 25/03/2026
+
+1. Checking the staging process. To create new thing we can create a branch of the github.
+2. and push the code. not in main branch.
