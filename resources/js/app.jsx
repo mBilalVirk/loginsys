@@ -31,12 +31,14 @@ import Profile from "./pages/user/profile";
 import AdminLogin from "./pages/admin/login";
 import AdminPanel from "./pages/admin/AdminPanel";
 import AdminRoute from "./pages/admin/AdminRoute";
+import ForgetPassword from "./pages/forgetpassword";
 function App() {
     return (
         <BrowserRouter basename="/vite">
             <Routes>
                 <Route path="/" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/forgetpassword" element={<ForgetPassword />} />
                 <Route
                     path="/home"
                     element={

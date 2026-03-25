@@ -2,37 +2,37 @@ import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Toast } from "primereact/toast";
 import { useNavigate } from "react-router-dom";
-const login = () => {
+const ForgetPassword = () => {
     const toast = useRef(null);
     const navigate = useNavigate();
 
-    const [showPassword, setShowPassword] = useState(false);
     const [input, setInput] = useState({
         email: "",
-        password: "",
     });
 
     const handleChange = (e) => {
         setInput({
-            ...input,
-            [e.target.name]: e.target.value,
+            email: e.target.value,
         });
     };
-    const login = async (e) => {
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            const response = await fetch("/api/user/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
+            const response = await fetch(
+                "http://127.0.0.1:8000/api/forgot-password",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Accept: "application/json",
+                    },
+                    body: JSON.stringify({
+                        email: input.email,
+                    }),
                 },
-                body: JSON.stringify({
-                    email: input.email,
-                    password: input.password,
-                }),
-            });
+            );
 
             let data;
             try {
@@ -47,18 +47,16 @@ const login = () => {
                 toast.current.show({
                     severity: "success",
                     summary: "Success",
-                    detail: data.message || "Login successful",
+                    detail:
+                        data.message ||
+                        "Password reset instructions sent to your email",
                     life: 3000,
                 });
-
-                setTimeout(() => {
-                    navigate("/home");
-                }, 1000);
             } else if (response.status === 401) {
                 toast.current.show({
                     severity: "error",
-                    summary: "Login Failed",
-                    detail: data.message || "Invalid credentials",
+                    summary: "Password Reset Failed",
+                    detail: data.message || "Invalid email address",
                     life: 3000,
                 });
             } else {
@@ -76,7 +74,7 @@ const login = () => {
                 detail: "Unable to connect to server",
                 life: 3000,
             });
-            console.error("Login error:", error);
+            console.error("Password reset error:", error);
         }
     };
     return (
@@ -85,7 +83,7 @@ const login = () => {
                 <Toast ref={toast} />
                 <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                     <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-black">
-                        Sign in to your account
+                        Reset your password
                     </h2>
                 </div>
 
@@ -94,7 +92,7 @@ const login = () => {
                         action="#"
                         method="POST"
                         className="space-y-6"
-                        onSubmit={login}
+                        onSubmit={handleSubmit}
                     >
                         <div>
                             <label
@@ -117,63 +115,28 @@ const login = () => {
                         </div>
 
                         <div>
-                            <div className="flex items-center justify-between">
-                                <label
-                                    htmlFor="password"
-                                    className="block text-sm/6 font-medium text-black"
-                                >
-                                    Password
-                                </label>
-                                <div className="text-sm">
-                                    <Link
-                                        to="/forgetpassword"
-                                        className="font-semibold text-indigo-400 hover:text-indigo-300"
-                                    >
-                                        Forgot password?
-                                    </Link>
-                                </div>
-                            </div>
-                            <div className="mt-2 relative">
-                                <input
-                                    id="password"
-                                    name="password"
-                                    type={showPassword ? "text" : "password"}
-                                    required
-                                    autoComplete="current-password"
-                                    className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-blue-800 outline-1 -outline-offset-1 outline-blue-400 placeholder-blue-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
-                                    onChange={handleChange}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                        setShowPassword(!showPassword)
-                                    }
-                                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-blue-600"
-                                >
-                                    <i
-                                        className={`pi ${showPassword ? "pi-eye-slash" : "pi-eye"}`}
-                                    ></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div>
                             <button
                                 type="submit"
                                 className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
                             >
-                                Sign in
+                                Send Reset Instructions
                             </button>
                         </div>
                     </form>
 
                     <p className="mt-10 text-center text-sm/6 text-gray-400">
-                        Don't have account?{" "}
                         <Link
                             to="/register"
                             className="font-semibold text-indigo-400 hover:text-indigo-300"
                         >
                             Register Now
+                        </Link>
+                        <span className="mx-2">|</span>
+                        <Link
+                            to="/"
+                            className="font-semibold text-indigo-400 hover:text-indigo-300"
+                        >
+                            Sign In
                         </Link>
                     </p>
                 </div>
@@ -182,4 +145,4 @@ const login = () => {
     );
 };
 
-export default login;
+export default ForgetPassword;
