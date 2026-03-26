@@ -7,6 +7,11 @@ use App\Http\Controllers\API\MessageController;
 use App\Http\Controllers\API\FriendController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ChatbotController;
+Route::get('/test', function () {
+    return response()->json(['message' => 'Route is working']);
+});
+Route::middleware('auth:sanctum')->post('/chatbot', [ChatbotController::class, 'chat']);
 
     Route::post('/user/login', [UserController::class,'login']);
     Route::post('/user/register', [UserController::class,'register']);
