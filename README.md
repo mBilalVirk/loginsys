@@ -619,3 +619,8 @@ return [
 3. Git is a software and github is host online to serve git.
 4. Some companies use gitlab instead of github.
    `https://docs.chaicode.com/youtube/chai-aur-git/introduction/`
+
+# 26/03/2026
+
+1. Add AI Chatbot in website.
+2. what is going on..
