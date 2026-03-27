@@ -111,8 +111,9 @@
                     <i class="fa-solid fa-magnifying-glass"></i> Search
                 </a>
 
-                <a href="{{ route('admin.setting') }}">
-                    <i class="fa-solid fa-gear"></i> Settings
+
+                <a href="{{ route('admin.assistant') }}">
+                    <i class="fa-solid fa-gear"></i> AI Assistant
                 </a>
             </nav>
 

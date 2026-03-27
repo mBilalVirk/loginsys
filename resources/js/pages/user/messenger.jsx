@@ -1,26 +1,100 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Toast } from "primereact/toast";
-import { useRef } from "react";
 
-// ✅ Chatbot conversation hook
+// ✅ Chatbot conversation hook — with DB history + dynamic settings
 const useChatbot = () => {
-    const [botMessages, setBotMessages] = useState([
-        {
-            id: 0,
-            role: "assistant",
-            message: "Hi! I'm your AI assistant 🤖 How can I help you today?",
-        },
-    ]);
+    const [botMessages, setBotMessages] = useState([]);
     const [botLoading, setBotLoading] = useState(false);
+    const [botReady, setBotReady] = useState(false); // ✅ loading gate
+    const [assistantName, setAssistantName] = useState(" ");
 
-    const sendBotMessage = async (text) => {
+    const token = JSON.parse(localStorage.getItem("user-info"))?.data?.token;
+
+    // ✅ Load settings + history together on mount
+    React.useEffect(() => {
+        const init = async () => {
+            try {
+                // Fetch settings and history in parallel
+                const [settingsRes, historyRes] = await Promise.all([
+                    fetch("/api/ai-settings", {
+                        headers: {
+                            Accept: "application/json",
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }),
+                    fetch("/api/chatbot/history", {
+                        headers: {
+                            Accept: "application/json",
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }),
+                ]);
+
+                const settings = await settingsRes.json();
+
+                const history = await historyRes.json();
+
+                const name = settings.data.assistant_name ?? "AI Assistant";
+
+                const welcome =
+                    settings.data.welcome_message ??
+                    "Hi! I'm your AI assistant 🤖 How can I help you today?";
+
+                setAssistantName(name);
+
+                // Build messages: greeting first, then history
+                setBotMessages([
+                    { id: 0, role: "assistant", message: welcome },
+                    ...(Array.isArray(history)
+                        ? history.map((m) => ({
+                              id: m.id,
+                              role: m.role,
+                              message: m.message,
+                          }))
+                        : []),
+                ]);
+            } catch (error) {
+                console.error("Failed to initialize chatbot:", error);
+                // Fallback defaults if API fails
+                setBotMessages([
+                    {
+                        id: 0,
+                        role: "assistant",
+                        message:
+                            "Hi! I'm your AI assistant 🤖 How can I help you today?",
+                    },
+                ]);
+            } finally {
+                setBotReady(true); // ✅ ready to render
+            }
+        };
+        init();
+    }, []);
+
+    // ✅ Clear history from DB
+    const clearBotHistory = async () => {
+        try {
+            await fetch("/api/chatbot/history", {
+                method: "DELETE",
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setBotMessages((prev) => [prev[0]]); // keep welcome message
+        } catch (error) {
+            console.error("Failed to clear history:", error);
+        }
+    };
+
+    // ✅ Send message
+    const sendBotMessage = async (text, currentMessages) => {
         const userMsg = { id: Date.now(), role: "user", message: text };
         setBotMessages((prev) => [...prev, userMsg]);
         setBotLoading(true);
 
         try {
-            // Build messages array for API (exclude initial greeting)
-            const history = [...botMessages.slice(1), userMsg].map((m) => ({
+            const history = [...currentMessages.slice(1), userMsg].map((m) => ({
                 role: m.role,
                 content: m.message,
             }));
@@ -30,15 +104,17 @@ const useChatbot = () => {
                 headers: {
                     "Content-Type": "application/json",
                     Accept: "application/json",
-                    Authorization: `Bearer ${JSON.parse(localStorage.getItem("user-info")).data.token}`,
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({ messages: history }),
             });
 
             const data = await response.json();
+            const reply = data.reply ?? "Sorry, no response.";
+
             setBotMessages((prev) => [
                 ...prev,
-                { id: Date.now() + 1, role: "assistant", message: data.reply },
+                { id: Date.now() + 1, role: "assistant", message: reply },
             ]);
         } catch {
             setBotMessages((prev) => [
@@ -54,30 +130,53 @@ const useChatbot = () => {
         }
     };
 
-    return { botMessages, botLoading, sendBotMessage };
+    return {
+        botMessages,
+        botLoading,
+        botReady,
+        assistantName,
+        sendBotMessage,
+        clearBotHistory,
+    };
 };
 
+// ✅ Main Messenger Component
 const Messenger = () => {
     const toast = useRef(null);
     const [open, setOpen] = useState(false);
     const [selectedFriend, setSelectedFriend] = useState(null);
     const [messages, setMessages] = useState([]);
     const [friends, setFriends] = useState([]);
-    const messagesEndRef = React.useRef(null);
     const [message, setMessage] = useState("");
     const [editingId, setEditingId] = useState(null);
+    const messagesEndRef = useRef(null);
 
-    // ✅ Chatbot state
+    // Chatbot state
     const [chatbotOpen, setChatbotOpen] = useState(false);
-    const { botMessages, botLoading, sendBotMessage } = useChatbot();
-    const botEndRef = React.useRef(null);
+    const {
+        botMessages,
+        botLoading,
+        botReady,
+        assistantName,
+        sendBotMessage,
+        clearBotHistory,
+    } = useChatbot();
+    const botEndRef = useRef(null);
 
-    // Auto-scroll bot messages
+    const token = JSON.parse(localStorage.getItem("user-info"))?.data?.token;
+    const authId = JSON.parse(localStorage.getItem("user-info"))?.data?.user
+        ?.id;
+
+    // ── Auto-scroll ──
     React.useEffect(() => {
         botEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [botMessages]);
 
-    // ✅ Handle chatbot friend selection
+    React.useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messages]);
+
+    // ── Chatbot handlers ──
     const handleSelectChatbot = () => {
         setChatbotOpen(true);
         setSelectedFriend(null);
@@ -87,7 +186,7 @@ const Messenger = () => {
         setChatbotOpen(false);
     };
 
-    // ---- Your existing functions (unchanged) ----
+    // ── Friend message handlers ──
     const editMessage = (id, text) => {
         setMessage(text);
         setEditingId(id);
@@ -102,7 +201,7 @@ const Messenger = () => {
                     headers: {
                         "Content-Type": "application/json",
                         Accept: "application/json",
-                        Authorization: `Bearer ${JSON.parse(localStorage.getItem("user-info")).data.token}`,
+                        Authorization: `Bearer ${token}`,
                     },
                     body: JSON.stringify({ message }),
                 },
@@ -136,7 +235,7 @@ const Messenger = () => {
                 headers: {
                     "Content-Type": "application/json",
                     Accept: "application/json",
-                    Authorization: `Bearer ${JSON.parse(localStorage.getItem("user-info")).data.token}`,
+                    Authorization: `Bearer ${token}`,
                 },
             });
             const data = await response.json();
@@ -161,26 +260,20 @@ const Messenger = () => {
         }
     };
 
-    React.useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
-
     const fetchFriends = async () => {
         try {
             const response = await fetch("/api/user/friends", {
                 method: "GET",
                 headers: {
                     Accept: "application/json",
-                    Authorization: `Bearer ${JSON.parse(localStorage.getItem("user-info")).data.token}`,
+                    Authorization: `Bearer ${token}`,
                 },
             });
             const data = await response.json();
-            const authUserId = JSON.parse(localStorage.getItem("user-info"))
-                .data.user.id;
             if (response.ok) {
                 const acceptedFriends = data.accepted_friends.map(
                     (friendship) =>
-                        friendship.sender.id === authUserId
+                        friendship.sender.id === authId
                             ? friendship.receiver
                             : friendship.sender,
                 );
@@ -197,7 +290,7 @@ const Messenger = () => {
                 method: "GET",
                 headers: {
                     Accept: "application/json",
-                    Authorization: `Bearer ${JSON.parse(localStorage.getItem("user-info")).data.token}`,
+                    Authorization: `Bearer ${token}`,
                 },
             });
             const data = await response.json();
@@ -220,7 +313,7 @@ const Messenger = () => {
                 headers: {
                     "Content-Type": "application/json",
                     Accept: "application/json",
-                    Authorization: `Bearer ${JSON.parse(localStorage.getItem("user-info")).data.token}`,
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
                     receiver_id: selectedFriend.id.toString(),
@@ -250,23 +343,21 @@ const Messenger = () => {
         }
     };
 
+    // ── Effects ──
     React.useEffect(() => {
         fetchFriends();
     }, []);
+
     React.useEffect(() => {
         if (selectedFriend) fetchMessages(selectedFriend.id);
     }, [selectedFriend]);
 
-    const userInfo = JSON.parse(localStorage.getItem("user-info"));
-    const authId = userInfo?.data?.user?.id;
-
+    // ── Real-time Echo ──
     React.useEffect(() => {
         if (!authId || !selectedFriend) return;
         const myChannel = window.Echo.private(`chat.${authId}`).listen(
             ".message.sent",
-            (e) => {
-                setMessages((prev) => [...prev, e.message]);
-            },
+            (e) => setMessages((prev) => [...prev, e.message]),
         );
         myChannel.listen(".message.updated", (e) => {
             setMessages((prev) =>
@@ -280,19 +371,18 @@ const Messenger = () => {
         myChannel.listen(".message.deleted", (e) => {
             setMessages((prev) => prev.filter((m) => m.id !== e.messageId));
         });
-        return () => {
-            window.Echo.leave("chat." + authId);
-        };
+        return () => window.Echo.leave("chat." + authId);
     }, [authId, selectedFriend]);
 
+    // ── Render ──
     return (
-        <div className="fixed bottom-0 right-6 w-80">
+        <div className="fixed bottom-0 right-6 w-80 z-50">
             <Toast ref={toast} />
 
-            {/* Header */}
+            {/* ── Messenger Header ── */}
             <div
                 onClick={() => setOpen(!open)}
-                className="flex items-center justify-between px-4 py-3 bg-blue-600 text-white rounded-t-2xl cursor-pointer"
+                className="flex items-center justify-between px-4 py-3 bg-blue-600 text-white rounded-t-2xl cursor-pointer select-none"
             >
                 <i className="pi pi-comment text-sm"></i>
                 <span className="font-semibold">Messenger</span>
@@ -310,7 +400,7 @@ const Messenger = () => {
                                 Messages
                             </h3>
 
-                            {/* ✅ AI Chatbot Entry */}
+                            {/* AI Chatbot Entry */}
                             <div
                                 onClick={handleSelectChatbot}
                                 className="flex items-center gap-3 p-2 hover:bg-blue-50 rounded-lg cursor-pointer border border-blue-100 mb-2"
@@ -320,7 +410,7 @@ const Messenger = () => {
                                 </div>
                                 <div>
                                     <p className="font-semibold text-sm text-blue-700">
-                                        AI Assistant
+                                        {assistantName}
                                     </p>
                                     <p className="text-xs text-gray-400">
                                         Ask me anything...
@@ -331,6 +421,7 @@ const Messenger = () => {
                                 </span>
                             </div>
 
+                            {/* Friends */}
                             <div className="border-t pt-2">
                                 {friends.map((friend) => (
                                     <div
@@ -371,78 +462,125 @@ const Messenger = () => {
                                     <span className="text-xl">🤖</span>
                                     <div>
                                         <p className="font-semibold text-sm text-blue-700">
-                                            AI Assistant
+                                            {assistantName}
                                         </p>
                                         <p className="text-xs text-gray-400">
                                             Always online
                                         </p>
                                     </div>
                                 </div>
-                                <button
-                                    onClick={handleBackFromChatbot}
-                                    className="text-sm text-blue-600 hover:underline"
-                                >
-                                    Back
-                                </button>
-                            </div>
-
-                            {/* Bot Messages */}
-                            <div className="flex-1 p-3 overflow-y-auto space-y-2">
-                                {botMessages.map((msg) => (
-                                    <div
-                                        key={msg.id}
-                                        className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={clearBotHistory}
+                                        className="text-xs text-red-400 hover:text-red-500 font-medium"
                                     >
-                                        <div
-                                            className={`px-3 py-2 rounded-2xl text-sm max-w-[80%] leading-relaxed ${
-                                                msg.role === "user"
-                                                    ? "bg-blue-600 text-white rounded-br-sm"
-                                                    : "bg-gray-100 text-gray-800 rounded-bl-sm"
-                                            }`}
-                                        >
-                                            {msg.message}
-                                        </div>
-                                    </div>
-                                ))}
-
-                                {/* Typing indicator */}
-                                {botLoading && (
-                                    <div className="flex justify-start">
-                                        <div className="bg-gray-100 px-4 py-2 rounded-2xl rounded-bl-sm">
-                                            <span className="flex gap-1">
-                                                <span
-                                                    className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"
-                                                    style={{
-                                                        animationDelay: "0ms",
-                                                    }}
-                                                ></span>
-                                                <span
-                                                    className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"
-                                                    style={{
-                                                        animationDelay: "150ms",
-                                                    }}
-                                                ></span>
-                                                <span
-                                                    className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"
-                                                    style={{
-                                                        animationDelay: "300ms",
-                                                    }}
-                                                ></span>
-                                            </span>
-                                        </div>
-                                    </div>
-                                )}
-                                <div ref={botEndRef} />
+                                        Clear
+                                    </button>
+                                    <button
+                                        onClick={handleBackFromChatbot}
+                                        className="text-sm text-blue-600 hover:underline"
+                                    >
+                                        Back
+                                    </button>
+                                </div>
                             </div>
+
+                            {/* ✅ Loading gate — show spinner until ready */}
+                            {!botReady ? (
+                                <div className="flex-1 flex items-center justify-center">
+                                    <div className="flex flex-col items-center gap-2 text-gray-400">
+                                        <span className="flex gap-1">
+                                            <span
+                                                className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
+                                                style={{
+                                                    animationDelay: "0ms",
+                                                }}
+                                            ></span>
+                                            <span
+                                                className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
+                                                style={{
+                                                    animationDelay: "150ms",
+                                                }}
+                                            ></span>
+                                            <span
+                                                className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
+                                                style={{
+                                                    animationDelay: "300ms",
+                                                }}
+                                            ></span>
+                                        </span>
+                                        <p className="text-xs">Loading...</p>
+                                    </div>
+                                </div>
+                            ) : (
+                                /* Bot Messages */
+                                <div className="flex-1 p-3 overflow-y-auto space-y-2">
+                                    {botMessages.map((msg) => (
+                                        <div
+                                            key={msg.id}
+                                            className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                                        >
+                                            <div
+                                                className={`px-3 py-2 rounded-2xl text-sm max-w-[80%] leading-relaxed ${
+                                                    msg.role === "user"
+                                                        ? "bg-blue-600 text-white rounded-br-sm"
+                                                        : "bg-gray-100 text-gray-800 rounded-bl-sm"
+                                                }`}
+                                            >
+                                                {msg.message}
+                                            </div>
+                                        </div>
+                                    ))}
+
+                                    {/* Typing indicator */}
+                                    {botLoading && (
+                                        <div className="flex justify-start">
+                                            <div className="bg-gray-100 px-4 py-2 rounded-2xl rounded-bl-sm">
+                                                <span className="flex gap-1">
+                                                    <span
+                                                        className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"
+                                                        style={{
+                                                            animationDelay:
+                                                                "0ms",
+                                                        }}
+                                                    ></span>
+                                                    <span
+                                                        className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"
+                                                        style={{
+                                                            animationDelay:
+                                                                "150ms",
+                                                        }}
+                                                    ></span>
+                                                    <span
+                                                        className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"
+                                                        style={{
+                                                            animationDelay:
+                                                                "300ms",
+                                                        }}
+                                                    ></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                    <div ref={botEndRef} />
+                                </div>
+                            )}
 
                             {/* Bot Input */}
                             <div className="p-2 border-t">
                                 <form
                                     onSubmit={(e) => {
                                         e.preventDefault();
-                                        if (!message.trim() || botLoading)
+                                        if (
+                                            !message.trim() ||
+                                            botLoading ||
+                                            !botReady
+                                        )
                                             return;
-                                        sendBotMessage(message.trim());
+                                        sendBotMessage(
+                                            message.trim(),
+                                            botMessages,
+                                        );
                                         setMessage("");
                                     }}
                                     className="flex gap-2"
@@ -455,11 +593,15 @@ const Messenger = () => {
                                         }
                                         className="flex-1 border rounded px-2 py-1 text-sm"
                                         placeholder="Ask AI anything..."
-                                        disabled={botLoading}
+                                        disabled={botLoading || !botReady}
                                     />
                                     <button
                                         type="submit"
-                                        disabled={botLoading || !message.trim()}
+                                        disabled={
+                                            botLoading ||
+                                            !message.trim() ||
+                                            !botReady
+                                        }
                                         className="bg-blue-600 text-white px-3 rounded text-sm disabled:opacity-50"
                                     >
                                         Send
@@ -469,7 +611,7 @@ const Messenger = () => {
                         </>
                     )}
 
-                    {/* ── Friend Chat View (unchanged) ── */}
+                    {/* ── Friend Chat View ── */}
                     {selectedFriend && (
                         <>
                             <div className="p-3 border-b flex justify-between items-center">
@@ -477,7 +619,11 @@ const Messenger = () => {
                                     {selectedFriend.name}
                                 </span>
                                 <button
-                                    onClick={() => setSelectedFriend(null)}
+                                    onClick={() => {
+                                        setSelectedFriend(null);
+                                        setEditingId(null);
+                                        setMessage("");
+                                    }}
                                     className="text-sm text-blue-600"
                                 >
                                     Back
@@ -488,32 +634,32 @@ const Messenger = () => {
                                 {messages.map((msg) => (
                                     <div
                                         key={msg.id}
-                                        className={`p-2 rounded-lg w-fit ${
-                                            msg.sender_id ===
-                                            JSON.parse(
-                                                localStorage.getItem(
-                                                    "user-info",
-                                                ),
-                                            ).data.user.id
+                                        className={`p-2 rounded-lg w-fit max-w-[80%] text-sm ${
+                                            msg.sender_id === authId
                                                 ? "bg-blue-600 text-white ml-auto"
-                                                : "bg-gray-200"
+                                                : "bg-gray-200 text-gray-800"
                                         }`}
                                     >
                                         {msg.message}
-                                        <i
-                                            className="pi pi-pencil ml-2"
-                                            style={{ cursor: "pointer" }}
-                                            onClick={() =>
-                                                editMessage(msg.id, msg.message)
-                                            }
-                                        ></i>
-                                        <i
-                                            className="pi pi-trash ml-2"
-                                            style={{ cursor: "pointer" }}
-                                            onClick={() =>
-                                                deleteMessage(msg.id)
-                                            }
-                                        ></i>
+                                        {msg.sender_id === authId && (
+                                            <>
+                                                <i
+                                                    className="pi pi-pencil ml-2 cursor-pointer opacity-70 hover:opacity-100"
+                                                    onClick={() =>
+                                                        editMessage(
+                                                            msg.id,
+                                                            msg.message,
+                                                        )
+                                                    }
+                                                ></i>
+                                                <i
+                                                    className="pi pi-trash ml-2 cursor-pointer opacity-70 hover:opacity-100"
+                                                    onClick={() =>
+                                                        deleteMessage(msg.id)
+                                                    }
+                                                ></i>
+                                            </>
+                                        )}
                                     </div>
                                 ))}
                                 <div ref={messagesEndRef} />
@@ -530,10 +676,14 @@ const Messenger = () => {
                                         onChange={(e) =>
                                             setMessage(e.target.value)
                                         }
-                                        className="flex-1 border rounded px-2 py-1"
-                                        placeholder="Type message..."
+                                        className="flex-1 border rounded px-2 py-1 text-sm"
+                                        placeholder={
+                                            editingId
+                                                ? "Edit message..."
+                                                : "Type message..."
+                                        }
                                     />
-                                    <button className="bg-blue-600 text-white px-3 rounded">
+                                    <button className="bg-blue-600 text-white px-3 rounded text-sm">
                                         {editingId ? "Update" : "Send"}
                                     </button>
                                 </form>

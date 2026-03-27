@@ -8,8 +8,10 @@ use App\Http\Controllers\API\FriendController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChatbotController;
-Route::get('/test', function () {
-    return response()->json(['message' => 'Route is working']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/chatbot/history', [ChatbotController::class, 'history']);
+    Route::delete('/chatbot/history', [ChatbotController::class, 'clearHistory']);
+    Route::get('/ai-settings', [App\Http\Controllers\ChatbotController::class, 'getSettings'])->name('admin.ai-settings.get');
 });
 Route::middleware('auth:sanctum')->post('/chatbot', [ChatbotController::class, 'chat']);
 

@@ -55,6 +55,9 @@ class User extends Authenticatable
     public function receivedMessages(){
         return $this->hasMany(Message::class, 'receiver_id');
     }
+    public function chatbotMessages(){
+        return $this->hasMany(ChatbotMessage::class);
+    }
     // public function friends(){
     //     return $this->hasMany(Friend::class, 'user_id');
     // }

@@ -7,6 +7,7 @@ use App\Models\Comment;
 use App\Models\Friend;
 use App\Models\Post;
 use App\Models\User;
+use App\Models\ChatbotMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -170,6 +171,31 @@ class AdminController extends Controller
     public function setting()
     {
         return view('admin.setting');
+    }
+    public function assistant(){
+        return view('admin.aiassistant');
+    }
+    public function ai_history(){
+       $messages = ChatbotMessage::with('user')->paginate(5);
+    
+         return response()->json([
+        'success' => true,
+        'messages' => $messages->items(),
+        'pagination' => [
+            'total' => $messages->total(),
+            'per_page' => $messages->perPage(),
+            'current_page' => $messages->currentPage(),
+            'last_page' => $messages->lastPage(),
+        ]
+    ],200);
+    }
+    public function clearAIHistory()
+    {
+        ChatbotMessage::truncate();
+        return response()->json([
+        'success' => true,
+        'message' => 'AI chat history cleared successfully.'
+    ]);
     }
     public function search()
     {

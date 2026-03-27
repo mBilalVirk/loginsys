@@ -1,69 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login</title>
-
-    <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css" />
 </head>
-<body class="bg-light">
 
-    <div class="container d-flex justify-content-center align-items-center vh-100">
-        <div class="card shadow p-4" style="width: 100%; max-width: 400px;">
-            
-            <h3 class="text-center mb-4">Admin Login</h3>
+<body class="bg-white">
 
-            <!-- Validation Errors -->
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+    <div class="flex min-h-screen flex-col justify-center px-6 py-12 lg:px-8">
+
+        {{-- Toast-style error messages --}}
+        @if ($errors->any())
+            <div class="fixed top-4 right-4 z-50 space-y-2">
+                @foreach ($errors->all() as $error)
+                    <div
+                        class="flex items-start gap-3 bg-white border-l-4 border-red-500 shadow-lg rounded-md px-4 py-3 max-w-sm">
+                        <i class="pi pi-times-circle text-red-500 mt-0.5"></i>
+                        <div>
+                            <p class="text-sm font-semibold text-gray-800">Login Failed</p>
+                            <p class="text-sm text-gray-500">{{ $error }}</p>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+
+        {{-- Toast-style success message --}}
+        @if (session('status'))
+            <div class="fixed top-4 right-4 z-50">
+                <div
+                    class="flex items-start gap-3 bg-white border-l-4 border-green-500 shadow-lg rounded-md px-4 py-3 max-w-sm">
+                    <i class="pi pi-check-circle text-green-500 mt-0.5"></i>
+                    <div>
+                        <p class="text-sm font-semibold text-gray-800">Success</p>
+                        <p class="text-sm text-gray-500">{{ session('status') }}</p>
+                    </div>
                 </div>
-            @endif
+            </div>
+        @endif
 
-            <!-- Success Message -->
-            @if(session('status'))
-                <div class="alert alert-success">
-                    {{ session('status') }}
-                </div>
-            @endif
+        {{-- Header --}}
+        <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+            <h2 class="mt-10 text-center text-2xl font-bold tracking-tight text-black">
+                Admin Login
+            </h2>
+        </div>
 
-            <!-- Login Form -->
-            <form action="{{ route('adminlogin') }}" method="POST">
+        {{-- Form Card --}}
+        <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+            <form method="POST" action="{{ route('adminlogin') }}" class="space-y-6">
                 @csrf
-                @method('POST')
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email address</label>
-                    <input type="email"
-                           name="email"
-                           id="email"
-                           class="form-control"
-                           placeholder="Enter email"
-                           required>
+
+                {{-- Email --}}
+                <div>
+                    <label for="email" class="block text-sm font-medium text-black">
+                        Email address
+                    </label>
+                    <div class="mt-2">
+                        <input id="email" name="email" type="email" required autocomplete="email"
+                            value="{{ old('email') }}" placeholder="admin@example.com"
+                            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-blue-800 outline outline-1 -outline-offset-1 outline-blue-400 placeholder-blue-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm" />
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password"
-                           name="password"
-                           id="password"
-                           class="form-control"
-                           placeholder="Enter password"
-                           required>
+                {{-- Password --}}
+                <div>
+                    <label for="password" class="block text-sm font-medium text-black">
+                        Password
+                    </label>
+                    <div class="mt-2 relative">
+                        <input id="password" name="password" type="password" required autocomplete="current-password"
+                            placeholder="••••••••"
+                            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-blue-800 outline outline-1 -outline-offset-1 outline-blue-400 placeholder-blue-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm" />
+                        <button type="button" onclick="togglePassword()"
+                            class="absolute inset-y-0 right-0 flex items-center pr-3 text-blue-600">
+                            <i id="eye-icon" class="pi pi-eye"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100">
-                    Login
-                </button>
+                {{-- Submit --}}
+                <div>
+                    <button type="submit"
+                        class="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 transition-colors duration-150">
+                        Sign in
+                    </button>
+                </div>
             </form>
-
         </div>
     </div>
 
+    <script>
+        function togglePassword() {
+            const input = document.getElementById('password');
+            const icon = document.getElementById('eye-icon');
+            const isHidden = input.type === 'password';
+            input.type = isHidden ? 'text' : 'password';
+            icon.className = isHidden ? 'pi pi-eye-slash' : 'pi pi-eye';
+        }
+
+        // Auto-dismiss toasts after 3 seconds
+        setTimeout(() => {
+            document.querySelectorAll('.fixed .flex').forEach(el => {
+                el.style.transition = 'opacity 0.5s';
+                el.style.opacity = '0';
+                setTimeout(() => el.remove(), 500);
+            });
+        }, 3000);
+    </script>
+
 </body>
+
 </html>

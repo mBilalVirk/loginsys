@@ -18,15 +18,15 @@ Route::get('/vite/{any?}', function () {
     return view('vite'); 
 })->where('any', '.*');
 
-Route::get('/', function () {
-    return view('login');
-})->name('login');
+// Route::get('/', function () {
+//     return view('login');
+// })->name('login');
 
 
 
-Route::get('/register', function () {
-    return view('register');
-})->name('register');
+// Route::get('/register', function () {
+//     return view('register');
+// })->name('register');
 
 
 Route::get('/passwordupdate', function () {
@@ -73,6 +73,15 @@ Route::get('/admin/edit/{id}', [App\Http\Controllers\AdminController::class, 'ed
 Route::post('admin/update/{id}',[App\Http\Controllers\AdminController::class, 'userUpdate'])->name('admin.userUpdate');
 Route::delete('admin/delete/{id}',[App\Http\Controllers\AdminController::class, 'delete'])->name('admin.delete');
 Route::get('/admin/setting', [App\Http\Controllers\AdminController::class, 'setting'])->name('admin.setting');
+// Ai routes
+Route::get('/admin/setting', [App\Http\Controllers\AdminController::class, 'assistant'])->name('admin.assistant');
+Route::get('/admin/ai-history', [App\Http\Controllers\AdminController::class, 'ai_history'])->name('admin.ai-history');
+Route::delete('/admin/clearAIHistory', [App\Http\Controllers\AdminController::class, 'clearAIHistory'])->name('admin.clearAIHistory');
+Route::post('/admin/ai-settings', [App\Http\Controllers\ChatbotController::class, 'loadSettings'])->name('admin.ai-settings.load');
+Route::post('/admin/ai-settings/save', [App\Http\Controllers\ChatbotController::class, 'saveSettings'])->name('admin.ai-settings.save');
+
+
+// end of Ai routes
 Route::get('/admin/search', [App\Http\Controllers\AdminController::class, 'search'])->name('admin.search');
 Route::get('/admin/searching', [App\Http\Controllers\AdminController::class, 'searchData'])->name('admin.searchData');
 Route::post('/admin/updateProfile',[App\Http\Controllers\AdminController::class, 'updateProfile'])->name('admin.updateProfile');
@@ -122,7 +131,7 @@ Route::middleware('auth' ,'user')->group(function(){
     Route::delete('/user/comment/{id}',[UserController::class,'deleteComment'])->name('user.deleteComment');
     
     Route::get('/dashboard', [App\Http\Controllers\UserController::class, 'dashboard'])->middleware('auth')->name('dashboard');
-    Route::post('/logout', [App\Http\Controllers\UserController::class, 'logout'])->middleware('auth')->name('logout');
+    // Route::post('/logout', [App\Http\Controllers\UserController::class, 'logout'])->middleware('auth')->name('logout');
     Route::post('/updateProfile', [App\Http\Controllers\UserController::class, 'updateProfile'])->middleware('auth')->name('updateProfile');
     Route::post('/updatePassword',[App\Http\Controllers\UserController::class, 'updatePassword'])->middleware('auth')->name('updatePassword');
     // Route::get('/admin', [App\Http\Controllers\UserController::class, 'fetch'])
