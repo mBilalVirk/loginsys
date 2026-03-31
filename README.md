@@ -628,3 +628,7 @@ return [
 # 27/03/2026
 
 1. chatbot integration.
+
+# 31/03/2026
+
+1. filter search
