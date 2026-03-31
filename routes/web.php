@@ -18,15 +18,15 @@ Route::get('/vite/{any?}', function () {
     return view('vite'); 
 })->where('any', '.*');
 
-// Route::get('/', function () {
-//     return view('login');
-// })->name('login');
+Route::get('/', function () {
+    return view('login');
+})->name('login');
 
 
 
-// Route::get('/register', function () {
-//     return view('register');
-// })->name('register');
+Route::get('/register', function () {
+    return view('register');
+})->name('register');
 
 
 Route::get('/passwordupdate', function () {

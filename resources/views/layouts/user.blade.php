@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-   
+
     <meta charset="utf-8">
     <title>@yield('title', 'Dashboard')</title>
     <link rel="stylesheet" href="{{ asset('css/base.css') }}">
@@ -13,15 +14,17 @@
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="apple-touch-icon" type="image/png" href="{{ asset('logo512.png') }}">
     <link rel="manifest" href="{{ asset('manifest.json') }}">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=edit" />
     <link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=edit" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     @yield('head')
-    
+
 </head>
+
 <body>
     <div class="container">
         @yield('content')
     </div>
 </body>
+
 </html>

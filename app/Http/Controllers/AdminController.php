@@ -172,80 +172,106 @@ class AdminController extends Controller
     {
         return view('admin.setting');
     }
-    public function assistant(){
+    public function assistant()
+    {
         return view('admin.aiassistant');
     }
-    public function ai_history(){
-       $messages = ChatbotMessage::with('user')->paginate(5);
-    
-         return response()->json([
-        'success' => true,
-        'messages' => $messages->items(),
-        'pagination' => [
-            'total' => $messages->total(),
-            'per_page' => $messages->perPage(),
-            'current_page' => $messages->currentPage(),
-            'last_page' => $messages->lastPage(),
-        ]
-    ],200);
+    public function ai_history()
+    {
+        $messages = ChatbotMessage::with('user')->paginate(5);
+
+        return response()->json(
+            [
+                'success' => true,
+                'messages' => $messages->items(),
+                'pagination' => [
+                    'total' => $messages->total(),
+                    'per_page' => $messages->perPage(),
+                    'current_page' => $messages->currentPage(),
+                    'last_page' => $messages->lastPage(),
+                ],
+            ],
+            200,
+        );
     }
     public function clearAIHistory()
     {
         ChatbotMessage::truncate();
         return response()->json([
-        'success' => true,
-        'message' => 'AI chat history cleared successfully.'
-    ]);
+            'success' => true,
+            'message' => 'AI chat history cleared successfully.',
+        ]);
     }
     public function search()
     {
         return view('admin.search');
     }
     public function searchData(Request $request)
-    {
-        $user = auth()->user();
-        $category = $request->input('category');
-        $query = $request->input('search');
+{
+    $request->validate([
+        'category'  => ['nullable', 'in:users,posts,admins'],
+        'search'    => ['nullable', 'string', 'max:255'],
+        'date_from' => ['nullable', 'date'],
+        'date_to'   => ['nullable', 'date', 'after_or_equal:date_from'],
+        'sort'      => ['nullable', 'in:newest,oldest,az,za'],
+    ]);
 
-        $results = [];
-        if ($category === 'users') {
-            $results = User::where('role', 'user')
-                ->where(function ($q) use ($query) {
-                    $q->where('name', 'like', "%$query%")->orWhere('email', 'like', "%$query%");
-                })
-                ->get();
-        } elseif ($category === 'posts') {
-            $results = Post::where('content', 'like', "%$query%")
-                ->orWhereHas('user', function ($q) use ($query) {
-                    $q->where('name', 'like', "%$query%");
-                })
-                ->with('user')
-                ->get();
-        } elseif ($category === 'admins') {
-            $results = User::where('role', 'admin')
-                ->where(function ($q) use ($query) {
-                    $q->where('name', 'like', "%$query%")->orWhere('email', 'like', "%$query%");
-                })
-                ->get();
-        }
-        if ($results) {
-            return response()->json(
-                [
-                    'success' => true,
-                    'data' => $results,
-                ],
-                200,
-            );
-        } else {
-            return response()->json(
-                [
-                    'success' => false,
-                    'data' => $results,
-                ],
-                400,
-            );
-        }
+    $category = $request->input('category');
+    $query    = trim($request->input('search', ''));
+    $dateFrom = $request->input('date_from');
+    $dateTo   = $request->input('date_to');
+    $sort     = $request->input('sort', 'newest');
+
+    if (!$category) {
+        return response()->json(['success' => false, 'message' => 'Category is required.'], 422);
     }
+
+    $role = match ($category) {
+        'admins' => 'admin',
+        'users'  => 'user',
+        default  => null,
+    };
+
+    $results = match ($category) {
+
+        'users', 'admins' => User::select('id', 'name', 'email', 'role', 'photo', 'created_at')
+            ->where('role', $role)
+            ->when($query, fn($q) =>
+                $q->where(fn($q) =>
+                    $q->where('name', 'like', "%$query%")
+                      ->orWhere('email', 'like', "%$query%")
+                )
+            )
+            ->when($sort === 'newest', fn($q) => $q->orderBy('id', 'desc'))
+            ->when($sort === 'oldest', fn($q) => $q->orderBy('id', 'asc'))
+            ->when($sort === 'az',     fn($q) => $q->orderBy('name', 'asc'))
+            ->when($sort === 'za',     fn($q) => $q->orderBy('name', 'desc'))
+            ->get(),
+
+        'posts' => Post::with('user')
+            ->when($query, fn($q) =>
+                $q->where(fn($q) =>
+                    $q->where('content', 'like', "%$query%")
+                      ->orWhereHas('user', fn($q) =>
+                          $q->where('name', 'like', "%$query%")
+                      )
+                )
+            )
+            ->when($dateFrom, fn($q) => $q->whereDate('created_at', '>=', $dateFrom))
+            ->when($dateTo,   fn($q) => $q->whereDate('created_at', '<=', $dateTo))
+            ->when($sort === 'newest', fn($q) => $q->latest())
+            ->when($sort === 'oldest', fn($q) => $q->oldest())
+            ->when($sort === 'az',     fn($q) => $q->orderBy('content', 'asc'))
+            ->when($sort === 'za',     fn($q) => $q->orderBy('content', 'desc'))
+            ->get(),
+
+    };
+
+    return response()->json([
+        'success' => true,
+        'data'    => $results,
+    ]);
+}
     public function updateProfile(Request $request)
     {
         $user = auth()->user();
