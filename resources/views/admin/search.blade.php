@@ -432,12 +432,12 @@
     </style>
 
     {{-- Header --}}
-    <div class="search-header">
-        <div>
-            <h1>Smart <span>Search</span></h1>
-            <p>Browse admins, users and posts — filters apply instantly</p>
-        </div>
+
+    <div>
+        <h1>Smart <span>Search</span></h1>
+        <p>Browse admins, users and posts — filters apply instantly</p>
     </div>
+
 
     {{-- Filter Panel --}}
     <form id="searchForm" class="filter-panel" onsubmit="return false;">

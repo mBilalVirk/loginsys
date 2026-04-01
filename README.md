@@ -632,3 +632,8 @@ return [
 # 31/03/2026
 
 1. filter search
+
+# 01/04/2026
+
+1. Add filter Search in most of the pages.
+2. Update pdf, excel export function after add filter search.

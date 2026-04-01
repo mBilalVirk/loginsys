@@ -7,7 +7,7 @@ use App\Http\Controllers\FriendController;
 use App\Http\Controllers\MessageController;
 
 Route::get('admin/generatepdf', [App\Http\Controllers\GeneratePDFcontroller::class, 'GeneratePDF']);
-Route::get('admin/friend/friendpdf', [App\Http\Controllers\GeneratePDFcontroller::class, 'FriendPDF']);
+Route::get('admin/friend/friendpdf', [App\Http\Controllers\GeneratePDFcontroller::class, 'FriendPDF'])->name('friend.pdf');
 Route::get('admin/exportexcel', [App\Http\Controllers\GeneratePDFcontroller::class, 'ExportExcel']);
 Route::get('admin/adminexport', [App\Http\Controllers\GeneratePDFcontroller::class, 'AdminExport']);
 Route::get('admin/useradminexport', [App\Http\Controllers\GeneratePDFcontroller::class, 'UserAdminExport']);

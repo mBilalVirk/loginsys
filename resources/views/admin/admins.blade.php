@@ -8,10 +8,10 @@
         <div class="alert alert-success d-none"></div>
         <div class="alert alert-danger d-none"></div>
         <div>
-            <a class="btn btn-warning text-white" href="adminpdf">
+            <a class="btn btn-warning text-white" id="downloadPdf">
                 <i class="fa-solid fa-file-pdf"></i> Download PDF
             </a>
-            <a class="btn btn-success text-white" href="adminexport">
+            <a class="btn btn-success text-white" id="downloadExcel">
                 <i class="fa-solid fa-file-excel"></i> Export Excel
             </a>
             @if (auth()->user()->role == 'super_admin')
@@ -22,6 +22,30 @@
             @else
                 <p></p>
             @endif
+
+            <script>
+                $("#downloadPdf").click(function() {
+                    const search = $("#searchInput").val();
+                    const dateFrom = $("#dateFrom").val();
+                    const dateTo = $("#dateTo").val();
+                    const sort = $("#sortInput").val();
+
+                    const url =
+                        `/admin/adminpdf?search=${search}&date_from=${dateFrom}&date_to=${dateTo}&sort=${sort}`;
+                    window.open(url, '_blank'); // opens PDF in a new tab
+                });
+
+                $("#downloadExcel").click(function() {
+                    const search = $("#searchInput").val();
+                    const dateFrom = $("#dateFrom").val();
+                    const dateTo = $("#dateTo").val();
+                    const sort = $("#sortInput").val();
+
+                    const url =
+                        `/admin/adminexport?search=${search}&date_from=${dateFrom}&date_to=${dateTo}&sort=${sort}`;
+                    window.open(url, '_blank'); // opens Excel in a new tab
+                });
+            </script>
         </div>
 
         @if (session('success'))
@@ -89,7 +113,31 @@
                 {{ session('status') }}
             </div>
         @endif
+        {{-- Search form --}}
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search name or email...">
+            </div>
 
+            <div class="col-md-3">
+                <input type="date" id="dateFrom" class="form-control">
+            </div>
+
+            <div class="col-md-3">
+                <input type="date" id="dateTo" class="form-control">
+            </div>
+
+            <div class="col-md-2">
+                <select id="sortInput" class="form-control">
+                    <option value="newest">Newest</option>
+                    <option value="oldest">Oldest</option>
+                    <option value="az">A → Z</option>
+                    <option value="za">Z → A</option>
+                </select>
+            </div>
+        </div>
+        {{-- End of Search form --}}
+        <hr />
         <div class="table-responsive">
             <table class="table table-bordered table-striped align-middle text-center">
                 <thead class="table-dark">
@@ -181,11 +229,25 @@
         });
 
         function loadAdmins() {
+            let rows = '';
+            const search = $("#searchInput").val().trim();
+            const dateFrom = $("#dateFrom").val();
+            const dateTo = $("#dateTo").val();
+            const sort = $("#sortInput").val();
             $.ajax({
+
+
                 url: "{{ route('admin.admins') }}",
                 type: "GET",
+                data: {
+                    search: search,
+                    date_from: dateFrom,
+                    date_to: dateTo,
+                    sort: sort
+                },
+
                 success: function(data) {
-                    let rows = '';
+
                     data.forEach(function(admin) {
                         rows += `<tr>
                             <td>${admin.id}</td>
@@ -211,6 +273,10 @@
                 }
             });
         }
+        // Trigger search on input or change
+        $("#searchInput, #dateFrom, #dateTo, #sortInput").on('input change', function() {
+            loadAdmins();
+        });
 
         function editAdmin(id, name, email) {
             $("#editName").val(name);

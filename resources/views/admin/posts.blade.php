@@ -64,7 +64,30 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3">Dashboard : Posts</h1>
     </div>
+    {{-- Search form --}}
+    <div class="row mb-3" style="pointer-events: none; opacity: 0.5;">
+        <div class="col-md-4">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search name or email...">
+        </div>
 
+        <div class="col-md-3">
+            <input type="date" id="dateFrom" class="form-control">
+        </div>
+
+        <div class="col-md-3">
+            <input type="date" id="dateTo" class="form-control">
+        </div>
+
+        <div class="col-md-2">
+            <select id="sortInput" class="form-control">
+                <option value="newest">Newest</option>
+                <option value="oldest">Oldest</option>
+                <option value="az">A → Z</option>
+                <option value="za">Z → A</option>
+            </select>
+        </div>
+    </div>
+    {{-- End of Search form --}}
     <div class="container mt-4">
 
         @if ($posts->isEmpty())

@@ -7,14 +7,37 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3">Dashboard : Users</h1>
         <div>
-            <a class="btn btn-warning flex text-white" href="generatepdf">
+            <a class="btn btn-warning flex text-white" id="downloadPdf">
                 <i class="fa-solid fa-file-pdf"></i> Download PDF
             </a>
-            <a class="btn btn-success flex text-white" href="exportexcel">
+            <a class="btn btn-success flex text-white" id="downloadExcel">
                 <i class="fa-solid fa-file-excel"></i> Download Excel
             </a>
         </div>
     </div>
+    <script>
+        $("#downloadPdf").click(function() {
+            const search = $("#searchInput").val();
+            const dateFrom = $("#dateFrom").val();
+            const dateTo = $("#dateTo").val();
+            const sort = $("#sortInput").val();
+
+            const url =
+                `/admin/generatepdf?search=${search}&date_from=${dateFrom}&date_to=${dateTo}&sort=${sort}`;
+            window.open(url, '_blank'); // opens PDF in a new tab
+        });
+
+        $("#downloadExcel").click(function() {
+            const search = $("#searchInput").val();
+            const dateFrom = $("#dateFrom").val();
+            const dateTo = $("#dateTo").val();
+            const sort = $("#sortInput").val();
+
+            const url =
+                `/admin/exportexcel?search=${search}&date_from=${dateFrom}&date_to=${dateTo}&sort=${sort}`;
+            window.open(url, '_blank'); // opens Excel in a new tab
+        });
+    </script>
 
     <div class="container mt-4">
 
@@ -26,7 +49,28 @@
 
         <div class="alert alert-success d-none"></div>
         <div class="alert alert-danger d-none"></div>
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search name or email...">
+            </div>
 
+            <div class="col-md-3">
+                <input type="date" id="dateFrom" class="form-control">
+            </div>
+
+            <div class="col-md-3">
+                <input type="date" id="dateTo" class="form-control">
+            </div>
+
+            <div class="col-md-2">
+                <select id="sortInput" class="form-control">
+                    <option value="newest">Newest</option>
+                    <option value="oldest">Oldest</option>
+                    <option value="az">A → Z</option>
+                    <option value="za">Z → A</option>
+                </select>
+            </div>
+        </div>
         <div class="table-responsive">
             <table class="table table-bordered table-striped align-middle text-center">
                 <thead class="table-dark">
@@ -95,10 +139,23 @@
 
         function loadUsers(page = 1) {
             let row = '';
+            const search = $("#searchInput").val();
+            const dateFrom = $("#dateFrom").val();
+            const dateTo = $("#dateTo").val();
+            const sort = $("#sortInput").val();
+
             $.ajax({
                 url: `{{ route('admin.users') }}?page=` + page,
                 type: "GET",
+                data: {
+                    page: page,
+                    search: search,
+                    date_from: dateFrom,
+                    date_to: dateTo,
+                    sort: sort
+                },
                 success: function(response) {
+                    console.log(response.data)
                     response.data.forEach(function(user) {
                         row += `<tr>
                             <td>${user.id}</td>
@@ -124,6 +181,17 @@
                 }
             });
         }
+        let debounce;
+
+        $("#searchInput").on("input", function() {
+            clearTimeout(debounce);
+            debounce = setTimeout(() => {
+                loadUsers();
+            }, 400);
+        });
+        $("#dateFrom, #dateTo, #sortInput").on("change", function() {
+            loadUsers();
+        });
 
         function deleteUser(id) {
             $.ajax({
