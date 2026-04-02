@@ -14,11 +14,11 @@ class UsersChart extends Chart
     public function __construct()
     {
         parent::__construct();
-        $this->labels(['Admins', 'User', 'Super Admin']);
+        $this->labels(['Super Admins', 'Admins', 'Users']);
         $admins = User::where('role', 'admin')->count();
         $users = User::where('role', 'user')->count();
         $superAdmin = User::where('role', 'super_admin')->count();
 
-        $this->dataset('User Roles', 'bar', [$admins, $users, $superAdmin])->backgroundColor(['#f87979', '#7acbf9', '#3acb22']);
+        $this->dataset('User Roles', 'bar', [  $superAdmin,$admins, $users])->backgroundColor(['#f87979', '#7acbf9', '#3acb22']);
     }
 }

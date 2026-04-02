@@ -47,7 +47,7 @@
         </div>
 
         <div class="col-md-4">
-            <div class="card mb-3">
+            <div class="card text-bg-info mb-3">
                 <div class="card-body">
                     <h5 class="card-title">Comments</h5>
                     <p class="card-text fs-4">{{ $comments }}</p>

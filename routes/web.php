@@ -131,7 +131,7 @@ Route::middleware('auth' ,'user')->group(function(){
     Route::delete('/user/comment/{id}',[UserController::class,'deleteComment'])->name('user.deleteComment');
     
     Route::get('/dashboard', [App\Http\Controllers\UserController::class, 'dashboard'])->middleware('auth')->name('dashboard');
-    // Route::post('/logout', [App\Http\Controllers\UserController::class, 'logout'])->middleware('auth')->name('logout');
+    Route::post('/logout', [App\Http\Controllers\UserController::class, 'logout'])->middleware('auth')->name('userlogout');
     Route::post('/updateProfile', [App\Http\Controllers\UserController::class, 'updateProfile'])->middleware('auth')->name('updateProfile');
     Route::post('/updatePassword',[App\Http\Controllers\UserController::class, 'updatePassword'])->middleware('auth')->name('updatePassword');
     // Route::get('/admin', [App\Http\Controllers\UserController::class, 'fetch'])

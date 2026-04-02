@@ -125,7 +125,7 @@ class GeneratePDFcontroller extends Controller
     }
     public function AdminPDF(Request $request)
     {
-         $user = auth()->user();
+        $user = auth()->user();
         $query = User::query();
         if ($user->role == 'super_admin') {
             $query->where('role', 'admin')->where('id', '!=', $user->id)->whereNull('deleted_at');

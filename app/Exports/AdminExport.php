@@ -27,10 +27,10 @@ class AdminExport implements FromView, ShouldAutoSize
            
         }
         
-        // ❌ Exclude soft deleted
+        //  Exclude soft deleted
         $query->whereNull('deleted_at');
 
-        // 🔍 SEARCH (name + email)
+        //  SEARCH (name + email)
         if (!empty($filters['search'])) {
             $search = $filters['search'];
             $query->where(function ($q) use ($search) {
@@ -38,7 +38,7 @@ class AdminExport implements FromView, ShouldAutoSize
             });
         }
 
-        // 📅 DATE FILTER
+        //  DATE FILTER
         if (!empty($filters['date_from'])) {
             $query->whereDate('created_at', '>=', $filters['date_from']);
         }
@@ -47,7 +47,7 @@ class AdminExport implements FromView, ShouldAutoSize
             $query->whereDate('created_at', '<=', $filters['date_to']);
         }
 
-        // 🔽 SORTING
+        //  SORTING
         if(!empty($filters['sort'])){
         switch ($filters['sort']) {
             case 'oldest':

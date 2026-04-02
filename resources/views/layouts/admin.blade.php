@@ -26,6 +26,10 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             background-color: #f8f9fa;
         }
@@ -44,11 +48,25 @@
 
         .sidebar a:hover {
             background: #343a40;
+            color: #fff !important;
+            border-left: 4px solid #0d6efd;
+            border-right: 4px solid #0d6efd;
+            border-radius: 5px;
+            transition: all 0.3s ease;
         }
 
         .sidebar a i {
             width: 20px;
             margin-right: 8px;
+        }
+
+        .active {
+            background: #343a40;
+            color: #fff !important;
+            border-left: 4px solid #0d6efd;
+            border-right: 4px solid #0d6efd;
+            border-radius: 5px;
+            transition: all 0.3s ease;
         }
     </style>
 </head>
@@ -81,38 +99,43 @@
 
             <!-- Sidebar -->
             <nav class="col-12 col-sm-4 col-md-3 col-lg-2 sidebar p-0">
-                <a href="{{ route('admin.dashboard') }}">
+                <a href="{{ route('admin.dashboard') }}"
+                    class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                     <i class="fa-solid fa-gauge-high"></i> Dashboard
                 </a>
 
-                <a href="{{ route('userView') }}">
+                <a href="{{ route('userView') }}" class="{{ request()->routeIs('userView') ? 'active' : '' }}">
                     <i class="fa-solid fa-users"></i> Users
                 </a>
 
-                <a href="{{ route('admin.posts') }}">
+                <a href="{{ route('admin.posts') }}" class="{{ request()->routeIs('admin.posts') ? 'active' : '' }}">
                     <i class="fa-solid fa-newspaper"></i> Posts
                 </a>
 
-                <a href="{{ route('friendsView') }}">
+                <a href="{{ route('friendsView') }}" class="{{ request()->routeIs('friendsView') ? 'active' : '' }}">
                     <i class="fa-solid fa-user-group"></i> Friends
                 </a>
 
                 @if (Auth::user()->role == 'super_admin')
-                    <a href="{{ route('adminsview') }}">
+                    <a href="{{ route('adminsview') }}"
+                        class="{{ request()->routeIs('adminsview') ? 'active' : '' }}">
                         <i class="fa-solid fa-user-shield"></i> Add New Admin
                     </a>
                 @endif
 
-                <a href="{{ route('admin.DeletedData') }}">
-                    <i class="fa-solid fa-trash-can"></i> Deleted Record
+                <a href="{{ route('admin.DeletedData') }}"
+                    class="{{ request()->routeIs('admin.DeletedData') ? 'active' : '' }}">
+                    <i class="fa-solid fa-trash-can"></i> Recycle Bin
                 </a>
 
-                <a href="{{ route('admin.search') }}">
+                <a href="{{ route('admin.search') }}"
+                    class="{{ request()->routeIs('admin.search') ? 'active' : '' }}">
                     <i class="fa-solid fa-magnifying-glass"></i> Search
                 </a>
 
 
-                <a href="{{ route('admin.assistant') }}">
+                <a href="{{ route('admin.assistant') }}"
+                    class="{{ request()->routeIs('admin.assistant') ? 'active' : '' }}">
                     <i class="fa-solid fa-gear"></i> AI Assistant
                 </a>
             </nav>

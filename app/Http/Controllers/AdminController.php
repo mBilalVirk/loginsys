@@ -37,24 +37,24 @@ class AdminController extends Controller
 
         $query = User::query();
 
-        // 🔐 Role-based filtering
+        //  Role-based filtering
         if ($authUser->role == 'super_admin') {
             $query->where('id', '!=', $authUser->id);
         } else {
             $query->whereNotIn('role', ['admin', 'super_admin']);
         }
 
-        // ❌ Exclude soft deleted
+        //  Exclude soft deleted
         $query->whereNull('deleted_at');
 
-        // 🔍 SEARCH (name + email)
+        //  SEARCH (name + email)
         if ($request->search) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'LIKE', "%{$request->search}%")->orWhere('email', 'LIKE', "%{$request->search}%");
             });
         }
 
-        // 📅 DATE FILTER
+        //  DATE FILTER
         if ($request->date_from) {
             $query->whereDate('created_at', '>=', $request->date_from);
         }
@@ -63,7 +63,7 @@ class AdminController extends Controller
             $query->whereDate('created_at', '<=', $request->date_to);
         }
 
-        // 🔽 SORTING
+        //  SORTING
         switch ($request->sort) {
             case 'oldest':
                 $query->orderBy('created_at', 'asc');
@@ -81,7 +81,7 @@ class AdminController extends Controller
                 $query->orderBy('created_at', 'desc'); // newest
         }
         
-        // 📄 PAGINATION
+        //  PAGINATION
         $users = $query->paginate(5);
 
         return response()->json($users);
@@ -99,17 +99,17 @@ class AdminController extends Controller
            
         }
         
-        // ❌ Exclude soft deleted
+        //  Exclude soft deleted
         $query->whereNull('deleted_at');
 
-        // 🔍 SEARCH (name + email)
+        //  SEARCH (name + email)
         if ($request->search) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'LIKE', "%{$request->search}%")->orWhere('email', 'LIKE', "%{$request->search}%");
             });
         }
 
-        // 📅 DATE FILTER
+        //  DATE FILTER
         if ($request->date_from) {
             $query->whereDate('created_at', '>=', $request->date_from);
         }
@@ -118,7 +118,7 @@ class AdminController extends Controller
             $query->whereDate('created_at', '<=', $request->date_to);
         }
 
-        // 🔽 SORTING
+        //  SORTING
         switch ($request->sort) {
             case 'oldest':
                 $query->orderBy('created_at', 'asc');
@@ -189,12 +189,16 @@ class AdminController extends Controller
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
                 'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'dob'=> 'nullable|date',
+                'gender' => 'nullable|in:male,female,other',
             ],
             [
                 'name.required' => 'Name is Required',
                 'email.required' => 'Email is Required',
                 'name.email' => 'Please enter a valid email',
                 'name.unique' => 'Email already Exist',
+                'gender.in' => 'Please select a valid gender',
+                'dob.date' => 'Please enter a valid date',
             ],
         );
         //   return $validatedData;

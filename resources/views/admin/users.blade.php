@@ -79,7 +79,9 @@
                         <th>Name</th>
                         <th>Email</th>
                         <th>Photo</th>
-                        <th colspan="2">Action</th>
+                        <th>DOB</th>
+                        <th>Gender</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody id="usersTable"></tbody>
@@ -110,6 +112,29 @@
                                 <div class="form-group mb-3">
                                     <label for="editEmail">Email</label>
                                     <input type="email" class="form-control" id="editEmail" name="email">
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="editEmail">DOB</label>
+                                    <input type="date" class="form-control" id="editDob" name="dob">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Gender</label>
+
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="gender" id="genderMale"
+                                            value="male">
+                                        <label class="form-check-label" for="genderMale">
+                                            Male
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="gender" id="genderFemale"
+                                            value="female">
+                                        <label class="form-check-label" for="genderFemale">
+                                            Female
+                                        </label>
+                                    </div>
                                 </div>
                                 <div class="form-group mb-3">
                                     <label for="photo">Photo</label>
@@ -162,15 +187,20 @@
                             <td>${user.name}</td>
                             <td>${user.email}</td>
                             <td><img src="/${user.photo}" width='50' height='50' class="rounded-circle object-fit-cover"/></td>
+                            <td>${user.dob}</td>
+                            <td>${user.gender}</td>
                             <td>
                                 <button class="btn btn-primary"
                                     onclick="editUser(${user.id},'${user.name}','${user.email}')">
-                                    Edit
+                                    <i class="fa-solid fa-pen-to-square"></i> 
+                                </button>
+                                <button class="btn btn-danger"
+                                    onclick="deleteUser(${user.id})">
+                                    <i class="fa-solid fa-trash"></i>
                                 </button>
                             </td>
-                            <td>
-                                <button class="btn btn-danger" onclick="deleteUser(${user.id})">Delete</button>
-                            </td>
+
+
                         </tr>`;
                     });
                     $("#usersTable").html(row);
@@ -215,10 +245,16 @@
             });
         }
 
-        function editUser(id, name, email) {
+        function editUser(id, name, email, dob, gender) {
             $("#editName").val(name);
             $("#editEmail").val(email);
-
+            $("#editDob").val(dob);
+            $("#genderMale, #genderFemale").prop('checked', false);
+            if (gender === 'male') {
+                $("#genderMale").prop('checked', true);
+            } else {
+                $("#genderFemale").prop('checked', true);
+            }
             let modalEl = document.getElementById('editUser');
             let modal = new bootstrap.Modal(modalEl);
             modal.show();
@@ -227,6 +263,7 @@
             $("#editForm").off('submit').on('submit', function(e) {
                 e.preventDefault();
                 const data = new FormData(this);
+
                 $.ajax({
                     url: `/admin/update/${id}`,
                     type: "POST",

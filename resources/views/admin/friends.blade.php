@@ -163,8 +163,15 @@
                     }
                 });
             }
+            let debounce;
+            $("#searchInput").on("input", function() {
+                clearTimeout(debounce);
+                debounce = setTimeout(() => {
+                    loadFriendShip();
+                }, 400);
+            });
             // Trigger search on input or change
-            $("#searchInput, #dateFrom, #dateTo, #sortInput").on('input change', function() {
+            $(" #dateFrom, #dateTo, #sortInput").on('input change', function() {
                 loadFriendShip();
             });
 
