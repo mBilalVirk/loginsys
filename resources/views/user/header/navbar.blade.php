@@ -74,12 +74,21 @@
                         <i class="fa-solid fa-user-gear"></i>
                     </button>
                     <div class="dropdown-content">
-                        <a href="{{ route('user.profile', auth()->user()->id) }}">Profile</a>
+                        <a href="{{ route('user.profile', auth()->user()->id) }}">
+                            <img
+                                src="{{ auth()->user()->photo ? asset('/' . auth()->user()->photo) : asset('images/default-user.png') }}">
+                            <span>
+                                {{ auth()->user()->name }}
+                            </span>
+                        </a>
+
                         <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
                             @csrf
                             <button type="submit"
-                                style="width: 100%; text-align: left; background: none; border: none; padding: 12px 16px; cursor: pointer;">Sign
-                                Out</button>
+                                style="width: 100%; text-align: center; background: none; border: none;  cursor: pointer;"><i
+                                    class="fa-solid fa-arrow-right-from-bracket"></i> <span style="margin-left:4px;">Log
+                                    out</span>
+                            </button>
                         </form>
                     </div>
                 </div>
