@@ -128,6 +128,8 @@ Route::middleware('auth' ,'user')->group(function(){
     Route::post('/user/uploadPhoto', [UserController::class, 'updatePhoto'])->name('user.updatePhoto');
     Route::post('/user/updateName', [UserController::class, 'updateName'])->name('user.updateName');
     Route::post('/user/updateEmail', [UserController::class, 'updateEmail'])->name('user.updateEmail');
+    Route::post('/user/updateDOB', [UserController::class, 'updateDOB'])->name('user.updateDOB');
+    Route::post('/user/updateGender', [UserController::class, 'updateGender'])->name('user.updateGender');
     Route::delete('/user/comment/{id}',[UserController::class,'deleteComment'])->name('user.deleteComment');
     
     Route::get('/dashboard', [App\Http\Controllers\UserController::class, 'dashboard'])->middleware('auth')->name('dashboard');

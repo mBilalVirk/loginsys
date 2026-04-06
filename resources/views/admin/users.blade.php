@@ -191,7 +191,7 @@
                             <td>${user.gender}</td>
                             <td>
                                 <button class="btn btn-primary"
-                                    onclick="editUser(${user.id},'${user.name}','${user.email}')">
+                                    onclick="editUser(${user.id},'${user.name}','${user.email}','${user.dob || ''}','${user.gender || ''}')">
                                     <i class="fa-solid fa-pen-to-square"></i> 
                                 </button>
                                 <button class="btn btn-danger"

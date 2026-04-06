@@ -14,7 +14,7 @@
 }
 
 /* PROFILE CARD */
-.profile-card {
+/* .profile-card {
     width: 250px;
     height: 25%;
     background: white;
@@ -23,7 +23,7 @@
     border-radius: 8px;
     position: sticky;
     top: 20px;
-}
+} */
 
 .friend-card {
     display: flex;
@@ -31,13 +31,12 @@
     align-items: center;
 
     width: 250px;
-    height: 100%;
+
     background: white;
     padding: 20px;
     text-align: center;
     border-radius: 8px;
-
-
+    box-shadow: 0 0 8px 1px rgba(0, 0, 0, 0.2);
 }
 
 
@@ -122,4 +121,104 @@
 .alert.success {
     background: #e6ffe6;
     color: #006600;
+}
+
+/* SIDEBAR */
+.side-nav {
+    max-width: 260px;
+    background: #fff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 24px;
+    position: sticky;
+    top: 56px;
+}
+
+.side-nav-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 16px;
+}
+
+.side-nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.side-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    color: #374151;
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.side-nav-link:hover,
+.side-nav-link.active {
+    background: #eef2ff;
+    color: #1d4ed8;
+}
+
+.side-nav-icon {
+    width: 22px;
+    text-align: center;
+    color: inherit;
+}
+
+.side-nav-text {
+    font-size: 0.96rem;
+}
+
+
+
+/* pc link */
+.pc-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 0.85rem;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    transition: background 0.15s;
+}
+
+.pc-link:hover {
+    background: rgba(124, 92, 252, 0.08);
+    color: var(--accent);
+}
+
+.pc-link i {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.pc-logout {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 9px 10px;
+    border-radius: 10px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    color: var(--red);
+    transition: background 0.15s;
+}
+
+.pc-logout:hover {
+    background: rgba(248, 113, 113, 0.08);
 }

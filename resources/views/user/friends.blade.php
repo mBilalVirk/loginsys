@@ -1,10 +1,41 @@
 @extends('layouts.user')
 @section('title', 'Profile')
-@include('layouts.navbar')
+
+
 @section('content')
+
+    {{-- side bar --}}
+    <div id="side-nav" class="side-nav">
+        <div class="side-nav-title">Friends</div>
+        <div class="side-nav-links">
+
+            <a href="{{ route('friends') }}" class="side-nav-link active">
+                <span class="side-nav-icon"><i class="fas fa-users"></i></span>
+                <span class="side-nav-text">Friends</span>
+            </a>
+            <a href="#sent-requests" class="side-nav-link">
+                <span class="side-nav-icon"><i class="fas fa-paper-plane"></i></span>
+                <span class="side-nav-text">Sent Requests</span>
+            </a>
+            <a href="#received-requests" class="side-nav-link">
+                <span class="side-nav-icon"><i class="fas fa-inbox"></i></span>
+                <span class="side-nav-text">Received Requests</span>
+            </a>
+            <a href="#suggestions" class="side-nav-link">
+                <span class="side-nav-icon"><i class="fas fa-lightbulb"></i></span>
+                <span class="side-nav-text">Suggestions</span>
+            </a>
+            <a href="#all-friends" class="side-nav-link">
+                <span class="side-nav-icon"><i class="fas fa-user-friends"></i></span>
+                <span class="side-nav-text">All Friends</span>
+            </a>
+
+        </div>
+    </div>
+    {{-- end of side bar --}}
     <!-- my friends -->
     <div
-        style="display:flex;justify-content:center;align-items:center;flex-direction:column;gap:20px; margin-top:20px;position:relative;">
+        style="display:flex;justify-content:center;flex-direction:column;gap:10px; margin-top:0px;position:relative;background-color:white; padding:10px; border-radius:3px;width:60%;">
         @if (session('status'))
             <div class="alert success">
                 {{ session('status') }}
@@ -26,7 +57,7 @@
 
         </div>
 
-        <h1>Your Friends</h1>
+        <h3 id="your-friends">Your Friends</h3>
         <div class="friends-list">
             @foreach ($acceptedFriends as $friendRequest)
                 @php
@@ -55,7 +86,7 @@
 
         </div>
         <!-- Sent Friend Requests -->
-        <h1>Sent Friend Requests</h1>
+        <h3 id="sent-requests">Sent Friend Requests</h3>
         <div class="friends-list">
             @foreach ($sentFriendRequests as $user)
                 @foreach ($user->sentFriendRequests as $request)
@@ -77,7 +108,7 @@
             @endforeach
         </div>
         <!-- receivedFriendRequests -->
-        <h1>Received Friend Requests</h1>
+        <h3 id="received-requests">Received Friend Requests</h3>
         <div class="friends-list">
             @foreach ($receivedFriendRequests as $user)
                 @foreach ($user->receivedFriendRequests as $request)
@@ -105,8 +136,8 @@
             @endforeach
         </div>
 
-        <h1>All others</h1>
 
+        <h3 id="all-friends">All others</h3>
         <div class="friends-list">
             @foreach ($friends as $friend)
                 <div class="friend-card">
@@ -130,5 +161,8 @@
             @endforeach
         </div>
 
+        <div>
+            <span>Footer ❤️</span>
+        </div>
     </div>
 @endsection

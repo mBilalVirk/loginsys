@@ -642,3 +642,7 @@ return [
 
 1. improve filter search.
 2. usr side
+
+# 06/04/2026
+
+1. improved user view

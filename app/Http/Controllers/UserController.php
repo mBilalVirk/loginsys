@@ -66,7 +66,9 @@ class UserController extends Controller
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => ['required', 'string', 'min:8', 'confirmed', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$/'],
-                'photo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+                'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'gender' => 'required|string|in:male,female,other',
+                'dob' => 'required|date|before:today',
             ],
             [
                 'name.required' => 'Name is required',
@@ -77,7 +79,14 @@ class UserController extends Controller
                 'password.min' => 'Password must be at least 8 characters',
                 'password.confirmed' => 'Password confirmation does not match',
                 'password.regex' => 'Password must include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character',
-                'photo.required' => 'Photo is Required',
+                'photo.image' => 'Photo must be an image',
+                'photo.mimes' => 'Photo must be jpeg, png, or jpg',
+                'photo.max' => 'Photo size must be less than 2MB',
+                'gender.required' => 'Gender is required',
+                'gender.in' => 'Please select a valid gender',
+                'dob.required' => 'Date of birth is required',
+                'dob.date' => 'Please enter a valid date',
+                'dob.before' => 'Date of birth must be before today',
             ],
         );
         if ($request->hasFile('photo')) {
@@ -88,12 +97,16 @@ class UserController extends Controller
             $request->photo->move(public_path('images'), $imageName);
 
             $validatedData['photo'] = 'images/' . $imageName;
+        } else {
+            $validatedData['photo'] = null; // or default image
         }
         $user = User::create([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
             'password' => $validatedData['password'],
             'photo' => $validatedData['photo'],
+            'gender' => $validatedData['gender'],
+            'dob' => $validatedData['dob'],
             'role' => 'user',
         ]);
 
@@ -277,6 +290,41 @@ class UserController extends Controller
         $user->email = $request->email;
         $user->save();
         return redirect()->back()->with('status', 'Email updated successfully.');
+    }
+    public function updateDOB(Request $request)
+    {
+        $user = auth()->user();
+        $request->validate(
+            [
+                'dob' => 'required|date|before:today',
+            ],
+            [
+                'dob.required' => 'Date of birth is required',
+                'dob.date' => 'Please enter a valid date',
+                'dob.before' => 'Date of birth must be before today',
+            ],
+        );
+
+        $user->dob = $request->dob;
+        $user->save();
+        return redirect()->back()->with('status', 'Date of birth updated successfully.');
+    }
+    public function updateGender(Request $request)
+    {
+        $user = auth()->user();
+        $request->validate(
+            [
+                'gender' => 'required|string|in:Male,Female,Other',
+            ],
+            [
+                'gender.required' => 'Gender is required',
+                'gender.in' => 'Please select a valid gender',
+            ],
+        );
+
+        $user->gender = $request->gender;
+        $user->save();
+        return redirect()->back()->with('status', 'Gender updated successfully.');
     }
     public function deleteComment($id)
     {

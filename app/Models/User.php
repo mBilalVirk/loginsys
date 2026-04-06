@@ -28,6 +28,8 @@ class User extends Authenticatable
         'password',
         'photo',
         'role',
+        'gender',
+        'dob',
     ];
     public function posts()
     {

@@ -42,140 +42,246 @@
         }, 3000);
     </script>
 @endsection
+
 @section('content')
-    @if (session('status'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert"
-            style="position: fixed; top: 1rem; right: 1rem; z-index: 1000; min-width: 300px;" setTimeout>
-            {{ session('status') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    @endif
+    <div class="container">
+        @if (session('status'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert"
+                style="position: fixed; top: 1rem; right: 1rem; z-index: 1000; min-width: 300px;" setTimeout>
+                {{ session('status') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
 
 
-    <!-- <div class="container"> -->
-    <!-- Profile Section -->
-    <div class="profile-card">
-        <div class="profile-photo-wrapper">
-            <img src="{{ auth()->user()->photo ? asset(auth()->user()->photo) : asset('images/default-user.png') }}"
-                alt="Profile" class="profile-img">
+        <!-- <div class="container"> -->
+        <!-- Profile Section -->
+        <div class="profile-card">
 
-            <span class="edit-icon material-symbols-outlined"
-                onclick="document.getElementById('photoUpload').click()">edit</span>
+            {{-- Banner + Avatar --}}
+            <div
+                style="height:72px; background:linear-gradient(135deg,#7c5cfc,#fc5c7d); border-radius:18px 18px 0 0; position:relative;">
+                <div style="position:absolute; bottom:-28px; left:50%; transform:translateX(-50%);">
+                    <div style="width:56px; height:56px; border-radius:16px; background:var(--surface); padding:3px;">
+                        <img src="{{ auth()->user()->photo ? asset(auth()->user()->photo) : asset('images/default-user.png') }}"
+                            style="width:50px; height:50px; border-radius:13px; object-fit:cover; display:block;"
+                            class="profile-avatar">
+                    </div>
+                    <span class="fa-solid fa-pen-to-square" onclick="document.getElementById('photoUpload').click()"
+                        style="position:absolute; bottom:2px; right:2px; font-size:16px; cursor:pointer; background:white; border-radius:50%; width:20px; height:20px; display:flex; align-items:center; justify-content:center;">
+                    </span>
+                </div>
+            </div>
+            {{-- end of Banner + Avatar --}}
 
-            <!-- Optional: hidden file input -->
+            {{-- Photo upload form (hidden) --}}
             <form action="{{ route('user.updatePhoto') }}" method="post" enctype="multipart/form-data">
                 @csrf
                 @method('POST')
                 <input type="file" id="photoUpload" name="photo" style="display:none;" onchange="this.form.submit()">
             </form>
-        </div>
 
-        <div class="profile-info-field">
-            <h2>{{ auth()->user()->name }}</h2>
+            {{-- Name & email --}}
+            <div style="padding:40px 20px 8px; text-align:center;">
+                <p id="nameDisplay"
+                    style="font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; margin:0 0 3px; cursor:pointer;"
+                    onclick="document.getElementById('nameDisplay').style.display='none'; document.getElementById('nameForm').style.display='block'; document.getElementById('nameupdate').focus();">
+                    {{ auth()->user()->name }}
+                </p>
+                <form id="nameForm" action="{{ route('user.updateName') }}" method="post" style="display:none; margin:0;">
+                    @csrf
+                    @method('POST')
+                    <input type="text" id="nameupdate" name="name" value="{{ auth()->user()->name }}"
+                        style="text-align:center; font-weight:700; font-size:1rem; border:2px solid #007bff; border-radius:6px; padding:8px; width:100%; box-sizing:border-box;"
+                        onchange="this.form.submit()"
+                        onblur="document.getElementById('nameDisplay').style.display='block'; document.getElementById('nameForm').style.display='none';">
+                </form>
+                <p style="font-size:0.75rem; color:var(--muted); margin:0 0 16px;">{{ auth()->user()->email }}</p>
+            </div>
 
-            <span class="text-edit-icon material-symbols-outlined"
-                onclick="this.style.display=''; document.getElementById('nameupdate').style.display='inline-block'; document.getElementById('nameupdate').focus();">edit</span>
-            <form action="{{ route('user.updateName') }}" method="post" enctype="multipart/form-data">
-                @csrf
-                @method('POST')
-                <input type="text" id="nameupdate" name="name" style="display:none;" onchange="this.form.submit()">
-            </form>
-        </div>
-
-
-        <div class="profile-info-field">
-            <h2>{{ auth()->user()->email }}</h2>
-            <span class="text-edit-icon material-symbols-outlined"
-                onclick="this.style.display=''; document.getElementById('emailupdate').style.display='inline-block'; document.getElementById('emailupdate').focus();">edit</span>
-            <form action="{{ route('user.updateEmail') }}" method="post" enctype="multipart/form-data">
-                @csrf
-                @method('POST')
-                <input type="email" id="emailupdate" name="email" style="display:none;" onchange="this.form.submit()">
-            </form>
-
-            <a href="{{ route('dashboard') }}">Home</a>
-            <a href="{{ route('friends') }}" class="link">Friends</a>
-            <a href="#">Messages</a>
-            <a href="{{ route('passwordupdate') }}" class="link">Change Password</a>
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button class="btn logout-btn btn-primary">Logout</button>
-            </form>
-
-
-        </div>
-
-    </div>
-
-    <!-- Posts Section -->
-
-    <div class="posts-section">
-        <div class="form">
-            <form action="{{ route('post') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                @method('POST')
-                <div class="form-group">
-                    <label for="content">Content</label>
-                    <textarea name="content" id="content" required></textarea>
+            {{-- Profile Info (Gender & DOB) --}}
+            <div style="padding:0 20px 16px; text-align:center; font-size:0.85rem; color:var(--muted);">
+                <div style="display:flex; justify-content:center; gap:16px; flex-wrap:wrap;">
+                    <div>
+                        <p style="margin:0 0 4px; font-weight:600; color:#333;">Gender</p>
+                        <p id="genderDisplay" style="margin:0; cursor:pointer;"
+                            onclick="document.getElementById('genderDisplay').style.display='none'; document.getElementById('genderForm').style.display='block'; document.getElementById('genderupdate').focus();">
+                            {{ auth()->user()->gender ?? 'Not set' }}
+                        </p>
+                        <form id="genderForm" action="{{ route('user.updateGender') }}" method="post"
+                            style="display:none; margin:0;">
+                            @csrf
+                            @method('POST')
+                            <select id="genderupdate" name="gender" onchange="this.form.submit()"
+                                onblur="document.getElementById('genderDisplay').style.display='block'; document.getElementById('genderForm').style.display='none';"
+                                style="border:2px solid #007bff; border-radius:4px; padding:6px; font-size:0.85rem;">
+                                <option value="">Select Gender</option>
+                                <option value="male" {{ auth()->user()->gender === 'male' ? 'selected' : '' }}>Male
+                                </option>
+                                <option value="female" {{ auth()->user()->gender === 'female' ? 'selected' : '' }}>Female
+                                </option>
+                                <option value="other" {{ auth()->user()->gender === 'other' ? 'selected' : '' }}>Other
+                                </option>
+                            </select>
+                        </form>
+                    </div>
+                    <div>
+                        <p style="margin:0 0 4px; font-weight:600; color:#333;">DOB</p>
+                        <p id="dobDisplay" style="margin:0; cursor:pointer;"
+                            onclick="document.getElementById('dobDisplay').style.display='none'; document.getElementById('dobForm').style.display='block'; document.getElementById('dobupdate').focus();">
+                            {{ auth()->user()->dob ? \Carbon\Carbon::parse(auth()->user()->dob)->format('M d, Y') : 'Not set' }}
+                        </p>
+                        <form id="dobForm" action="{{ route('user.updateDOB') }}" method="post"
+                            style="display:none; margin:0;">
+                            @csrf
+                            @method('POST')
+                            <input type="date" id="dobupdate" name="dob" value="{{ auth()->user()->dob }}"
+                                onchange="this.form.submit()"
+                                onblur="document.getElementById('dobDisplay').style.display='block'; document.getElementById('dobForm').style.display='none';"
+                                style="border:2px solid #007bff; border-radius:4px; padding:6px; font-size:0.85rem;">
+                        </form>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="photo">Image (optional)</label>
-                    <input type="file" name="photo" id="image" accept="image/*">
-                </div>
-                <button type="submit" class="btn btn-primary">Create Post</button>
-            </form>
+            </div>
+
+            {{-- Nav links --}}
+            <div style="border-top:1px solid var(--border); padding:8px 12px;">
+                <a href="{{ route('dashboard') }}" class="pc-link"><i class="fa-solid fa-house fa-fw"></i> Home</a>
+                <a href="{{ route('userMessages') }}" class="pc-link"><i class="fa-solid fa-message fa-fw"></i>
+                    Messages</a>
+                <a href="{{ route('friends') }}" class="pc-link"><i class="fa-solid fa-user-group fa-fw"></i> Friends</a>
+                <a href="{{ route('user.profile', auth()->user()->id) }}" class="pc-link"><i
+                        class="fa-solid fa-circle-user fa-fw"></i> Profile</a>
+                <a href="{{ route('passwordupdate') }}" class="pc-link"><i class="fa-solid fa-lock fa-fw"></i> Change
+                    Password</a>
+            </div>
+
+            {{-- Logout --}}
+            <div style="padding:8px 12px 12px;">
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="pc-logout"><i class="fa-solid fa-right-from-bracket fa-fw"></i>
+                        Logout</button>
+                </form>
+            </div>
+
         </div>
-        <hr>
-        <div class="posts">
-            @forelse($posts as $post)
-                <div class="post-card" style="position:relative;">
-                    <form action="{{ url('post/delete/' . $post->id) }}" method="post" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" onclick="return confirm('Are you sure you want to delete this Post?')"
-                            style="border:none; background:none; cursor:pointer; position:absolute; top:0.5rem; right:0.5rem; margin-right:10px;display:block;">
-                            <i class="fa-solid fa-circle-xmark" style="width:100%;color:red"></i>
+
+        <!-- Posts Section -->
+
+        <div class="posts-section post-card">
+            <div class="form">
+                <h3>Create a Post</h3>
+                <form action="{{ route('post') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @method('POST')
+                    <div class="form-group">
+                        <label for="content">Content</label>
+                        <textarea name="content" id="content" required style="border: 1px solid #007bff;">{{ old('content') }} </textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="photo">Image (optional)</label>
+                        <input type="file" name="photo" id="image" accept="image/*"
+                            style="border: 1px solid #007bff;">
+                        <button type="submit" class="btn btn-primary  align-items-center gap-2 mt-3">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            <span>Create Post</span>
                         </button>
-                    </form>
+                    </div>
+                </form>
+            </div>
+
+            <hr>
+            <div class="posts">
+                @forelse($posts as $post)
+                    <div class="post-card" style="position:relative;">
+                        <form action="{{ url('post/delete/' . $post->id) }}" method="post" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" onclick="return confirm('Are you sure you want to delete this Post?')"
+                                style="border:none; background:none; cursor:pointer; position:absolute; top:0.5rem; right:0.5rem; margin-right:10px;display:block;">
+                                <i class="fa-solid fa-circle-xmark" style="width:100%;color:red"></i>
+                            </button>
+                        </form>
 
 
-                    <span class="editPost-icon material-symbols-outlined" data-toggle="modal"
-                        data-target="#editPost{{ $post->id }}"
-                        style="margin-right: 10px; cursor: pointer;position: absolute;top:1rem; right:3rem;">
-                        edit
-                    </span>
+                        <span class="editPost-icon material-symbols-outlined" data-toggle="modal"
+                            data-target="#editPost{{ $post->id }}"
+                            style="margin-right: 10px; cursor: pointer;position: absolute;top:1rem; right:3rem;">
+                            edit
+                        </span>
 
-                    {{-- Post Image --}}
-                    <br>
-                    @if ($post->photo)
-                        <img src="{{ asset($post->photo) }}" class="post-image" width="300"
-                            style="margin-top:10px; border-radius:8px;" onclick="openImage(this)">
-                    @endif
+                        {{-- Post Image --}}
+                        <br>
+                        @if ($post->photo)
+                            <img src="{{ asset($post->photo) }}" class="post-image" width="300"
+                                style="margin-top:10px; border-radius:8px;" onclick="openImage(this)">
+                        @endif
 
-                    {{-- Post Content --}}
-                    <!-- <textarea rows="3" disabled name="content">{{ $post->content }}</textarea> -->
-                    <p>{{ $post->content }}</p>
+                        {{-- Post Content --}}
+                        <!-- <textarea rows="3" disabled name="content">{{ $post->content }}</textarea> -->
+                        <p>{{ $post->content }}</p>
 
-                    <span>{{ $post->created_at->diffForHumans() }}</span>
-                    <hr>
-                    <div class="comment-section">
-                        @foreach ($post->comments as $comment)
-                            <div class="comment" style="display:flex; align-items:center; gap:10px;">
-                                <p style="margin-top:-10px;margin-bottom:-5px;">{{ $comment->user->name }} :
-                                    {{ $comment->comment }}</p>
+                        <span>{{ $post->created_at->diffForHumans() }}</span>
+                        <hr>
+                        <div class="comment-section">
+                            @foreach ($post->comments as $comment)
+                                <div class="comment" style="display:flex; align-items:center; gap:10px;">
+                                    <p style="margin-top:-10px;margin-bottom:-5px;">{{ $comment->user->name }} :
+                                        {{ $comment->comment }}</p>
 
 
-                                <i class="fa-regular fa-pen-to-square" style="margin-bottom: 5px; cursor: pointer;"
-                                    data-toggle="modal" data-target="#editComment{{ $comment->id }}"></i>
+                                    <i class="fa-regular fa-pen-to-square" style="margin-bottom: 5px; cursor: pointer;"
+                                        data-toggle="modal" data-target="#editComment{{ $comment->id }}"></i>
+                                    <!-- The Modal -->
+                                    <div class="modal" id="editComment{{ $comment->id }}">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <!-- Modal Header -->
+                                                <div class="modal-header">
+                                                    <h4 class="modal-title">Edit Comment</h4>
+                                                    <button type="button" class="close" data-dismiss="modal">
+                                                        &times;
+                                                    </button>
+                                                </div>
+
+                                                <!-- Modal body -->
+                                                <div class="modal-body">
+                                                    <form action="{{ route('commentUpdate', $comment->id) }}"
+                                                        method="POST" enctype="multipart/form-data">
+                                                        @csrf
+                                                        @method('POST')
+                                                        <div class="form-group">
+                                                            <label for="comment">Comment</label>
+                                                            <textarea name="comment" id="comment" class="form-control" rows="3" required>{{ $comment->comment }}</textarea>
+                                                            <input type="submit" value="Update Comment"
+                                                                class="btn btn-success mt-2" />
+                                                    </form>
+                                                </div>
+                                                <!-- Modal footer -->
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-danger" data-dismiss="modal"
+                                                        style="margin-right: 10px; background-color: blue;">
+                                                        Close
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Comment to comment -->
+                                <i class="fas fa-reply" style="margin-bottom: 5px; cursor: pointer;" data-toggle="modal"
+                                    data-target="#commentToComment{{ $comment->id }}"></i>
                                 <!-- The Modal -->
-                                <div class="modal" id="editComment{{ $comment->id }}">
+                                <div class="modal" id="commentToComment{{ $comment->id }}">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <!-- Modal Header -->
                                             <div class="modal-header">
-                                                <h4 class="modal-title">Edit Comment</h4>
+                                                <h4 class="modal-title">Write Comment</h4>
                                                 <button type="button" class="close" data-dismiss="modal">
                                                     &times;
                                                 </button>
@@ -183,14 +289,20 @@
 
                                             <!-- Modal body -->
                                             <div class="modal-body">
-                                                <form action="{{ route('commentUpdate', $comment->id) }}" method="POST"
+                                                <form action="{{ route('giveComment') }}" method="POST"
                                                     enctype="multipart/form-data">
                                                     @csrf
                                                     @method('POST')
                                                     <div class="form-group">
-                                                        <label for="comment">Comment</label>
-                                                        <textarea name="comment" id="comment" class="form-control" rows="3" required>{{ $comment->comment }}</textarea>
-                                                        <input type="submit" value="Update Comment"
+                                                        <label for="comment">Comment:</label>
+                                                        <input type="text" id='comment' name="comment"
+                                                            placeholder="Write your comment here..." style="width:100%;"
+                                                            required>
+                                                        <input type="text" name="post_id" id="post_id"
+                                                            value="{{ $post->id }}" hidden>
+                                                        <input type="text" name="parent_id" id="parent_id"
+                                                            value="{{ $comment->id }}" hidden>
+                                                        <input type="submit" value="Comment"
                                                             class="btn btn-success mt-2" />
                                                 </form>
                                             </div>
@@ -204,18 +316,41 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                        </div>
+                        <!-- end of Comment to comment -->
 
-                            <!-- Comment to comment -->
-                            <i class="fas fa-reply" style="margin-bottom: 5px; cursor: pointer;" data-toggle="modal"
-                                data-target="#commentToComment{{ $comment->id }}"></i>
+
+
+
+                        <form action="{{ route('user.deleteComment', $comment->id) }}" method="post"
+                            onsubmit="return confirm('Are you sure you want to delete this comment?');"
+                            style="all:unset; display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                style="all:unset; background:none; border:none;cursor:pointer; color:black; font-size:16px; margin-left:5px;">
+
+                                <i class="fa-solid fa-delete-left" style="margin-bottom: 5px; cursor: pointer;"></i>
+                            </button>
+                        </form>
+
+                    </div>
+                    <!-- display comment to comment -->
+                    @foreach ($comment->commentWithComment as $reply)
+                        <div class="comment" style="display:flex; align-items:center; gap:10px;">
+                            <p style="margin-top:-10px;margin-bottom:-5px; margin-left:20px;">
+                                {{ $reply->user->name }} : {{ $reply->comment }}
+                            </p>
+
+                            <i class="fa-regular fa-pen-to-square" style="margin-bottom: 5px; cursor: pointer;"
+                                data-toggle="modal" data-target="#editComment{{ $reply->id }}"></i>
                             <!-- The Modal -->
-                            <div class="modal" id="commentToComment{{ $comment->id }}">
+                            <div class="modal" id="editComment{{ $reply->id }}">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <!-- Modal Header -->
                                         <div class="modal-header">
-                                            <h4 class="modal-title">Write Comment</h4>
+                                            <h4 class="modal-title">Edit Comment</h4>
                                             <button type="button" class="close" data-dismiss="modal">
                                                 &times;
                                             </button>
@@ -223,20 +358,15 @@
 
                                         <!-- Modal body -->
                                         <div class="modal-body">
-                                            <form action="{{ route('giveComment') }}" method="POST"
+                                            <form action="{{ route('commentUpdate', $reply->id) }}" method="POST"
                                                 enctype="multipart/form-data">
                                                 @csrf
                                                 @method('POST')
                                                 <div class="form-group">
-                                                    <label for="comment">Comment:</label>
-                                                    <input type="text" id='comment' name="comment"
-                                                        placeholder="Write your comment here..." style="width:100%;"
-                                                        required>
-                                                    <input type="text" name="post_id" id="post_id"
-                                                        value="{{ $post->id }}" hidden>
-                                                    <input type="text" name="parent_id" id="parent_id"
-                                                        value="{{ $comment->id }}" hidden>
-                                                    <input type="submit" value="Comment" class="btn btn-success mt-2" />
+                                                    <label for="comment">Comment</label>
+                                                    <textarea name="comment" id="comment" class="form-control" rows="3" required>{{ $reply->comment }}</textarea>
+                                                    <input type="submit" value="Update Comment"
+                                                        class="btn btn-success mt-2" />
                                             </form>
                                         </div>
                                         <!-- Modal footer -->
@@ -249,41 +379,18 @@
                                     </div>
                                 </div>
                             </div>
-                    </div>
-                    <!-- end of Comment to comment -->
+                        </div>
 
-
-
-
-                    <form action="{{ route('user.deleteComment', $comment->id) }}" method="post"
-                        onsubmit="return confirm('Are you sure you want to delete this comment?');"
-                        style="all:unset; display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit"
-                            style="all:unset; background:none; border:none;cursor:pointer; color:black; font-size:16px; margin-left:5px;">
-
-                            <i class="fa-solid fa-delete-left" style="margin-bottom: 5px; cursor: pointer;"></i>
-                        </button>
-                    </form>
-
-                </div>
-                <!-- display comment to comment -->
-                @foreach ($comment->commentWithComment as $reply)
-                    <div class="comment" style="display:flex; align-items:center; gap:10px;">
-                        <p style="margin-top:-10px;margin-bottom:-5px; margin-left:20px;">
-                            {{ $reply->user->name }} : {{ $reply->comment }}
-                        </p>
-
-                        <i class="fa-regular fa-pen-to-square" style="margin-bottom: 5px; cursor: pointer;"
-                            data-toggle="modal" data-target="#editComment{{ $reply->id }}"></i>
+                        <!-- Comment to comment -->
+                        <i class="fas fa-reply" style="margin-bottom: 5px; cursor: pointer;" data-toggle="modal"
+                            data-target="#commentToComment{{ $reply->id }}"></i>
                         <!-- The Modal -->
-                        <div class="modal" id="editComment{{ $reply->id }}">
+                        <div class="modal" id="commentToComment{{ $reply->id }}">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <!-- Modal Header -->
                                     <div class="modal-header">
-                                        <h4 class="modal-title">Edit Comment</h4>
+                                        <h4 class="modal-title">Write Comment</h4>
                                         <button type="button" class="close" data-dismiss="modal">
                                             &times;
                                         </button>
@@ -291,15 +398,19 @@
 
                                     <!-- Modal body -->
                                     <div class="modal-body">
-                                        <form action="{{ route('commentUpdate', $reply->id) }}" method="POST"
+                                        <form action="{{ route('giveComment') }}" method="POST"
                                             enctype="multipart/form-data">
                                             @csrf
                                             @method('POST')
                                             <div class="form-group">
-                                                <label for="comment">Comment</label>
-                                                <textarea name="comment" id="comment" class="form-control" rows="3" required>{{ $reply->comment }}</textarea>
-                                                <input type="submit" value="Update Comment"
-                                                    class="btn btn-success mt-2" />
+                                                <label for="comment">Comment:</label>
+                                                <input type="text" id='comment' name="comment"
+                                                    placeholder="Write your comment here..." style="width:100%;" required>
+                                                <input type="text" name="post_id" id="post_id"
+                                                    value="{{ $post->id }}" hidden>
+                                                <input type="text" name="parent_id" id="parent_id"
+                                                    value="{{ $comment->id }}" hidden>
+                                                <input type="submit" value="Comment" class="btn btn-success mt-2" />
                                         </form>
                                     </div>
                                     <!-- Modal footer -->
@@ -312,83 +423,39 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+            </div>
+            <!-- end of Comment to comment -->
 
-                    <!-- Comment to comment -->
-                    <i class="fas fa-reply" style="margin-bottom: 5px; cursor: pointer;" data-toggle="modal"
-                        data-target="#commentToComment{{ $reply->id }}"></i>
-                    <!-- The Modal -->
-                    <div class="modal" id="commentToComment{{ $reply->id }}">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <!-- Modal Header -->
-                                <div class="modal-header">
-                                    <h4 class="modal-title">Write Comment</h4>
-                                    <button type="button" class="close" data-dismiss="modal">
-                                        &times;
-                                    </button>
-                                </div>
 
-                                <!-- Modal body -->
-                                <div class="modal-body">
-                                    <form action="{{ route('giveComment') }}" method="POST"
-                                        enctype="multipart/form-data">
-                                        @csrf
-                                        @method('POST')
-                                        <div class="form-group">
-                                            <label for="comment">Comment:</label>
-                                            <input type="text" id='comment' name="comment"
-                                                placeholder="Write your comment here..." style="width:100%;" required>
-                                            <input type="text" name="post_id" id="post_id"
-                                                value="{{ $post->id }}" hidden>
-                                            <input type="text" name="parent_id" id="parent_id"
-                                                value="{{ $comment->id }}" hidden>
-                                            <input type="submit" value="Comment" class="btn btn-success mt-2" />
-                                    </form>
-                                </div>
-                                <!-- Modal footer -->
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal"
-                                        style="margin-right: 10px; background-color: blue;">
-                                        Close
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
+
+            <form action="{{ route('user.deleteComment', $reply->id) }}" method="post"
+                onsubmit="return confirm('Are you sure you want to delete this comment?');"
+                style="all:unset; display:inline;">
+                @csrf
+                @method('DELETE')
+                <button type="submit"
+                    style="all:unset; background:none; border:none;cursor:pointer; color:black; font-size:16px; margin-left:5px;">
+
+                    <i class="fa-solid fa-delete-left" style="margin-bottom: 5px; cursor: pointer;"></i>
+                </button>
+            </form>
         </div>
-        <!-- end of Comment to comment -->
-
-
-
-
-        <form action="{{ route('user.deleteComment', $reply->id) }}" method="post"
-            onsubmit="return confirm('Are you sure you want to delete this comment?');"
-            style="all:unset; display:inline;">
+        @endforeach
+        <!-- end display comment to comment -->
+        @endforeach
+        <hr>
+        <form action="{{ route('giveComment') }}" method="POST">
             @csrf
-            @method('DELETE')
-            <button type="submit"
-                style="all:unset; background:none; border:none;cursor:pointer; color:black; font-size:16px; margin-left:5px;">
+            <label for="comment">Give comments to this post:</label>
+            <div class="form-group" style="display:flex;">
+                <input type="text" id='comment' name="comment" placeholder="Write your comment here..."
+                    style="width:100%;" required>
+                <input type="text" name="post_id" id="post_id" value="{{ $post->id }}" hidden>
+                <input type="submit" value="⤴️"style="width:50px;">
 
-                <i class="fa-solid fa-delete-left" style="margin-bottom: 5px; cursor: pointer;"></i>
-            </button>
+            </div>
         </form>
-    </div>
-    @endforeach
-    <!-- end display comment to comment -->
-    @endforeach
-    <hr>
-    <form action="{{ route('giveComment') }}" method="POST">
-        @csrf
-        <label for="comment">Give comments to this post:</label>
-        <div class="form-group" style="display:flex;">
-            <input type="text" id='comment' name="comment" placeholder="Write your comment here..."
-                style="width:100%;" required>
-            <input type="text" name="post_id" id="post_id" value="{{ $post->id }}" hidden>
-            <input type="submit" value="⤴️"style="width:50px;">
-
-        </div>
-    </form>
     </div>
     <!-- <div class="container">    -->
     <div class="post-actions">
@@ -433,15 +500,15 @@
     </div>
     <!-- End of model -->
     <!-- <div class="post-actions">
-                                    <form action="{{ url('post/delete/' . $post->id) }}" method="post">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="delete-btn" style="margin-right: 10px; background-color: red;"
-                                                    onclick="return confirm('Are you sure you want to delete this Post?')">
-                                                    Delete
-                                        </button>
-                                    </form>
-                                </div> -->
+                                                                                                                                <form action="{{ url('post/delete/' . $post->id) }}" method="post">
+                                                                                                                                    @csrf
+                                                                                                                                    @method('DELETE')
+                                                                                                                                    <button class="delete-btn" style="margin-right: 10px; background-color: red;"
+                                                                                                                                                onclick="return confirm('Are you sure you want to delete this Post?')">
+                                                                                                                                                Delete
+                                                                                                                                    </button>
+                                                                                                                                </form>
+                                                                                                                            </div> -->
     </div>
     </div>
 @empty

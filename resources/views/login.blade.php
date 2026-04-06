@@ -79,6 +79,13 @@
 
 
             <p class="mt-3 text-center text-sm text-gray-400">
+                Don't have an account?
+                <a href="{{ route('register') }}" class="font-semibold text-indigo-400 hover:text-indigo-300">
+                    Register here
+                </a>
+            </p>
+
+            <p class="mt-3 text-center text-sm text-gray-400">
                 <a href="{{ route('admin.login') }}" class="font-semibold text-indigo-400 hover:text-indigo-300">
                     Admin Login
                 </a>
