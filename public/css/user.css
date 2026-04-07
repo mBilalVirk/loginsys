@@ -103,7 +103,15 @@
     padding: 8px;
     margin-bottom: 12px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 4px 0 0 4px;
+}
+
+.update-profile button {
+
+    padding: 8px;
+    margin-bottom: 12px;
+    /* border: 1px solid #ccc; */
+    border-radius: 0 4px 4px 0;
 }
 
 /* ALERTS */
@@ -125,10 +133,11 @@
 
 /* SIDEBAR */
 .side-nav {
-    max-width: 260px;
+    width: 350px;
     background: #fff;
+    height: 60vh;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-    border-radius: 16px;
+    /* border-radius: 16px; */
     padding: 18px;
     margin-bottom: 24px;
     position: sticky;
@@ -221,4 +230,14 @@
 
 .pc-logout:hover {
     background: rgba(248, 113, 113, 0.08);
+}
+
+@media (max-width: 768px) {
+    .side-nav {
+        width: 100%;
+        position: static;
+
+        top: auto;
+
+    }
 }

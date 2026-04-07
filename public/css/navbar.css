@@ -265,7 +265,7 @@ nav ul li #btn_profile::after {
     }
 
     nav ul {
-        min-width: 600px;
+        width: 100%;
         padding: 8px 12px;
         justify-content: space-between;
     }
@@ -279,13 +279,13 @@ nav ul li #btn_profile::after {
 /* side navbar */
 
 
-.side-nav {
+/* .side-nav {
 
     width: 100vh;
     background-color: white;
     height: 60vh;
     box-shadow: 0 0 8px 1px rgba(0, 0, 0, 0.2);
-}
+} */
 
 .side-items {
     cursor: pointer;
@@ -489,3 +489,41 @@ nav ul li #btn_profile::after {
 .no-messages small {
     font-size: 0.85rem;
 }
+
+/* ✅ Large Devices (Laptops ≤ 1200px) */
+@media (max-width: 1200px) {}
+
+.dropdown .mobile-only {
+    display: none;
+}
+
+/* ✅ Medium Devices (Tablets ≤ 992px) */
+@media (max-width: 992px) {
+    .nav ul li a {
+        display: flex;
+        align-items: center;
+    }
+
+    #btn_profile {
+        margin-left: auto;
+    }
+
+
+    #btn_bell,
+    #btn_plus,
+    #btn_msg {
+        display: none !important;
+    }
+
+    .dropdown .mobile-only {
+        display: block;
+    }
+
+
+}
+
+/* ✅ Small Devices (Mobile ≤ 768px) */
+@media (max-width: 768px) {}
+
+/* ✅ Extra Small Devices (≤ 576px) */
+@media (max-width: 576px) {}

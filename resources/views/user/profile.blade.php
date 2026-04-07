@@ -452,7 +452,9 @@
                 <input type="text" id='comment' name="comment" placeholder="Write your comment here..."
                     style="width:100%;" required>
                 <input type="text" name="post_id" id="post_id" value="{{ $post->id }}" hidden>
-                <input type="submit" value="⤴️"style="width:50px;">
+                <button type="submit" class="submit-arrow">
+                    <i class="fa-solid fa-comment"></i>
+                </button>
 
             </div>
         </form>
@@ -500,15 +502,15 @@
     </div>
     <!-- End of model -->
     <!-- <div class="post-actions">
-                                                                                                                                <form action="{{ url('post/delete/' . $post->id) }}" method="post">
-                                                                                                                                    @csrf
-                                                                                                                                    @method('DELETE')
-                                                                                                                                    <button class="delete-btn" style="margin-right: 10px; background-color: red;"
-                                                                                                                                                onclick="return confirm('Are you sure you want to delete this Post?')">
-                                                                                                                                                Delete
-                                                                                                                                    </button>
-                                                                                                                                </form>
-                                                                                                                            </div> -->
+                                                                                                                                    <form action="{{ url('post/delete/' . $post->id) }}" method="post">
+                                                                                                                                        @csrf
+                                                                                                                                        @method('DELETE')
+                                                                                                                                        <button class="delete-btn" style="margin-right: 10px; background-color: red;"
+                                                                                                                                                    onclick="return confirm('Are you sure you want to delete this Post?')">
+                                                                                                                                                    Delete
+                                                                                                                                        </button>
+                                                                                                                                    </form>
+                                                                                                                                </div> -->
     </div>
     </div>
 @empty

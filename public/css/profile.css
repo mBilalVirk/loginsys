@@ -257,6 +257,11 @@
         align-items: center;
     }
 
+    .profile-page {
+        flex-direction: column;
+        align-items: center;
+    }
+
     .profile-card {
         width: 100%;
         max-width: 400px;

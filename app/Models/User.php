@@ -63,7 +63,15 @@ class User extends Authenticatable
     // public function friends(){
     //     return $this->hasMany(Friend::class, 'user_id');
     // }
-
+public function friends()
+{
+    return Friend::with(['sender', 'receiver'])
+        ->where(function($query) {
+            $query->where('user_id', $this->id)
+                  ->orWhere('friend_id', $this->id);
+        })
+        ->where('status', 'accepted');
+}
     /**
      * The attributes that should be hidden for serialization.
      *
