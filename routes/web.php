@@ -162,7 +162,7 @@ Route::middleware('auth')->group(function(){
 });
 
 Route::middleware('auth')->group(function(){
-    route::get('user/api/friends', [FriendController::class, 'apiIndex'])->name('api.friends');
+    route::get('user/api/friends', [MessageController::class, 'apiIndex'])->name('api.friends');
       Route::get('/user/message', [App\Http\Controllers\MessageController::class, 'index'])->name('userMessages');
       Route::post('/user/message/send',[App\Http\Controllers\MessageController::class, 'create'])->name('sendMessage');
       Route::get('/user/chat/friend/{id}', function(){

@@ -260,51 +260,16 @@ const Messenger = () => {
         }
     };
     // this is api for front-end
-    const fetchFriends = async () => {
-        try {
-            const response = await fetch("/api/user/friends", {
-                method: "GET",
-                headers: {
-                    Accept: "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            const data = await response.json();
-            if (response.ok) {
-                const acceptedFriends = data.accepted_friends.map(
-                    (friendship) =>
-                        friendship.sender.id === authId
-                            ? friendship.receiver
-                            : friendship.sender,
-                );
-                setFriends(acceptedFriends);
-            }
-        } catch (error) {
-            console.error("Error fetching friends:", error);
-        }
-    };
-    // this is for .blade.php component
     // const fetchFriends = async () => {
     //     try {
-    //         // Step 1: Get CSRF cookie from Laravel
-    //         await fetch("http://127.0.0.1:8000/sanctum/csrf-cookie", {
-    //             credentials: "include", // Important
-    //         });
-
-    //         // Step 2: Fetch friends API
-    //         const response = await fetch(
-    //             "http://127.0.0.1:8000/api/user/friends",
-    //             {
-    //                 method: "GET",
-    //                 headers: {
-    //                     Accept: "application/json",
-    //                     credentials: "include", // Sends session cookie
-    //                 },
+    //         const response = await fetch("/api/user/friends", {
+    //             method: "GET",
+    //             headers: {
+    //                 Accept: "application/json",
+    //                 Authorization: `Bearer ${token}`,
     //             },
-    //         );
-
+    //         });
     //         const data = await response.json();
-
     //         if (response.ok) {
     //             const acceptedFriends = data.accepted_friends.map(
     //                 (friendship) =>
@@ -313,23 +278,56 @@ const Messenger = () => {
     //                         : friendship.sender,
     //             );
     //             setFriends(acceptedFriends);
-    //         } else {
-    //             console.error("Failed to fetch friends:", data);
     //         }
     //     } catch (error) {
     //         console.error("Error fetching friends:", error);
     //     }
     // };
-    const fetchMessages = async (friendId) => {
+    // this is for .blade.php component
+    const fetchFriends = async () => {
         try {
-            const response = await fetch(`/api/user/chat/${friendId}`, {
+            // Step 1: Get CSRF cookie from Laravel
+            await fetch("http://127.0.0.1:8000/sanctum/csrf-cookie", {
+                credentials: "include", // Important
+            });
+
+            // Step 2: Fetch friends API
+            const response = await fetch("user/api/friends", {
                 method: "GET",
+                credentials: "include", // Sends session cookie
                 headers: {
                     Accept: "application/json",
-                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+            console.log("Friends API response:", data);
+            if (response.ok) {
+                const acceptedFriends = data.friends.map((friendship) =>
+                    friendship.sender.id === authId
+                        ? friendship.sender
+                        : friendship.receiver,
+                );
+                setFriends(acceptedFriends);
+            } else {
+                console.error("Failed to fetch friends:", data);
+            }
+        } catch (error) {
+            console.error("Error fetching friends:", error);
+        }
+    };
+    const fetchMessages = async (friendId) => {
+        try {
+            const response = await fetch(`user/chat/${friendId}`, {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    Accept: "application/json",
+                    // Authorization: `Bearer ${token}`,
                 },
             });
             const data = await response.json();
+            console.log("Messages API response:", data);
             if (response.ok) setMessages(data.data);
         } catch (error) {
             console.error("Error fetching messages:", error);

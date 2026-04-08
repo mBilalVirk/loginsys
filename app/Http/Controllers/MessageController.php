@@ -33,17 +33,18 @@ class MessageController extends Controller
     {
         $user = auth()->user();
         $friends = Friend::with(['sender', 'receiver'])
-            ->where(function ($query) use ($user) {
-                $query->where('user_id', $user->id)->orWhere('friend_id', $user->id);
-            })
-            ->where('status', 'accepted')
-            ->get();
+                        ->where(function($query) use ($user) {
+                            $query->where('user_id', $user->id)   // requests you sent
+                                ->orWhere('friend_id', $user->id); // requests you received
+                        })
+                        ->where('status', 'accepted')
+                        ->get();
 
         
 
         return response()->json([
             'friends' => $friends,
-        ]);
+        ],200);
     }
     public function chat(Request $request, $friend_id)
     {
@@ -67,7 +68,13 @@ class MessageController extends Controller
 
         // return $messages;
         return response()->json($messages);
-        // return view('user.chat',compact('messages'));
+    //      return response()->json([
+    //     'success' => true,
+    //     'message' => 'Messages fetched successfully',
+    //     'data' => $messages
+    // ], 200);
+    //     // return view('user.chat',compact('messages'));
+    // 
     }
     public function create(Request $request)
     {

@@ -652,7 +652,7 @@ return [
 1. improved in view.
 2. try to used react component into .blade.php
 
-# 07/04/2026
+# 08/04/2026
 
 1. Use react message component inside the .blade.php
 2. Create a file in js folder. `messendger.jsx` & past this code
@@ -673,3 +673,4 @@ if (el) {
 4. Past this `<div id="messenger-root"></div> @vite('resources/js/messenger.jsx')`
 5. Past tailwind cdn or install it. or other css library etc.
 6. Before all of this make proper authentication setup in react components.
+7. As see the api/ routes does't work in blade you need to create custom route to fetch data..

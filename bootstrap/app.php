@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->statefulApi();// you need to removed this line if front-end give you error like "Unauthenticated" when you try to access api route with sanctum token auth
         $middleware->alias([
         'admin' => AdminMiddleware::class,
         'user' => UserMiddleware::class,
