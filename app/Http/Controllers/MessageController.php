@@ -29,6 +29,22 @@ class MessageController extends Controller
 
         return view('user.messages', compact('messages', 'friends'));
     }
+    public function apiIndex()
+    {
+        $user = auth()->user();
+        $friends = Friend::with(['sender', 'receiver'])
+            ->where(function ($query) use ($user) {
+                $query->where('user_id', $user->id)->orWhere('friend_id', $user->id);
+            })
+            ->where('status', 'accepted')
+            ->get();
+
+        
+
+        return response()->json([
+            'friends' => $friends,
+        ]);
+    }
     public function chat(Request $request, $friend_id)
     {
         $user_id = auth()->user()->id;

@@ -650,3 +650,26 @@ return [
 # 07/04/2026
 
 1. improved in view.
+2. try to used react component into .blade.php
+
+# 07/04/2026
+
+1. Use react message component inside the .blade.php
+2. Create a file in js folder. `messendger.jsx` & past this code
+
+```jsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import Messenger from "../js/pages/user/messenger";
+
+const el = document.getElementById("messenger-root");
+console.log("ROOT:", el); // check the element is render
+if (el) {
+    ReactDOM.createRoot(el).render(<Messenger />);
+}
+```
+
+3. Create the div with `id="messenger-root"`
+4. Past this `<div id="messenger-root"></div> @vite('resources/js/messenger.jsx')`
+5. Past tailwind cdn or install it. or other css library etc.
+6. Before all of this make proper authentication setup in react components.

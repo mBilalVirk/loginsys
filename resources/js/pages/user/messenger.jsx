@@ -259,7 +259,7 @@ const Messenger = () => {
             console.log(error);
         }
     };
-
+    // this is api for front-end
     const fetchFriends = async () => {
         try {
             const response = await fetch("/api/user/friends", {
@@ -283,7 +283,43 @@ const Messenger = () => {
             console.error("Error fetching friends:", error);
         }
     };
+    // this is for .blade.php component
+    // const fetchFriends = async () => {
+    //     try {
+    //         // Step 1: Get CSRF cookie from Laravel
+    //         await fetch("http://127.0.0.1:8000/sanctum/csrf-cookie", {
+    //             credentials: "include", // Important
+    //         });
 
+    //         // Step 2: Fetch friends API
+    //         const response = await fetch(
+    //             "http://127.0.0.1:8000/api/user/friends",
+    //             {
+    //                 method: "GET",
+    //                 headers: {
+    //                     Accept: "application/json",
+    //                     credentials: "include", // Sends session cookie
+    //                 },
+    //             },
+    //         );
+
+    //         const data = await response.json();
+
+    //         if (response.ok) {
+    //             const acceptedFriends = data.accepted_friends.map(
+    //                 (friendship) =>
+    //                     friendship.sender.id === authId
+    //                         ? friendship.receiver
+    //                         : friendship.sender,
+    //             );
+    //             setFriends(acceptedFriends);
+    //         } else {
+    //             console.error("Failed to fetch friends:", data);
+    //         }
+    //     } catch (error) {
+    //         console.error("Error fetching friends:", error);
+    //     }
+    // };
     const fetchMessages = async (friendId) => {
         try {
             const response = await fetch(`/api/user/chat/${friendId}`, {

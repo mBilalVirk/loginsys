@@ -117,7 +117,8 @@
                 </div>
                 <div class="form-group">
                     <label for="photo">Image (optional)</label>
-                    <input type="file" name="photo" id="image" accept="image/*" style="border: 1px solid #007bff;">
+                    <input type="file" name="photo" id="image" accept="image/*" style="border: 1px solid #007bff;"
+                        class="">
                     <button type="submit" class="btn btn-primary  align-items-center gap-2">
                         <i class="fa-solid fa-pen-to-square"></i>
                         <span>Create Post</span>
